@@ -11,7 +11,9 @@ import { colors, spacing } from '../theme/theme';
 
 interface BottomTabNavigatorProps {
   activeTab?: 'Home' | 'Orders' | 'Wishlist' | 'Chat' | 'Profile';
-  onTabPress?: (tab: string) => void;
+  onTabPress?: (
+    tab: 'Home' | 'Orders' | 'Wishlist' | 'Chat' | 'Profile',
+  ) => void;
 }
 
 export const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
@@ -35,7 +37,11 @@ export const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
           <TouchableOpacity
             key={tab.name}
             style={styles.tab}
-            onPress={() => onTabPress?.(tab.name)}
+            onPress={() =>
+              onTabPress?.(
+                tab.name as 'Home' | 'Orders' | 'Wishlist' | 'Chat' | 'Profile',
+              )
+            }
           >
             <Icon color={isActive ? '#20A39E' : colors.textLight} size={24} />
             <Text

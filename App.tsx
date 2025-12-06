@@ -11,6 +11,8 @@ import { OtpScreen } from './src/screens/OtpScreen';
 import { NotificationScreen } from './src/screens/NotificationScreen';
 import { PromoCodeScreen } from './src/screens/PromoCodeScreen';
 import { AllProductsScreen } from './src/screens/AllProductsScreen';
+import { ChatScreen } from './src/screens/ChatScreen';
+import { ChatDetailScreen } from './src/screens/ChatDetailScreen';
 import { VoucherScreen } from './src/screens/VoucherScreen';
 
 function App() {
@@ -24,6 +26,7 @@ function App() {
   const [showVoucherScreen, setShowVoucherScreen] = useState(false);
   const [showPromoCodeScreen, setShowPromoCodeScreen] = useState(false);
   const [showAllProductsScreen, setShowAllProductsScreen] = useState(false);
+  const [showChatDetailScreen, setShowChatDetailScreen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -35,6 +38,10 @@ function App() {
 
   useEffect(() => {
     const backAction = () => {
+      if (showChatDetailScreen) {
+        setShowChatDetailScreen(false);
+        return true;
+      }
       if (showAllProductsScreen) {
         setShowAllProductsScreen(false);
         return true;
@@ -90,6 +97,7 @@ function App() {
     showVoucherScreen,
     showPromoCodeScreen,
     showAllProductsScreen,
+    showChatDetailScreen,
   ]);
 
   const handleLanguageSelect = (language: string) => {
@@ -172,6 +180,14 @@ function App() {
     setShowAllProductsScreen(false);
   };
 
+  const handleChatPress = () => {
+    setShowChatDetailScreen(true);
+  };
+
+  const handleBackFromChatDetail = () => {
+    setShowChatDetailScreen(false);
+  };
+
   return (
     <SafeAreaProvider>
       {isShowSplash ? (
@@ -200,6 +216,8 @@ function App() {
         )
       ) : showAllProductsScreen ? (
         <AllProductsScreen onClose={handleCloseAllProducts} />
+      ) : showChatDetailScreen ? (
+        <ChatDetailScreen onBackPress={handleBackFromChatDetail} />
       ) : showPromoCodeScreen ? (
         <PromoCodeScreen onBackPress={handleBackFromPromo} />
       ) : showVoucherScreen ? (
@@ -214,6 +232,7 @@ function App() {
           onNotificationPress={handleNotificationPress}
           onVoucherPress={handleVoucherPress}
           onAllProductsPress={handleAllProductsPress}
+          onChatPress={handleChatPress}
         />
       )}
     </SafeAreaProvider>
