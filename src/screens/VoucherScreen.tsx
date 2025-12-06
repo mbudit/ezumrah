@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, StatusBar, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Search } from 'lucide-react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, typography } from '../theme/theme';
 
 interface VoucherScreenProps {
@@ -73,44 +72,34 @@ export const VoucherScreen = ({ onBackPress }: VoucherScreenProps) => {
     </View>
   );
 
-  const renderHeader = () => (
-    <LinearGradient 
-      colors={['#20A39E', '#1D938E', '#1A827E', '#13625F']} 
-      start={{x: 0, y: 0}} 
-      end={{x: 0, y: 1}}
-      style={styles.greenBackground}
-    >
-      <SafeAreaView edges={['top']}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
-            <ArrowLeft color="white" size={24} />
-          </TouchableOpacity>
-          <View style={styles.searchContainer}>
-            <Search color={colors.textLight} size={20} style={styles.searchIcon} />
-            <TextInput 
-              placeholder="Search for promos" 
-              placeholderTextColor={colors.textLight}
-              style={styles.searchInput}
-            />
-          </View>
-        </View>
-      </SafeAreaView>
-    </LinearGradient>
-  );
-
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#20A39E" />
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
       
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+          <ArrowLeft color="black" size={24} />
+        </TouchableOpacity>
+        <View style={styles.searchContainer}>
+          <Search color={colors.textLight} size={20} style={styles.searchIcon} />
+          <TextInput 
+            placeholder="Search for promos" 
+            placeholderTextColor={colors.textLight}
+            style={styles.searchInput}
+          />
+        </View>
+      </View>
+
+      {/* List */}
       <FlatList
         data={vouchers}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        ListHeaderComponent={renderHeader}
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -119,18 +108,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  greenBackground: {
-    paddingBottom: 80,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    marginBottom: -60, // Overlap effect
-    paddingHorizontal: spacing.m,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: spacing.s,
-    marginBottom: spacing.m,
+    padding: spacing.m,
   },
   backButton: {
     marginRight: spacing.m,
@@ -139,7 +120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#F3F4F6',
     borderRadius: spacing.s,
     paddingHorizontal: spacing.s,
     height: 40,
@@ -155,9 +136,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   listContent: {
-    paddingHorizontal: spacing.m,
-    paddingBottom: spacing.xl,
-    paddingTop: spacing.m,
+    padding: spacing.m,
   },
   voucherItem: {
     flexDirection: 'row',
