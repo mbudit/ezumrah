@@ -8,6 +8,8 @@ import { LoginSelectionScreen } from './src/screens/LoginSelectionScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { OtpScreen } from './src/screens/OtpScreen';
+import { NotificationScreen } from './src/screens/NotificationScreen';
+import { VoucherScreen } from './src/screens/VoucherScreen';
 
 function App() {
   const [isShowSplash, setIsShowSplash] = useState(true);
@@ -16,17 +18,27 @@ function App() {
   const [showLoginScreen, setShowLoginScreen] = useState(false);
   const [showRegisterScreen, setShowRegisterScreen] = useState(false);
   const [showOtpScreen, setShowOtpScreen] = useState(false);
+  const [showNotificationScreen, setShowNotificationScreen] = useState(false);
+  const [showVoucherScreen, setShowVoucherScreen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsShowSplash(false);
-    }, 2000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     const backAction = () => {
+      if (showVoucherScreen) {
+        setShowVoucherScreen(false);
+        return true;
+      }
+      if (showNotificationScreen) {
+        setShowNotificationScreen(false);
+        return true;
+      }
       if (showOtpScreen) {
         setShowOtpScreen(false);
         setShowLoginScreen(true);
@@ -41,8 +53,7 @@ function App() {
         return true;
       }
       if (isLoggedIn) {
-        setIsLoggedIn(false);
-        return true;
+        return false;
       }
       if (isLanguageSelected) {
         setIsLanguageSelected(false);
@@ -57,7 +68,7 @@ function App() {
     );
 
     return () => backHandler.remove();
-  }, [showOtpScreen, showRegisterScreen, showLoginScreen, isLoggedIn, isLanguageSelected]);
+  }, [showOtpScreen, showRegisterScreen, showLoginScreen, isLoggedIn, isLanguageSelected, showNotificationScreen, showVoucherScreen]);
 
   const handleLanguageSelect = (language: string) => {
     console.log('Selected language:', language);
@@ -94,8 +105,8 @@ function App() {
   const handleSignUp = () => {
       console.log('Sign Up success');
       setIsLoggedIn(true);
-      setShowRegisterScreen(false); // Reset register state
-      setShowLoginScreen(false); // Reset login state
+      setShowRegisterScreen(false);
+      setShowLoginScreen(false);
   };
 
   const handleBackToLogin = () => {
@@ -105,6 +116,22 @@ function App() {
   const handleBackFromOtp = () => {
       setShowOtpScreen(false);
       setShowLoginScreen(true);
+  };
+
+  const handleNotificationPress = () => {
+    setShowNotificationScreen(true);
+  };
+
+  const handleBackFromNotification = () => {
+    setShowNotificationScreen(false);
+  };
+
+  const handleVoucherPress = () => {
+    setShowVoucherScreen(true);
+  };
+
+  const handleBackFromVoucher = () => {
+    setShowVoucherScreen(false);
   };
 
   return (
@@ -130,8 +157,15 @@ function App() {
         ) : (
             <LoginSelectionScreen onLogin={handleLoginSelection} onGuest={handleGuest} />
         )
+      ) : showVoucherScreen ? (
+        <VoucherScreen onBackPress={handleBackFromVoucher} />
+      ) : showNotificationScreen ? (
+        <NotificationScreen onBackPress={handleBackFromNotification} />
       ) : (
-        <HomeScreen />
+        <HomeScreen 
+            onNotificationPress={handleNotificationPress} 
+            onVoucherPress={handleVoucherPress}
+        />
       )}
     </SafeAreaProvider>
   );

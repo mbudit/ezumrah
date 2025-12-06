@@ -1,92 +1,87 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  Image,
-  SafeAreaView,
   StatusBar,
-  FlatList,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
+import { Search, Bell, Percent, MapPin } from 'lucide-react-native';
 import { colors, spacing, typography } from '../theme/theme';
-import { Card } from '../components/Card';
-import { Button } from '../components/Button';
-import { fetchServices, ServiceItem, fetchUserProfile } from '../services/api';
+import { ServiceGrid } from '../components/ServiceGrid';
+import { PromoSection } from '../components/PromoSection';
+import { HotelDealsSection } from '../components/HotelDealsSection';
+import { NotificationCard } from '../components/NotificationCard';
+import { BottomTabNavigator } from '../components/BottomTabNavigator';
 
-export const HomeScreen = () => {
-  const [services, setServices] = useState<ServiceItem[]>([]);
-  const [user, setUser] = useState<{ name: string; avatar: string } | null>(null);
+interface HomeScreenProps {
+  onNotificationPress: () => void;
+  onVoucherPress: () => void;
+}
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    const [servicesData, userData] = await Promise.all([
-      fetchServices(),
-      fetchUserProfile(),
-    ]);
-    setServices(servicesData);
-    setUser(userData as any);
-  };
-
-  const renderHeader = () => (
-    <View style={styles.header}>
-      <View>
-        <Text style={typography.caption}>Assalamu Alaikum,</Text>
-        <Text style={typography.h2}>{user?.name || 'Guest'}</Text>
-      </View>
-      <View style={styles.avatarContainer}>
-          {/* Placeholder for Avatar */}
-          <View style={styles.avatarPlaceholder} />
-      </View>
-    </View>
-  );
-
-  const renderHero = () => (
-    <Card style={styles.heroCard} variant="elevated">
-      <Text style={[typography.h2, { color: colors.surface, marginBottom: spacing.s }]}>
-        Plan Your Spiritual Journey
-      </Text>
-      <Text style={[typography.body, { color: colors.surface, marginBottom: spacing.l }]}>
-        Experience a seamless Umrah with our premium packages.
-      </Text>
-      <Button
-        title="Book Now"
-        onPress={() => console.log('Book Now Pressed')}
-        variant="secondary"
-      />
-    </Card>
-  );
-
-  const renderServiceItem = ({ item }: { item: ServiceItem }) => (
-    <Card style={styles.serviceCard} variant="flat">
-      <View style={styles.iconPlaceholder} />
-      <Text style={[typography.h3, { marginTop: spacing.s }]}>{item.title}</Text>
-      <Text style={[typography.caption, { marginTop: spacing.xs }]}>
-        {item.description}
-      </Text>
-    </Card>
-  );
-
+export const HomeScreen = ({ onNotificationPress, onVoucherPress }: HomeScreenProps) => {
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.background} />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {renderHeader()}
-        {renderHero()}
-        
-        <Text style={[typography.h3, styles.sectionTitle]}>Our Services</Text>
-        <View style={styles.servicesGrid}>
-            {services.map((item) => (
-                <View key={item.id} style={styles.serviceWrapper}>
-                    {renderServiceItem({ item })}
-                </View>
-            ))}
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#20A39E" />
+      
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent} 
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Green Background with Curve */}
+        <LinearGradient 
+          colors={['#20A39E', '#1D938E', '#1A827E', '#13625F']} 
+          start={{x: 0, y: 0}} 
+          end={{x: 0, y: 1}}
+          style={styles.greenBackground}
+        >
+          <SafeAreaView edges={['top']}>
+            <View style={styles.header}>
+              <View style={styles.searchContainer}>
+                <Search color="#20A39E" size={20} style={styles.searchIcon} />
+                <TextInput 
+                  placeholder="Search" 
+                  placeholderTextColor={colors.textLight}
+                  style={styles.searchInput}
+                />
+              </View>
+              <View style={styles.headerIcons}>
+                <TouchableOpacity style={styles.iconButton} onPress={onNotificationPress}>
+                  <Bell color="#20A39E" size={20} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iconButton} onPress={onVoucherPress}>
+                  <Percent color="#20A39E" size={20} />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.heroContent}>
+              <View style={styles.locationContainer}>
+                  <MapPin color="red" size={16} />
+                  <Text style={styles.locationText}>Masjidil Haram, Makkah al-Mukarramah</Text>
+              </View>
+              
+              <Text style={styles.prayerName}>Subuh 04.46 WAS</Text>
+              <Text style={styles.countdown}>— 05 : 25 : 22</Text>
+              <Text style={styles.date}>31 Agustus 2025 / 7 Rabiul Awal 1447</Text>
+            </View>
+          </SafeAreaView>
+        </LinearGradient>
+
+        <View style={styles.contentContainer}>
+            <ServiceGrid />
+            <PromoSection />
+            <NotificationCard />
+            <HotelDealsSection />
         </View>
       </ScrollView>
-    </SafeAreaView>
+      
+      <BottomTabNavigator />
+    </View>
   );
 };
 
@@ -95,57 +90,91 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  scrollContent: {
-    padding: spacing.m,
+  greenBackground: {
+    paddingBottom: 80,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    paddingHorizontal: spacing.m,
+    paddingTop: 0,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: spacing.l,
+    marginTop: spacing.s,
   },
-  avatarContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.border,
-    overflow: 'hidden',
-  },
-  avatarPlaceholder: {
-      width: '100%',
-      height: '100%',
-      backgroundColor: colors.primary,
-      opacity: 0.2
-  },
-  heroCard: {
-    backgroundColor: colors.primary,
-    padding: spacing.l,
-    marginBottom: spacing.xl,
-  },
-  sectionTitle: {
-    marginBottom: spacing.m,
-  },
-  servicesGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-  },
-  serviceWrapper: {
-      width: '48%', // Two columns with some gap
-      marginBottom: spacing.m,
-  },
-  serviceCard: {
+  searchContainer: {
+    flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.l,
-    height: 160, 
-    justifyContent: 'center'
+    backgroundColor: 'white',
+    borderRadius: spacing.s,
+    paddingHorizontal: spacing.s,
+    height: 40,
+    marginRight: spacing.m,
   },
-  iconPlaceholder: {
+  searchIcon: {
+    marginRight: spacing.xs,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: 'Inter_18pt-Regular',
+    color: colors.text,
+    paddingVertical: 0, // Fix android text input padding
+  },
+  headerIcons: {
+    flexDirection: 'row',
+  },
+  iconButton: {
     width: 40,
     height: 40,
+    backgroundColor: 'white',
     borderRadius: 20,
-    backgroundColor: colors.primary,
-    opacity: 0.1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: spacing.s,
+  },
+  heroContent: {
+    alignItems: 'center',
+    paddingBottom: spacing.xs,
+  },
+  locationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: spacing.s,
+  },
+  locationText: {
+    color: 'white',
+    marginLeft: spacing.xs,
+    fontFamily: 'Inter_18pt-Regular',
+    fontSize: 12,
+  },
+  prayerName: {
+    color: 'white',
+    fontSize: 20,
+    fontFamily: 'Inter_18pt-Bold',
+    marginBottom: spacing.xs,
+  },
+  countdown: {
+    color: 'white',
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Regular',
+    marginBottom: spacing.xs,
+  },
+  date: {
+    color: 'white',
+    fontSize: 12,
+    fontFamily: 'Inter_18pt-Regular',
+    opacity: 0.9,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 80, // Add padding for bottom tab
+  },
+  contentContainer: {
+      paddingTop: spacing.m,
+      marginTop: -80,
+      zIndex: 10,
+      elevation: 10,
   },
 });
