@@ -21,39 +21,56 @@ import { BottomTabNavigator } from '../components/BottomTabNavigator';
 interface HomeScreenProps {
   onNotificationPress: () => void;
   onVoucherPress: () => void;
+  onAllProductsPress: () => void;
 }
 
-export const HomeScreen = ({ onNotificationPress, onVoucherPress }: HomeScreenProps) => {
+export const HomeScreen = ({
+  onNotificationPress,
+  onVoucherPress,
+  onAllProductsPress,
+}: HomeScreenProps) => {
+  const handleServicePress = (id: string) => {
+    if (id === 'others') {
+      onAllProductsPress();
+    }
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#20A39E" />
-      
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent} 
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Green Background with Curve */}
-        <LinearGradient 
-          colors={['#20A39E', '#1D938E', '#1A827E', '#13625F']} 
-          start={{x: 0, y: 0}} 
-          end={{x: 0, y: 1}}
+        <LinearGradient
+          colors={['#20A39E', '#1D938E', '#1A827E', '#13625F']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
           style={styles.greenBackground}
         >
           <SafeAreaView edges={['top']}>
             <View style={styles.header}>
               <View style={styles.searchContainer}>
                 <Search color="#20A39E" size={20} style={styles.searchIcon} />
-                <TextInput 
-                  placeholder="Search" 
+                <TextInput
+                  placeholder="Search"
                   placeholderTextColor={colors.textLight}
                   style={styles.searchInput}
                 />
               </View>
               <View style={styles.headerIcons}>
-                <TouchableOpacity style={styles.iconButton} onPress={onNotificationPress}>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={onNotificationPress}
+                >
                   <Bell color="#20A39E" size={20} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton} onPress={onVoucherPress}>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={onVoucherPress}
+                >
                   <Percent color="#20A39E" size={20} />
                 </TouchableOpacity>
               </View>
@@ -61,25 +78,29 @@ export const HomeScreen = ({ onNotificationPress, onVoucherPress }: HomeScreenPr
 
             <View style={styles.heroContent}>
               <View style={styles.locationContainer}>
-                  <MapPin color="red" size={16} />
-                  <Text style={styles.locationText}>Masjidil Haram, Makkah al-Mukarramah</Text>
+                <MapPin color="red" size={16} />
+                <Text style={styles.locationText}>
+                  Masjidil Haram, Makkah al-Mukarramah
+                </Text>
               </View>
-              
+
               <Text style={styles.prayerName}>Subuh 04.46 WAS</Text>
               <Text style={styles.countdown}>— 05 : 25 : 22</Text>
-              <Text style={styles.date}>31 Agustus 2025 / 7 Rabiul Awal 1447</Text>
+              <Text style={styles.date}>
+                31 Agustus 2025 / 7 Rabiul Awal 1447
+              </Text>
             </View>
           </SafeAreaView>
         </LinearGradient>
 
         <View style={styles.contentContainer}>
-            <ServiceGrid />
-            <PromoSection />
-            <NotificationCard />
-            <HotelDealsSection />
+          <ServiceGrid onServicePress={handleServicePress} />
+          <PromoSection />
+          <NotificationCard />
+          <HotelDealsSection />
         </View>
       </ScrollView>
-      
+
       <BottomTabNavigator />
     </View>
   );
@@ -172,9 +193,9 @@ const styles = StyleSheet.create({
     paddingBottom: 80, // Add padding for bottom tab
   },
   contentContainer: {
-      paddingTop: spacing.m,
-      marginTop: -80,
-      zIndex: 10,
-      elevation: 10,
+    paddingTop: spacing.m,
+    marginTop: -80,
+    zIndex: 10,
+    elevation: 10,
   },
 });

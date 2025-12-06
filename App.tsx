@@ -9,6 +9,8 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { OtpScreen } from './src/screens/OtpScreen';
 import { NotificationScreen } from './src/screens/NotificationScreen';
+import { PromoCodeScreen } from './src/screens/PromoCodeScreen';
+import { AllProductsScreen } from './src/screens/AllProductsScreen';
 import { VoucherScreen } from './src/screens/VoucherScreen';
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
   const [showOtpScreen, setShowOtpScreen] = useState(false);
   const [showNotificationScreen, setShowNotificationScreen] = useState(false);
   const [showVoucherScreen, setShowVoucherScreen] = useState(false);
+  const [showPromoCodeScreen, setShowPromoCodeScreen] = useState(false);
+  const [showAllProductsScreen, setShowAllProductsScreen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -31,6 +35,14 @@ function App() {
 
   useEffect(() => {
     const backAction = () => {
+      if (showAllProductsScreen) {
+        setShowAllProductsScreen(false);
+        return true;
+      }
+      if (showPromoCodeScreen) {
+        setShowPromoCodeScreen(false);
+        return true;
+      }
       if (showVoucherScreen) {
         setShowVoucherScreen(false);
         return true;
@@ -68,7 +80,17 @@ function App() {
     );
 
     return () => backHandler.remove();
-  }, [showOtpScreen, showRegisterScreen, showLoginScreen, isLoggedIn, isLanguageSelected, showNotificationScreen, showVoucherScreen]);
+  }, [
+    showOtpScreen,
+    showRegisterScreen,
+    showLoginScreen,
+    isLoggedIn,
+    isLanguageSelected,
+    showNotificationScreen,
+    showVoucherScreen,
+    showPromoCodeScreen,
+    showAllProductsScreen,
+  ]);
 
   const handleLanguageSelect = (language: string) => {
     console.log('Selected language:', language);
@@ -76,46 +98,46 @@ function App() {
   };
 
   const handleLoginSelection = () => {
-      console.log('Login selection pressed');
-      setShowLoginScreen(true);
+    console.log('Login selection pressed');
+    setShowLoginScreen(true);
   };
 
   const handleLoginSuccess = () => {
-      console.log('Login credentials accepted, showing OTP');
-      setShowLoginScreen(false);
-      setShowOtpScreen(true);
+    console.log('Login credentials accepted, showing OTP');
+    setShowLoginScreen(false);
+    setShowOtpScreen(true);
   };
 
   const handleOtpVerify = (code: string) => {
-      console.log('OTP Verified:', code);
-      setShowOtpScreen(false);
-      setIsLoggedIn(true);
+    console.log('OTP Verified:', code);
+    setShowOtpScreen(false);
+    setIsLoggedIn(true);
   };
 
   const handleGuest = () => {
-      console.log('Guest pressed');
-      setIsLoggedIn(true);
+    console.log('Guest pressed');
+    setIsLoggedIn(true);
   };
 
   const handleRegister = () => {
-      console.log('Register pressed');
-      setShowRegisterScreen(true);
+    console.log('Register pressed');
+    setShowRegisterScreen(true);
   };
 
   const handleSignUp = () => {
-      console.log('Sign Up success');
-      setIsLoggedIn(true);
-      setShowRegisterScreen(false);
-      setShowLoginScreen(false);
+    console.log('Sign Up success');
+    setIsLoggedIn(true);
+    setShowRegisterScreen(false);
+    setShowLoginScreen(false);
   };
 
   const handleBackToLogin = () => {
-      setShowRegisterScreen(false);
+    setShowRegisterScreen(false);
   };
 
   const handleBackFromOtp = () => {
-      setShowOtpScreen(false);
-      setShowLoginScreen(true);
+    setShowOtpScreen(false);
+    setShowLoginScreen(true);
   };
 
   const handleNotificationPress = () => {
@@ -134,6 +156,22 @@ function App() {
     setShowVoucherScreen(false);
   };
 
+  const handlePromoPress = () => {
+    setShowPromoCodeScreen(true);
+  };
+
+  const handleBackFromPromo = () => {
+    setShowPromoCodeScreen(false);
+  };
+
+  const handleAllProductsPress = () => {
+    setShowAllProductsScreen(true);
+  };
+
+  const handleCloseAllProducts = () => {
+    setShowAllProductsScreen(false);
+  };
+
   return (
     <SafeAreaProvider>
       {isShowSplash ? (
@@ -142,29 +180,40 @@ function App() {
         <LanguageSelectionScreen onSelectLanguage={handleLanguageSelect} />
       ) : !isLoggedIn ? (
         showOtpScreen ? (
-            <OtpScreen onBack={handleBackFromOtp} onVerify={handleOtpVerify} />
+          <OtpScreen onBack={handleBackFromOtp} onVerify={handleOtpVerify} />
         ) : showRegisterScreen ? (
-            <RegisterScreen 
-                onLoginPress={handleBackToLogin} 
-                onSignUp={handleSignUp} 
-                onBack={handleBackToLogin}
-            />
+          <RegisterScreen
+            onLoginPress={handleBackToLogin}
+            onSignUp={handleSignUp}
+            onBack={handleBackToLogin}
+          />
         ) : showLoginScreen ? (
-            <LoginScreen 
-                onLoginSuccess={handleLoginSuccess} 
-                onRegisterPress={handleRegister} 
-            />
+          <LoginScreen
+            onLoginSuccess={handleLoginSuccess}
+            onRegisterPress={handleRegister}
+          />
         ) : (
-            <LoginSelectionScreen onLogin={handleLoginSelection} onGuest={handleGuest} />
+          <LoginSelectionScreen
+            onLogin={handleLoginSelection}
+            onGuest={handleGuest}
+          />
         )
+      ) : showAllProductsScreen ? (
+        <AllProductsScreen onClose={handleCloseAllProducts} />
+      ) : showPromoCodeScreen ? (
+        <PromoCodeScreen onBackPress={handleBackFromPromo} />
       ) : showVoucherScreen ? (
-        <VoucherScreen onBackPress={handleBackFromVoucher} />
+        <VoucherScreen
+          onBackPress={handleBackFromVoucher}
+          onPromoPress={handlePromoPress}
+        />
       ) : showNotificationScreen ? (
         <NotificationScreen onBackPress={handleBackFromNotification} />
       ) : (
-        <HomeScreen 
-            onNotificationPress={handleNotificationPress} 
-            onVoucherPress={handleVoucherPress}
+        <HomeScreen
+          onNotificationPress={handleNotificationPress}
+          onVoucherPress={handleVoucherPress}
+          onAllProductsPress={handleAllProductsPress}
         />
       )}
     </SafeAreaProvider>

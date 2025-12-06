@@ -1,105 +1,156 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, StatusBar, TextInput } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  StatusBar,
+  TextInput,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Search } from 'lucide-react-native';
+import { ArrowLeft, Search, Percent, User } from 'lucide-react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, typography } from '../theme/theme';
 
 interface VoucherScreenProps {
   onBackPress: () => void;
+  onPromoPress: () => void;
 }
 
+const bannerImage = require('../assets/banner/bannerrvoucher.png');
+const umrahIcon = require('../assets/icons/umrah.png');
+const hotelIcon = require('../assets/icons/hotel.png');
+const flightIcon = require('../assets/icons/flight.png');
+const mutawwifIcon = require('../assets/icons/mutawwif.png');
+
 const vouchers = [
-  {
-    id: '1',
-    title: 'Special Umrah Discount',
-    description: 'Get 10% off on your next Umrah package booking.',
-    expiry: 'Valid until 31 Dec 2025',
-    code: 'UMRAH10',
-    image: 'https://placehold.co/100x100/png',
-  },
-  {
-    id: '2',
-    title: 'Hotel Stay Deal',
-    description: 'Save RM 50 on hotel bookings over RM 500.',
-    expiry: 'Valid until 30 Nov 2025',
-    code: 'HOTEL50',
-    image: 'https://placehold.co/100x100/png',
-  },
-  {
-    id: '3',
-    title: 'Flight Cashback',
-    description: 'Enjoy RM 100 cashback on international flights.',
-    expiry: 'Valid until 15 Oct 2025',
-    code: 'FLY100',
-    image: 'https://placehold.co/100x100/png',
-  },
-  {
-    id: '4',
-    title: 'Flight Cashback',
-    description: 'Enjoy RM 100 cashback on international flights.',
-    expiry: 'Valid until 15 Oct 2025',
-    code: 'FLY100',
-    image: 'https://placehold.co/100x100/png',
-  },
-  {
-    id: '5',
-    title: 'Flight Cashback',
-    description: 'Enjoy RM 100 cashback on international flights.',
-    expiry: 'Valid until 15 Oct 2025',
-    code: 'FLY100',
-    image: 'https://placehold.co/100x100/png',
-  },
+  { id: '1', image: bannerImage },
+  { id: '2', image: bannerImage },
+  { id: '3', image: bannerImage },
+  { id: '4', image: bannerImage },
 ];
 
-export const VoucherScreen = ({ onBackPress }: VoucherScreenProps) => {
-  const renderItem = ({ item }: { item: typeof vouchers[0] }) => (
-    <View style={styles.voucherItem}>
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: item.image }} style={styles.itemImage} />
+const categories = [
+  { id: 'all', label: 'All', icon: mutawwifIcon },
+  { id: 'umrah', label: 'Umrah', icon: umrahIcon },
+  { id: 'hotel', label: 'Hotel', icon: hotelIcon },
+  { id: 'flight', label: 'Flight', icon: flightIcon },
+];
+
+export const VoucherScreen = ({
+  onBackPress,
+  onPromoPress,
+}: VoucherScreenProps) => {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const renderItem = ({ item }: { item: (typeof vouchers)[0] }) => (
+    <View style={styles.bannerItem}>
+      <Image
+        source={item.image}
+        style={styles.bannerImage}
+        resizeMode="cover"
+      />
+    </View>
+  );
+
+  const renderHeader = () => (
+    <View style={styles.headerContainer}>
+      <LinearGradient
+        colors={['#20A39E', '#1D938E', '#1A827E', '#13625F']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={styles.greenHeader}
+      >
+        <SafeAreaView edges={['top']} style={styles.safeArea}>
+          <View style={styles.topBar}>
+            <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+              <ArrowLeft color="white" size={24} />
+            </TouchableOpacity>
+            <View style={styles.searchContainer}>
+              <Search
+                color={colors.textLight}
+                size={20}
+                style={styles.searchIcon}
+              />
+              <TextInput
+                placeholder="Search for Promos"
+                placeholderTextColor={colors.textLight}
+                style={styles.searchInput}
+              />
+            </View>
+          </View>
+
+          <View style={styles.headerTextContainer}>
+            <View style={styles.textWrapper}>
+              <Text style={styles.headerTitle}>
+                Today’s special promo surprise
+              </Text>
+              <Text style={styles.headerSubtitle}>
+                Lots of promotions for you
+              </Text>
+            </View>
+            {/* Placeholder for illustration if needed, or just space */}
+            <View style={styles.illustrationPlaceholder} />
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+
+      <View style={styles.promoInputContainer}>
+        <TouchableOpacity
+          style={styles.promoInputWrapper}
+          onPress={onPromoPress}
+        >
+          <View style={styles.percentIconContainer}>
+            <Percent color="white" size={12} />
+          </View>
+          <Text style={styles.promoInputText}>Got a promo code? Tap here</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.itemContent}>
-        <Text style={styles.itemTitle}>{item.title}</Text>
-        <Text style={styles.itemDescription}>{item.description}</Text>
-        <Text style={styles.expiryText}>{item.expiry}</Text>
-        <View style={styles.codeContainer}>
-             <Text style={styles.codeLabel}>Code: </Text>
-             <Text style={styles.codeText}>{item.code}</Text>
-        </View>
+
+      <View style={styles.categoriesContainer}>
+        {categories.map(cat => (
+          <TouchableOpacity
+            key={cat.id}
+            style={[
+              styles.categoryItem,
+              selectedCategory === cat.id && styles.categoryItemActive,
+            ]}
+            onPress={() => setSelectedCategory(cat.id)}
+          >
+            <View style={styles.categoryIconWrapper}>
+              {cat.id === 'all' ? (
+                <View style={styles.userIconBg}>
+                  <User color="white" size={20} fill="white" />
+                </View>
+              ) : (
+                <Image
+                  source={cat.icon}
+                  style={styles.categoryIcon}
+                  resizeMode="contain"
+                />
+              )}
+            </View>
+            <Text style={styles.categoryLabel}>{cat.label}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
-      <TouchableOpacity style={styles.useButton}>
-        <Text style={styles.useButtonText}>Use</Text>
-      </TouchableOpacity>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="white" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
-          <ArrowLeft color="black" size={24} />
-        </TouchableOpacity>
-        <View style={styles.searchContainer}>
-          <Search color={colors.textLight} size={20} style={styles.searchIcon} />
-          <TextInput 
-            placeholder="Search for promos" 
-            placeholderTextColor={colors.textLight}
-            style={styles.searchInput}
-          />
-        </View>
-      </View>
-
-      {/* List */}
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#20A39E" />
       <FlatList
         data={vouchers}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
+        ListHeaderComponent={renderHeader}
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -108,10 +159,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  header: {
+  headerContainer: {
+    marginBottom: spacing.m,
+  },
+  greenHeader: {
+    paddingBottom: spacing.l,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    paddingHorizontal: spacing.m,
+    minHeight: 255,
+  },
+  safeArea: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.m,
+    marginTop: spacing.s,
+    marginBottom: spacing.l,
   },
   backButton: {
     marginRight: spacing.m,
@@ -120,7 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: 'white',
     borderRadius: spacing.s,
     paddingHorizontal: spacing.s,
     height: 40,
@@ -135,77 +201,115 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     fontSize: 14,
   },
-  listContent: {
-    padding: spacing.m,
-  },
-  voucherItem: {
+  headerTextContainer: {
     flexDirection: 'row',
-    padding: spacing.m,
-    backgroundColor: 'white',
-    borderRadius: spacing.s,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    // paddingBottom: spacing.s,
   },
-  imageContainer: {
-    marginRight: spacing.m,
+  textWrapper: {
+    flex: 1,
+    paddingRight: spacing.m,
   },
-  itemImage: {
+  headerTitle: {
+    fontSize: 20,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'white',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Regular',
+    color: 'white',
+    opacity: 0.9,
+  },
+  illustrationPlaceholder: {
     width: 60,
     height: 60,
-    borderRadius: 8,
-    backgroundColor: '#F3F4F6',
+    // backgroundColor: 'rgba(255,255,255,0.2)', // Optional placeholder
   },
-  itemContent: {
-    flex: 1,
+  promoInputContainer: {
+    paddingHorizontal: spacing.m,
+    marginTop: spacing.m,
+  },
+  promoInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F3F4F6',
+    borderRadius: 20, // Pill shape
+    padding: spacing.s,
+    paddingHorizontal: spacing.m,
+  },
+  percentIconContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#6B7280', // Dark gray
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: spacing.s,
   },
-  itemTitle: {
+  promoInputText: {
     fontSize: 14,
-    fontFamily: 'Inter_18pt-Bold',
-    color: 'black',
-    marginBottom: 4,
-  },
-  itemDescription: {
-    fontSize: 12,
     fontFamily: 'Inter_18pt-Regular',
     color: colors.textLight,
-    marginBottom: 4,
   },
-  expiryText: {
-    fontSize: 10,
-    color: '#EF4444', // Red for expiry
-    fontFamily: 'Inter_18pt-Regular',
-    marginBottom: 4,
-  },
-  codeContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-  },
-  codeLabel: {
-      fontSize: 10,
-      color: colors.textLight,
-      fontFamily: 'Inter_18pt-Regular',
-  },
-  codeText: {
-      fontSize: 10,
-      color: colors.text,
-      fontFamily: 'Inter_18pt-Bold',
-      backgroundColor: '#F3F4F6',
-      paddingHorizontal: 4,
-      paddingVertical: 2,
-      borderRadius: 4,
-  },
-  useButton: {
-    backgroundColor: '#20A39E',
+  categoriesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.m,
-    paddingVertical: spacing.s,
-    borderRadius: spacing.s,
+    marginTop: spacing.l,
   },
-  useButtonText: {
-    color: 'white',
+  categoryItem: {
+    alignItems: 'center',
+    width: 80,
+    padding: spacing.s,
+    borderRadius: spacing.s,
+    backgroundColor: '#F0FDF4', // Light green bg for items
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  categoryItemActive: {
+    borderColor: '#20A39E',
+    backgroundColor: '#E6FFFA',
+  },
+  categoryIconWrapper: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
+  },
+  userIconBg: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#20A39E',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  categoryIcon: {
+    width: 40,
+    height: 40,
+  },
+  categoryLabel: {
     fontSize: 12,
-    fontFamily: 'Inter_18pt-Bold',
+    fontFamily: 'Inter_18pt-Medium',
+    color: colors.text,
+  },
+  listContent: {
+    paddingBottom: spacing.xl,
+  },
+  bannerItem: {
+    borderRadius: spacing.s,
+    overflow: 'hidden',
+    backgroundColor: '#F3F4F6',
+    height: 193,
+    marginHorizontal: spacing.m,
+  },
+  bannerImage: {
+    width: '100%',
+    height: '100%',
   },
   separator: {
     height: spacing.m,
