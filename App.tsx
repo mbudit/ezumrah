@@ -13,6 +13,7 @@ import { PromoCodeScreen } from './src/screens/PromoCodeScreen';
 import { AllProductsScreen } from './src/screens/AllProductsScreen';
 import { ChatScreen } from './src/screens/ChatScreen';
 import { ChatDetailScreen } from './src/screens/ChatDetailScreen';
+import { UmrahPackageScreen } from './src/screens/UmrahPackageScreen';
 import { VoucherScreen } from './src/screens/VoucherScreen';
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
   const [showPromoCodeScreen, setShowPromoCodeScreen] = useState(false);
   const [showAllProductsScreen, setShowAllProductsScreen] = useState(false);
   const [showChatDetailScreen, setShowChatDetailScreen] = useState(false);
+  const [showUmrahPackageScreen, setShowUmrahPackageScreen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -38,6 +40,10 @@ function App() {
 
   useEffect(() => {
     const backAction = () => {
+      if (showUmrahPackageScreen) {
+        setShowUmrahPackageScreen(false);
+        return true;
+      }
       if (showChatDetailScreen) {
         setShowChatDetailScreen(false);
         return true;
@@ -98,6 +104,7 @@ function App() {
     showPromoCodeScreen,
     showAllProductsScreen,
     showChatDetailScreen,
+    showUmrahPackageScreen,
   ]);
 
   const handleLanguageSelect = (language: string) => {
@@ -188,6 +195,14 @@ function App() {
     setShowChatDetailScreen(false);
   };
 
+  const handleUmrahPress = () => {
+    setShowUmrahPackageScreen(true);
+  };
+
+  const handleBackFromUmrah = () => {
+    setShowUmrahPackageScreen(false);
+  };
+
   return (
     <SafeAreaProvider>
       {isShowSplash ? (
@@ -214,8 +229,13 @@ function App() {
             onGuest={handleGuest}
           />
         )
+      ) : showUmrahPackageScreen ? (
+        <UmrahPackageScreen onBackPress={handleBackFromUmrah} />
       ) : showAllProductsScreen ? (
-        <AllProductsScreen onClose={handleCloseAllProducts} />
+        <AllProductsScreen
+          onClose={handleCloseAllProducts}
+          onUmrahPress={handleUmrahPress}
+        />
       ) : showChatDetailScreen ? (
         <ChatDetailScreen onBackPress={handleBackFromChatDetail} />
       ) : showPromoCodeScreen ? (

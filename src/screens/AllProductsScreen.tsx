@@ -13,9 +13,13 @@ import { colors, spacing, typography } from '../theme/theme';
 
 interface AllProductsScreenProps {
   onClose: () => void;
+  onUmrahPress?: () => void;
 }
 
-export const AllProductsScreen = ({ onClose }: AllProductsScreenProps) => {
+export const AllProductsScreen = ({
+  onClose,
+  onUmrahPress,
+}: AllProductsScreenProps) => {
   const services = [
     {
       id: 'flight',
@@ -73,6 +77,12 @@ export const AllProductsScreen = ({ onClose }: AllProductsScreenProps) => {
     },
   ];
 
+  const handlePress = (id: string) => {
+    if (id === 'umrah') {
+      onUmrahPress?.();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
@@ -91,6 +101,7 @@ export const AllProductsScreen = ({ onClose }: AllProductsScreenProps) => {
           <TouchableOpacity
             key={service.id}
             style={[styles.item, { backgroundColor: service.color }]}
+            onPress={() => handlePress(service.id)}
           >
             <Image
               source={service.image}
