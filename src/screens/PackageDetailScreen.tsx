@@ -32,18 +32,32 @@ import {
   Stethoscope,
   Wifi,
   ChefHat,
+  Scissors,
+  Luggage,
+  Ticket,
+  Armchair,
 } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
 
 interface PackageDetailScreenProps {
   onBackPress: () => void;
+  onVendorPress: () => void;
+  onOrderPress: () => void;
 }
 
 export const PackageDetailScreen = ({
   onBackPress,
+  onVendorPress,
+  onOrderPress,
 }: PackageDetailScreenProps) => {
   const [advantagesModalVisible, setAdvantagesModalVisible] =
     React.useState(false);
+  const [facilitiesModalVisible, setFacilitiesModalVisible] =
+    React.useState(false);
+  const [itineraryModalVisible, setItineraryModalVisible] =
+    React.useState(false);
+  const [itinerarySelectedDay, setItinerarySelectedDay] =
+    React.useState('Day 01');
 
   const FLIGHT_DATA = [
     {
@@ -129,6 +143,44 @@ export const PackageDetailScreen = ({
     },
   ];
 
+  const FULL_FACILITY_DATA = [
+    {
+      id: '1',
+      title: 'Exclusive Round-Trip Flight Tickets',
+      icon: Plane,
+    },
+    {
+      id: '2',
+      title: 'Haramain High-Speed Railway',
+      icon: TrainFront,
+    },
+    {
+      id: '3',
+      title: 'Tour Equipment',
+      icon: Briefcase,
+    },
+    {
+      id: '4',
+      title: 'Eat 3 times a day with full board',
+      icon: Utensils,
+    },
+    {
+      id: '5',
+      title: 'Ihram Cloth (for Ikhwan)',
+      icon: Scissors,
+    },
+    {
+      id: '6',
+      title: 'Ihram Cloth Belt (for Ikhwan)',
+      icon: Armchair, // Closest usable icon for belt/strap logic? Or generic
+    },
+    {
+      id: '7',
+      title: '24-inch and 20-inch suitcases',
+      icon: Luggage,
+    },
+  ];
+
   const ITINERARY_DATA = [
     {
       id: '1',
@@ -170,12 +222,104 @@ export const PackageDetailScreen = ({
       },
     },
   ];
+  const FULL_ITINERARY_DATA = [
+    {
+      id: '1',
+      day: 'Day 01',
+      dayId: 'Day 01', // Added dayId for filtering
+      date: '04 Sept',
+      icon: Plane,
+      type: 'flight_card',
+      data: {
+        badge: 'Depart',
+        fullDate: 'Wed, 04 Sept 2025',
+        startTime: '15:50',
+        startLoc: 'Jakarta (CGK)',
+        endTime: '21:45',
+        endLoc: 'Jeddah (Jed)',
+        airline: 'Garuda Indonesia',
+        duration: '9h 50m Direct',
+      },
+    },
+    {
+      id: '2',
+      day: '',
+      dayId: 'Day 01',
+      date: '',
+      icon: Building,
+      type: 'simple',
+      data: {
+        time: '18:00',
+        title: 'Check-in',
+      },
+    },
+    {
+      id: '3',
+      day: 'Day 2',
+      dayId: 'Day 02',
+      date: '06 Sept',
+      icon: Plane,
+      type: 'simple',
+      data: {
+        time: '18:00',
+        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
+      },
+    },
+    {
+      id: '4',
+      day: 'Day 3',
+      dayId: 'Day 03',
+      date: '06 Sept',
+      icon: Plane,
+      type: 'simple',
+      data: {
+        time: '18:00',
+        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
+      },
+    },
+    {
+      id: '5',
+      day: 'Day 4',
+      dayId: 'Day 04',
+      date: '06 Sept',
+      icon: Plane,
+      type: 'simple',
+      data: {
+        time: '18:00',
+        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
+      },
+    },
+    {
+      id: '6',
+      day: 'Day 5',
+      dayId: 'Day 05',
+      date: '06 Sept',
+      icon: Plane,
+      type: 'simple',
+      data: {
+        time: '18:00',
+        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
+      },
+    },
+    {
+      id: '7',
+      day: 'Day 6',
+      dayId: 'Day 06',
+      date: '',
+      icon: Plane,
+      type: 'simple',
+      data: {
+        time: '18:00',
+        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
+      },
+    },
+  ];
 
   const renderItinerary = () => (
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeaderRow}>
         <Text style={styles.sectionTitle}>Itinerary</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setItineraryModalVisible(true)}>
           <Text style={styles.seeAllText}>See all</Text>
         </TouchableOpacity>
       </View>
@@ -253,7 +397,7 @@ export const PackageDetailScreen = ({
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeaderRow}>
         <Text style={styles.sectionTitle}>Facility</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setFacilitiesModalVisible(true)}>
           <Text style={styles.seeAllText}>See all</Text>
         </TouchableOpacity>
       </View>
@@ -347,51 +491,6 @@ export const PackageDetailScreen = ({
     },
   ];
 
-  const renderAdvantagesModal = () => (
-    <Modal
-      animationType="slide"
-      transparent={false}
-      visible={advantagesModalVisible}
-      onRequestClose={() => setAdvantagesModalVisible(false)}
-    >
-      <SafeAreaView style={styles.modalContainer}>
-        <View style={styles.modalHeader}>
-          <TouchableOpacity onPress={() => setAdvantagesModalVisible(false)}>
-            <X color="black" size={24} />
-          </TouchableOpacity>
-          <Text style={styles.modalTitle}>Advantages</Text>
-          <View style={{ width: 24 }} />
-        </View>
-        <ScrollView contentContainerStyle={styles.modalContent}>
-          {FULL_ADVANTAGES_DATA.map(item => (
-            <View key={item.id} style={styles.fullAdvantageItem}>
-              <View style={styles.fullAdvantageIconContainer}>
-                {item.type === 'image' ? (
-                  <Image
-                    source={item.source}
-                    style={styles.fullAdvantageImage}
-                  />
-                ) : (
-                  <View
-                    style={[
-                      styles.fullAdvantageIconCircle,
-                      { backgroundColor: item.bgColor },
-                    ]}
-                  >
-                    {item.icon && <item.icon color={item.color} size={20} />}
-                  </View>
-                )}
-              </View>
-              <View style={styles.fullAdvantageTextContainer}>
-                <Text style={styles.fullAdvantageTitle}>{item.title}</Text>
-                <Text style={styles.fullAdvantageDest}>{item.description}</Text>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-      </SafeAreaView>
-    </Modal>
-  );
   const renderAdvantages = () => (
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeaderRow}>
@@ -422,8 +521,8 @@ export const PackageDetailScreen = ({
           <ChevronDown color="#333" size={20} style={{ marginLeft: 4 }} />
         </View>
       </View>
-      <TouchableOpacity style={styles.orderButton}>
-        <Text style={styles.orderButtonText}>Orders</Text>
+      <TouchableOpacity style={styles.orderButton} onPress={onOrderPress}>
+        <Text style={styles.orderButtonText}>Order</Text>
       </TouchableOpacity>
     </View>
   );
@@ -440,7 +539,7 @@ export const PackageDetailScreen = ({
             <Text style={styles.vendorName}>Ezumrah</Text>
             <Text style={styles.vendorLocation}>Kuala Lumpur, Malaysia</Text>
           </View>
-          <TouchableOpacity style={styles.visitButton}>
+          <TouchableOpacity style={styles.visitButton} onPress={onVendorPress}>
             <Text style={styles.visitButtonText}>Visit</Text>
           </TouchableOpacity>
         </View>
@@ -652,7 +751,218 @@ export const PackageDetailScreen = ({
         {renderVendorInfo()}
       </ScrollView>
       {renderBottomBar()}
-      {renderAdvantagesModal()}
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={advantagesModalVisible}
+        onRequestClose={() => setAdvantagesModalVisible(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={() => setAdvantagesModalVisible(false)}>
+              <X color="black" size={24} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Advantages</Text>
+            <View style={{ width: 24 }} />
+          </View>
+          <ScrollView contentContainerStyle={styles.modalContent}>
+            {FULL_ADVANTAGES_DATA.map(item => (
+              <View key={item.id} style={styles.fullAdvantageItem}>
+                <View style={styles.fullAdvantageIconContainer}>
+                  {item.type === 'image' ? (
+                    <Image
+                      source={item.source}
+                      style={styles.fullAdvantageImage}
+                    />
+                  ) : (
+                    <View
+                      style={[
+                        styles.fullAdvantageIconCircle,
+                        { backgroundColor: item.bgColor },
+                      ]}
+                    >
+                      {item.icon && <item.icon color={item.color} size={20} />}
+                    </View>
+                  )}
+                </View>
+                <View style={styles.fullAdvantageTextContainer}>
+                  <Text style={styles.fullAdvantageTitle}>{item.title}</Text>
+                  <Text style={styles.fullAdvantageDest}>
+                    {item.description}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={facilitiesModalVisible}
+        onRequestClose={() => setFacilitiesModalVisible(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={() => setFacilitiesModalVisible(false)}>
+              <X color="black" size={24} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Facilities</Text>
+            <View style={{ width: 24 }} />
+          </View>
+          <ScrollView contentContainerStyle={styles.modalContent}>
+            {FULL_FACILITY_DATA.map(item => (
+              <View key={item.id} style={styles.fullAdvantageItem}>
+                <View style={styles.fullAdvantageIconContainer}>
+                  <item.icon color="#555" size={24} />
+                </View>
+                <View style={styles.fullAdvantageTextContainer}>
+                  <Text
+                    style={[styles.fullAdvantageTitle, { marginBottom: 0 }]}
+                  >
+                    {item.title}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={itineraryModalVisible}
+        onRequestClose={() => setItineraryModalVisible(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity onPress={() => setItineraryModalVisible(false)}>
+              <X color="black" size={24} />
+            </TouchableOpacity>
+            <Text style={styles.modalTitle}>Itinerary</Text>
+            <View style={{ width: 24 }} />
+          </View>
+          {/* Day Tabs */}
+          <View style={styles.dayTabsContainer}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.dayTabsContent}
+            >
+              {[
+                'Day 01',
+                'Day 02',
+                'Day 03',
+                'Day 04',
+                'Day 05',
+                'Day 06',
+                'Day 07',
+              ].map((day, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setItinerarySelectedDay(day)}
+                  style={[
+                    styles.dayTab,
+                    itinerarySelectedDay === day && styles.dayTabActive,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.dayTabText,
+                      itinerarySelectedDay === day && styles.dayTabTextActive,
+                    ]}
+                  >
+                    {day}
+                  </Text>
+                  {itinerarySelectedDay === day && (
+                    <View style={styles.dayTabIndicator} />
+                  )}
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          <ScrollView contentContainerStyle={styles.modalContent}>
+            {FULL_ITINERARY_DATA.filter(
+              item => item.dayId === itinerarySelectedDay,
+            ).map((item, index) => (
+              <View key={item.id} style={styles.itineraryRow}>
+                {/* Day Column */}
+                <View style={styles.dayColumn}>
+                  <Text style={styles.dayText}>{item.day}</Text>
+                  <Text style={styles.dayDateText}>{item.date}</Text>
+                </View>
+
+                {/* Icon Column */}
+                <View style={styles.iconColumn}>
+                  <View style={styles.iconCircle}>
+                    <item.icon size={16} color="#555" />
+                  </View>
+                </View>
+
+                {/* Content Column */}
+                <View style={styles.contentColumn}>
+                  {item.type === 'flight_card' ? (
+                    <View style={styles.itineraryCard}>
+                      <View style={styles.itineraryCardHeader}>
+                        <View style={styles.badgeLabel}>
+                          <Text style={styles.badgeText}>
+                            {item.data.badge}
+                          </Text>
+                        </View>
+                        <Text style={styles.itineraryCardDate}>
+                          {item.data.fullDate}
+                        </Text>
+                      </View>
+                      <View style={styles.itineraryCardBody}>
+                        <View style={styles.itTimeCol}>
+                          <Text style={styles.itTimeText}>
+                            {item.data.startTime}
+                          </Text>
+                          <View style={{ flex: 1 }} />
+                          <Text style={styles.itTimeText}>
+                            {item.data.endTime}
+                          </Text>
+                        </View>
+                        <View style={styles.itLineCol}>
+                          <View style={styles.itLine} />
+                        </View>
+                        <View style={styles.itDetailCol}>
+                          <Text style={styles.itLocText}>
+                            {item.data.startLoc}
+                          </Text>
+                          <View style={styles.itAirlineBlock}>
+                            <Image
+                              source={require('../assets/logo/garuda.png')} // Reusing logo logic
+                              style={styles.itAirlineLogo}
+                            />
+                            <Text style={styles.itAirlineName}>
+                              {item.data.airline}
+                            </Text>
+                          </View>
+                          <Text style={styles.itDurationText}>
+                            {item.data.duration}
+                          </Text>
+                          <Text style={styles.itLocText}>
+                            {item.data.endLoc}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.simpleItinerary}>
+                      <Text style={styles.simpleTime}>{item.data.time}</Text>
+                      <Text style={styles.simpleTitle}>{item.data.title}</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
     </View>
   );
 };
@@ -1220,5 +1530,40 @@ const styles = StyleSheet.create({
     color: '#4B5563',
     fontFamily: 'Inter_18pt-Regular',
     lineHeight: 20,
+  },
+  dayTabsContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+    backgroundColor: 'white',
+  },
+  dayTabsContent: {
+    paddingHorizontal: spacing.m,
+  },
+  dayTab: {
+    paddingVertical: spacing.m,
+    paddingHorizontal: spacing.s,
+    marginRight: spacing.m,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  dayTabActive: {},
+  dayTabText: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Regular',
+    color: '#6B7280',
+  },
+  dayTabTextActive: {
+    color: '#0D9488', // Teal
+    fontFamily: 'Inter_18pt-Bold',
+  },
+  dayTabIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    left: spacing.s,
+    right: spacing.s,
+    height: 3,
+    backgroundColor: '#0D9488',
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
   },
 });

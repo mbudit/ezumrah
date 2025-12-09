@@ -18,6 +18,9 @@ import { VoucherScreen } from './src/screens/VoucherScreen';
 import { PackageListScreen } from './src/screens/PackageListScreen';
 import { VendorDetailScreen } from './src/screens/VendorDetailScreen';
 import { PackageDetailScreen } from './src/screens/PackageDetailScreen';
+import { BookingScreen } from './src/screens/BookingScreen';
+import { PassengerDetailScreen } from './src/screens/PassengerDetailScreen';
+import { TripEnhanceScreen } from './src/screens/TripEnhanceScreen';
 
 function App() {
   const [isShowSplash, setIsShowSplash] = useState(true);
@@ -35,6 +38,10 @@ function App() {
   const [showPackageListScreen, setShowPackageListScreen] = useState(false);
   const [showVendorDetailScreen, setShowVendorDetailScreen] = useState(false);
   const [showPackageDetailScreen, setShowPackageDetailScreen] = useState(false);
+  const [showBookingScreen, setShowBookingScreen] = useState(false);
+  const [showPassengerDetailScreen, setShowPassengerDetailScreen] =
+    useState(false);
+  const [showTripEnhanceScreen, setShowTripEnhanceScreen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -48,6 +55,18 @@ function App() {
     const backAction = () => {
       if (showVendorDetailScreen) {
         setShowVendorDetailScreen(false);
+        return true;
+      }
+      if (showBookingScreen) {
+        setShowBookingScreen(false);
+        return true;
+      }
+      if (showTripEnhanceScreen) {
+        setShowTripEnhanceScreen(false);
+        return true;
+      }
+      if (showPassengerDetailScreen) {
+        setShowPassengerDetailScreen(false);
         return true;
       }
       if (showPackageDetailScreen) {
@@ -124,8 +143,11 @@ function App() {
     showChatDetailScreen,
     showUmrahPackageScreen,
     showPackageListScreen,
+    showPackageListScreen,
     showVendorDetailScreen,
     showPackageDetailScreen,
+    showPassengerDetailScreen,
+    showTripEnhanceScreen,
   ]);
 
   const handleLanguageSelect = (language: string) => {
@@ -248,6 +270,30 @@ function App() {
     setShowPackageDetailScreen(false);
   };
 
+  const handleOpenBooking = () => {
+    setShowBookingScreen(true);
+  };
+
+  const handleCloseBooking = () => {
+    setShowBookingScreen(false);
+  };
+
+  const handleOpenPassengerDetail = () => {
+    setShowPassengerDetailScreen(true);
+  };
+
+  const handleClosePassengerDetail = () => {
+    setShowPassengerDetailScreen(false);
+  };
+
+  const handleOpenTripEnhance = () => {
+    setShowTripEnhanceScreen(true);
+  };
+
+  const handleCloseTripEnhance = () => {
+    setShowTripEnhanceScreen(false);
+  };
+
   return (
     <SafeAreaProvider>
       {isShowSplash ? (
@@ -279,8 +325,24 @@ function App() {
           onBackPress={handleCloseVendorDetail}
           onPackagePress={handleOpenPackageDetail}
         />
+      ) : showTripEnhanceScreen ? (
+        <TripEnhanceScreen onBackPress={handleCloseTripEnhance} />
+      ) : showPassengerDetailScreen ? (
+        <PassengerDetailScreen
+          onBackPress={handleClosePassengerDetail}
+          onContinuePress={handleOpenTripEnhance}
+        />
+      ) : showBookingScreen ? (
+        <BookingScreen
+          onBackPress={handleCloseBooking}
+          onPassengerPress={handleOpenPassengerDetail}
+        />
       ) : showPackageDetailScreen ? (
-        <PackageDetailScreen onBackPress={handleClosePackageDetail} />
+        <PackageDetailScreen
+          onBackPress={handleClosePackageDetail}
+          onVendorPress={handleOpenVendorDetail}
+          onOrderPress={handleOpenBooking}
+        />
       ) : showPackageListScreen ? (
         <PackageListScreen
           onBackPress={handleClosePackageList}
