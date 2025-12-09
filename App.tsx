@@ -15,6 +15,9 @@ import { ChatScreen } from './src/screens/ChatScreen';
 import { ChatDetailScreen } from './src/screens/ChatDetailScreen';
 import { UmrahPackageScreen } from './src/screens/UmrahPackageScreen';
 import { VoucherScreen } from './src/screens/VoucherScreen';
+import { PackageListScreen } from './src/screens/PackageListScreen';
+import { VendorDetailScreen } from './src/screens/VendorDetailScreen';
+import { PackageDetailScreen } from './src/screens/PackageDetailScreen';
 
 function App() {
   const [isShowSplash, setIsShowSplash] = useState(true);
@@ -29,6 +32,9 @@ function App() {
   const [showAllProductsScreen, setShowAllProductsScreen] = useState(false);
   const [showChatDetailScreen, setShowChatDetailScreen] = useState(false);
   const [showUmrahPackageScreen, setShowUmrahPackageScreen] = useState(false);
+  const [showPackageListScreen, setShowPackageListScreen] = useState(false);
+  const [showVendorDetailScreen, setShowVendorDetailScreen] = useState(false);
+  const [showPackageDetailScreen, setShowPackageDetailScreen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,6 +46,18 @@ function App() {
 
   useEffect(() => {
     const backAction = () => {
+      if (showVendorDetailScreen) {
+        setShowVendorDetailScreen(false);
+        return true;
+      }
+      if (showPackageDetailScreen) {
+        setShowPackageDetailScreen(false);
+        return true;
+      }
+      if (showPackageListScreen) {
+        setShowPackageListScreen(false);
+        return true;
+      }
       if (showUmrahPackageScreen) {
         setShowUmrahPackageScreen(false);
         return true;
@@ -105,6 +123,9 @@ function App() {
     showAllProductsScreen,
     showChatDetailScreen,
     showUmrahPackageScreen,
+    showPackageListScreen,
+    showVendorDetailScreen,
+    showPackageDetailScreen,
   ]);
 
   const handleLanguageSelect = (language: string) => {
@@ -203,6 +224,30 @@ function App() {
     setShowUmrahPackageScreen(false);
   };
 
+  const handleSearchPress = () => {
+    setShowPackageListScreen(true);
+  };
+
+  const handleClosePackageList = () => {
+    setShowPackageListScreen(false);
+  };
+
+  const handleOpenVendorDetail = () => {
+    setShowVendorDetailScreen(true);
+  };
+
+  const handleCloseVendorDetail = () => {
+    setShowVendorDetailScreen(false);
+  };
+
+  const handleOpenPackageDetail = () => {
+    setShowPackageDetailScreen(true);
+  };
+
+  const handleClosePackageDetail = () => {
+    setShowPackageDetailScreen(false);
+  };
+
   return (
     <SafeAreaProvider>
       {isShowSplash ? (
@@ -229,8 +274,24 @@ function App() {
             onGuest={handleGuest}
           />
         )
+      ) : showVendorDetailScreen ? (
+        <VendorDetailScreen
+          onBackPress={handleCloseVendorDetail}
+          onPackagePress={handleOpenPackageDetail}
+        />
+      ) : showPackageDetailScreen ? (
+        <PackageDetailScreen onBackPress={handleClosePackageDetail} />
+      ) : showPackageListScreen ? (
+        <PackageListScreen
+          onBackPress={handleClosePackageList}
+          onVendorPress={handleOpenVendorDetail}
+          onPackagePress={handleOpenPackageDetail}
+        />
       ) : showUmrahPackageScreen ? (
-        <UmrahPackageScreen onBackPress={handleBackFromUmrah} />
+        <UmrahPackageScreen
+          onBackPress={handleBackFromUmrah}
+          onSearchPress={handleSearchPress}
+        />
       ) : showAllProductsScreen ? (
         <AllProductsScreen
           onClose={handleCloseAllProducts}

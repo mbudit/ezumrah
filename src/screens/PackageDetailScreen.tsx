@@ -1,0 +1,1224 @@
+import React from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  StatusBar,
+  Dimensions,
+  Modal,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ArrowLeft,
+  Share2,
+  Heart,
+  Check,
+  BedDouble,
+  CigaretteOff,
+  MoreHorizontal,
+  Star,
+  MapPin,
+  ChevronDown,
+  Plane,
+  TrainFront,
+  Briefcase,
+  Utensils,
+  Building,
+  X,
+  ShoppingBag,
+  Stethoscope,
+  Wifi,
+  ChefHat,
+} from 'lucide-react-native';
+import { colors, spacing } from '../theme/theme';
+
+interface PackageDetailScreenProps {
+  onBackPress: () => void;
+}
+
+export const PackageDetailScreen = ({
+  onBackPress,
+}: PackageDetailScreenProps) => {
+  const [advantagesModalVisible, setAdvantagesModalVisible] =
+    React.useState(false);
+
+  const FLIGHT_DATA = [
+    {
+      id: '1',
+      type: 'Depart',
+      date: 'Wed, 04 Sept 2025',
+      departureTime: '15:50',
+      departureCity: 'Jakarta (CGK)',
+      arrivalTime: '21:45',
+      arrivalCity: 'Jeddah (Jed)',
+      airline: 'Garuda Indonesia',
+      duration: '9h 50m Direct',
+      isVerified: true,
+    },
+    {
+      id: '2',
+      type: 'Return',
+      date: 'Wed, 18 Sept 2025',
+      departureTime: '05:30',
+      departureCity: 'Jeddah (Jed)',
+      arrivalTime: '20:01',
+      arrivalCity: 'Jakarta (CGK)',
+      airline: 'Garuda Indonesia',
+      duration: '9h 30m Direct',
+      isVerified: true,
+    },
+  ];
+
+  const ACCOMMODATION_DATA = [
+    {
+      id: '1',
+      city: 'Makkah',
+      date: '04-20 Sept 2025',
+      hotel: 'Address Jamal Omar',
+      rating: 5,
+      distance: '500m from Masjidil Haram',
+      amenities: ['1 Twin bed', 'Non-smoking Room'],
+    },
+    {
+      id: '2',
+      city: 'Madinah',
+      date: '20-24 Sept 2025',
+      hotel: 'Pullman Zamzam',
+      rating: 5,
+      distance: '100m from Masjid Nabawi',
+      amenities: ['1 Twin bed', 'Non-smoking Room'],
+    },
+  ];
+
+  const ADVANTAGES_DATA = [
+    {
+      id: '1',
+      title: 'Garuda Indonesia',
+      image: require('../assets/icons/flight.png'),
+    },
+    {
+      id: '2',
+      title: 'Travel Guide',
+      image: require('../assets/icons/mutawwif.png'),
+    },
+  ];
+
+  const FACILITY_DATA = [
+    {
+      id: '1',
+      title: 'Inclusive Round-Trip Airline Ticket',
+      icon: Plane,
+    },
+    {
+      id: '2',
+      title: 'Haramain High Speed Railway',
+      icon: TrainFront,
+    },
+    {
+      id: '3',
+      title: 'Tour Equipment',
+      icon: Briefcase,
+    },
+    {
+      id: '4',
+      title: 'Eat 3 times a day with full board',
+      icon: Utensils,
+    },
+  ];
+
+  const ITINERARY_DATA = [
+    {
+      id: '1',
+      day: 'Day 1',
+      date: '04 Sept',
+      icon: Plane,
+      type: 'flight_card',
+      data: {
+        badge: 'Depart',
+        fullDate: 'Wed, 04 Sept 2025',
+        startTime: '15:50',
+        startLoc: 'Jakarta (CGK)',
+        endTime: '21:45',
+        endLoc: 'Jeddah (Jed)',
+        airline: 'Garuda Indonesia',
+        duration: '9h 50m Direct',
+      },
+    },
+    {
+      id: '2',
+      day: '',
+      date: '',
+      icon: Building,
+      type: 'simple',
+      data: {
+        time: '18:00',
+        title: 'Check-in',
+      },
+    },
+    {
+      id: '3',
+      day: 'Day 2',
+      date: '06 Sept',
+      icon: Plane,
+      type: 'simple',
+      data: {
+        time: '18:00',
+        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
+      },
+    },
+  ];
+
+  const renderItinerary = () => (
+    <View style={styles.sectionContainer}>
+      <View style={styles.sectionHeaderRow}>
+        <Text style={styles.sectionTitle}>Itinerary</Text>
+        <TouchableOpacity>
+          <Text style={styles.seeAllText}>See all</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.itineraryList}>
+        {ITINERARY_DATA.map((item, index) => (
+          <View key={item.id} style={styles.itineraryRow}>
+            {/* Day Column */}
+            <View style={styles.dayColumn}>
+              <Text style={styles.dayText}>{item.day}</Text>
+              <Text style={styles.dayDateText}>{item.date}</Text>
+            </View>
+
+            {/* Icon Column */}
+            <View style={styles.iconColumn}>
+              <View style={styles.iconCircle}>
+                <item.icon size={16} color="#555" />
+              </View>
+            </View>
+
+            {/* Content Column */}
+            <View style={styles.contentColumn}>
+              {item.type === 'flight_card' ? (
+                <View style={styles.itineraryCard}>
+                  <View style={styles.itineraryCardHeader}>
+                    <View style={styles.badgeLabel}>
+                      <Text style={styles.badgeText}>{item.data.badge}</Text>
+                    </View>
+                    <Text style={styles.itineraryCardDate}>
+                      {item.data.fullDate}
+                    </Text>
+                  </View>
+                  <View style={styles.itineraryCardBody}>
+                    <View style={styles.itTimeCol}>
+                      <Text style={styles.itTimeText}>
+                        {item.data.startTime}
+                      </Text>
+                      <View style={{ flex: 1 }} />
+                      <Text style={styles.itTimeText}>{item.data.endTime}</Text>
+                    </View>
+                    <View style={styles.itLineCol}>
+                      <View style={styles.itLine} />
+                    </View>
+                    <View style={styles.itDetailCol}>
+                      <Text style={styles.itLocText}>{item.data.startLoc}</Text>
+                      <View style={styles.itAirlineBlock}>
+                        <Image
+                          source={require('../assets/logo/garuda.png')} // Reusing logo logic
+                          style={styles.itAirlineLogo}
+                        />
+                        <Text style={styles.itAirlineName}>
+                          {item.data.airline}
+                        </Text>
+                      </View>
+                      <Text style={styles.itDurationText}>
+                        {item.data.duration}
+                      </Text>
+                      <Text style={styles.itLocText}>{item.data.endLoc}</Text>
+                    </View>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.simpleItinerary}>
+                  <Text style={styles.simpleTime}>{item.data.time}</Text>
+                  <Text style={styles.simpleTitle}>{item.data.title}</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+
+  const renderFacilities = () => (
+    <View style={styles.sectionContainer}>
+      <View style={styles.sectionHeaderRow}>
+        <Text style={styles.sectionTitle}>Facility</Text>
+        <TouchableOpacity>
+          <Text style={styles.seeAllText}>See all</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.facilitiesList}>
+        {FACILITY_DATA.map(item => (
+          <View key={item.id} style={styles.facilityItem}>
+            <item.icon color="#555" size={24} style={styles.facilityIcon} />
+            <Text style={styles.facilityTitle}>{item.title}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+
+  const FULL_ADVANTAGES_DATA = [
+    {
+      id: '1',
+      title: 'Near from Ka’bah',
+      description: '500meter from kakbah',
+      type: 'image',
+      source: require('../assets/icons/kiblat.png'),
+    },
+    {
+      id: '2',
+      title: 'Near from Masjid Nabawi',
+      description: '500meter from kakbah', // Copied logic from image
+      type: 'image',
+      source: require('../assets/icons/umrah.png'),
+    },
+    {
+      id: '3',
+      title: 'Garuda Indonesia',
+      description:
+        'Direct flights to Jeddah and Medina with Indonesian-speaking crew.',
+      type: 'image',
+      source: require('../assets/icons/flight.png'),
+    },
+    {
+      id: '4',
+      title: 'Muthawwif/muthawwifah',
+      description:
+        'Experienced guides, guidance on rituals, and accompanying tour leaders.',
+      type: 'image',
+      source: require('../assets/icons/vendor_mutawwif.png'),
+    },
+    {
+      id: '5',
+      title: 'Complete Hotel Facilities',
+      description:
+        'Halal restaurants, laundry, 24-hour dining, and meeting rooms for rituals.',
+      type: 'image',
+      source: require('../assets/icons/hotel.png'),
+    },
+    {
+      id: '6',
+      title: 'Near Shopping Centers',
+      description:
+        "It's easy to find souvenirs, local food, or daily necessities.",
+      type: 'icon',
+      icon: ShoppingBag,
+      color: '#0D9488', // Teal
+      bgColor: '#E0F2F1',
+    },
+    {
+      id: '7',
+      title: 'Near Health Facilities',
+      description:
+        'Nearby hospitals and clinics, plus doctors accompanying pilgrims.',
+      type: 'icon',
+      icon: Stethoscope,
+      color: '#EF4444', // Red
+      bgColor: '#FEE2E2',
+    },
+    {
+      id: '8',
+      title: 'Indonesian cuisine',
+      description: 'Daily Indonesian food menu',
+      type: 'icon',
+      icon: ChefHat,
+      color: '#F59E0B', // Amber
+      bgColor: '#FEF3C7',
+    },
+    {
+      id: '9',
+      title: 'Additional Facilities',
+      description: 'Free WiFi, currency exchange, and quick laundry service.',
+      type: 'icon',
+      icon: Wifi,
+      color: '#D97706', // Dark Amber/Brownish
+      bgColor: '#FEF3C7',
+    },
+  ];
+
+  const renderAdvantagesModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={false}
+      visible={advantagesModalVisible}
+      onRequestClose={() => setAdvantagesModalVisible(false)}
+    >
+      <SafeAreaView style={styles.modalContainer}>
+        <View style={styles.modalHeader}>
+          <TouchableOpacity onPress={() => setAdvantagesModalVisible(false)}>
+            <X color="black" size={24} />
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Advantages</Text>
+          <View style={{ width: 24 }} />
+        </View>
+        <ScrollView contentContainerStyle={styles.modalContent}>
+          {FULL_ADVANTAGES_DATA.map(item => (
+            <View key={item.id} style={styles.fullAdvantageItem}>
+              <View style={styles.fullAdvantageIconContainer}>
+                {item.type === 'image' ? (
+                  <Image
+                    source={item.source}
+                    style={styles.fullAdvantageImage}
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.fullAdvantageIconCircle,
+                      { backgroundColor: item.bgColor },
+                    ]}
+                  >
+                    {item.icon && <item.icon color={item.color} size={20} />}
+                  </View>
+                )}
+              </View>
+              <View style={styles.fullAdvantageTextContainer}>
+                <Text style={styles.fullAdvantageTitle}>{item.title}</Text>
+                <Text style={styles.fullAdvantageDest}>{item.description}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      </SafeAreaView>
+    </Modal>
+  );
+  const renderAdvantages = () => (
+    <View style={styles.sectionContainer}>
+      <View style={styles.sectionHeaderRow}>
+        <Text style={styles.sectionTitle}>Advantages</Text>
+        <TouchableOpacity onPress={() => setAdvantagesModalVisible(true)}>
+          <Text style={styles.seeAllText}>See all</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.advantagesList}>
+        {ADVANTAGES_DATA.map(item => (
+          <View key={item.id} style={styles.advantageItem}>
+            <Image source={item.image} style={styles.advantageIcon} />
+            <Text style={styles.advantageTitle}>{item.title}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+
+  const renderBottomBar = () => (
+    <View style={styles.bottomBar}>
+      <View style={styles.priceContainer}>
+        <Text style={styles.totalPriceLabel}>
+          Total Price <Text style={styles.taxLabel}>(After Taxes)</Text>
+        </Text>
+        <View style={styles.priceRow}>
+          <Text style={styles.priceValue}>$17.500</Text>
+          <ChevronDown color="#333" size={20} style={{ marginLeft: 4 }} />
+        </View>
+      </View>
+      <TouchableOpacity style={styles.orderButton}>
+        <Text style={styles.orderButtonText}>Orders</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderVendorInfo = () => (
+    <View style={styles.sectionContainer}>
+      <View style={styles.vendorContainer}>
+        <View style={styles.vendorHeader}>
+          <Image
+            source={require('../assets/logo/Logo2.png')}
+            style={styles.vendorLogo}
+          />
+          <View style={styles.vendorInfo}>
+            <Text style={styles.vendorName}>Ezumrah</Text>
+            <Text style={styles.vendorLocation}>Kuala Lumpur, Malaysia</Text>
+          </View>
+          <TouchableOpacity style={styles.visitButton}>
+            <Text style={styles.visitButtonText}>Visit</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.separator} />
+
+        <View style={styles.vendorStatsRow}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>5.0</Text>
+            <Text style={styles.statLabel}>Review</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>10</Text>
+            <Text style={styles.statLabel}>Property</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>100%</Text>
+            <Text style={styles.statLabel}>Chat replied</Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+
+  const renderHeader = () => (
+    <View style={styles.imageContainer}>
+      <Image
+        source={require('../assets/banner/umrah.png')}
+        style={styles.headerImage}
+        resizeMode="cover"
+      />
+      <View style={styles.overlay} />
+      <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity onPress={onBackPress}>
+            <ArrowLeft color="white" size={24} />
+          </TouchableOpacity>
+          <View style={styles.headerRightButtons}>
+            <TouchableOpacity style={styles.iconButton}>
+              <Heart color="white" size={24} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.iconButton}>
+              <Share2 color="white" size={24} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    </View>
+  );
+
+  const renderFlightItem = (item: (typeof FLIGHT_DATA)[0]) => (
+    <View key={item.id} style={styles.cardContainer}>
+      {/* Vertical Label Strip */}
+      <View style={styles.flightStrip}>
+        <View style={[styles.verticalTextContainer, { width: 70 }]}>
+          <Text style={styles.verticalText}>Flight</Text>
+        </View>
+      </View>
+
+      <View style={styles.cardContent}>
+        <View style={styles.cardHeaderRow}>
+          <View style={styles.badgeLabel}>
+            <Text style={styles.badgeText}>{item.type}</Text>
+          </View>
+          <Text style={styles.dateText}>{item.date}</Text>
+        </View>
+
+        <View style={styles.flightRouteContainer}>
+          {/* Time Column */}
+          <View style={styles.timeColumn}>
+            <Text style={styles.timeText}>{item.departureTime}</Text>
+            <View style={{ flex: 1 }} />
+            <Text style={styles.timeText}>{item.arrivalTime}</Text>
+          </View>
+
+          {/* Graphic Column */}
+          <View style={styles.graphicColumn}>
+            <Image
+              source={require('../assets/icons/plane_track.png')}
+              style={{
+                width: 24,
+                height: 24,
+                marginBottom: -4,
+                zIndex: 1,
+                resizeMode: 'contain',
+              }}
+            />
+            <View style={styles.verticalLine} />
+            <View style={styles.destinationDot} />
+          </View>
+
+          {/* Details Column */}
+          <View style={styles.detailsColumn}>
+            <Text style={styles.cityText}>{item.departureCity}</Text>
+
+            <View style={styles.airlineInfoBlock}>
+              <View style={styles.airlineRow}>
+                <Image
+                  source={require('../assets/logo/garuda.png')}
+                  style={styles.airlineLogo}
+                />
+                {item.isVerified && (
+                  <View style={styles.verifiedBadge}>
+                    <Text style={styles.verifiedText}> • verified</Text>
+                    <Check color="#4ADE80" size={12} />
+                  </View>
+                )}
+              </View>
+              <Text style={styles.durationText}>{item.duration}</Text>
+            </View>
+
+            <Text style={styles.cityText}>{item.arrivalCity}</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity>
+          <Text style={styles.seeDetailsLink}>See Details</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderAccommodationItem = (item: (typeof ACCOMMODATION_DATA)[0]) => (
+    <View key={item.id} style={styles.cardContainer}>
+      {/* Vertical Label Strip */}
+      <View style={styles.accommodationStrip}>
+        <View style={[styles.verticalTextContainer, { width: 120 }]}>
+          <Text style={styles.verticalText}>Accommodation</Text>
+        </View>
+      </View>
+
+      <View style={styles.cardContent}>
+        <View style={styles.cardHeaderRow}>
+          <View style={styles.badgeLabel}>
+            <Text style={styles.badgeText}>{item.city}</Text>
+          </View>
+          <Text style={styles.dateText}>{item.date}</Text>
+        </View>
+
+        <Text style={styles.hotelName}>{item.hotel}</Text>
+        <View style={styles.ratingRow}>
+          {[...Array(item.rating)].map((_, i) => (
+            <Star
+              key={i}
+              color="#FFC107"
+              fill="#FFC107"
+              size={12}
+              style={{ marginRight: 2 }}
+            />
+          ))}
+        </View>
+        <Text style={styles.distanceText}>{item.distance}</Text>
+
+        <View style={styles.amenitiesContainer}>
+          <View style={styles.amenityRow}>
+            <BedDouble color="#666" size={16} style={{ marginRight: 8 }} />
+            <Text style={styles.amenityText}>{item.amenities[0]}</Text>
+          </View>
+          <View style={styles.amenityRow}>
+            <CigaretteOff color="#666" size={16} style={{ marginRight: 8 }} />
+            <Text style={styles.amenityText}>{item.amenities[1]}</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity>
+          <Text style={styles.seeDetailsLink}>See Details</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  return (
+    <View style={styles.container}>
+      <StatusBar
+        barStyle="light-content"
+        translucent
+        backgroundColor="transparent"
+      />
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        {renderHeader()}
+
+        <View style={styles.contentHeader}>
+          <Text style={styles.title}>Haji Plus 2027</Text>
+        </View>
+
+        <View style={styles.sectionContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollPadding}
+          >
+            {FLIGHT_DATA.map(renderFlightItem)}
+          </ScrollView>
+        </View>
+
+        <View style={styles.sectionContainer}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalScrollPadding}
+          >
+            {ACCOMMODATION_DATA.map(renderAccommodationItem)}
+          </ScrollView>
+        </View>
+
+        {renderAdvantages()}
+        {renderFacilities()}
+        {renderItinerary()}
+        {renderVendorInfo()}
+      </ScrollView>
+      {renderBottomBar()}
+      {renderAdvantagesModal()}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white', // Layout seems to be on white based on card shadows
+  },
+  scrollContent: {
+    paddingBottom: spacing.xl,
+  },
+  imageContainer: {
+    height: 250,
+    width: '100%',
+    position: 'relative',
+    marginBottom: spacing.m,
+  },
+  headerImage: {
+    width: '100%',
+    height: '100%',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  headerSafeArea: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    paddingHorizontal: spacing.m,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: spacing.s,
+  },
+  headerRightButtons: {
+    flexDirection: 'row',
+  },
+  iconButton: {
+    marginLeft: spacing.m,
+  },
+  contentHeader: {
+    paddingHorizontal: spacing.m,
+    marginTop: spacing.m,
+  },
+  title: {
+    fontSize: 20,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  sectionContainer: {
+    marginTop: spacing.l,
+  },
+  horizontalScrollPadding: {
+    paddingHorizontal: spacing.m,
+    paddingBottom: spacing.s, // Space for shadow
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderRadius: 12,
+    marginRight: spacing.m,
+    width: Dimensions.get('window').width * 0.85,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    overflow: 'hidden',
+    height: 230, // Fixed height to align strips
+  },
+  flightStrip: {
+    width: 30,
+    height: 70,
+    backgroundColor: '#CA8A04', // Dark Yellow/Gold
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomRightRadius: 12,
+  },
+  accommodationStrip: {
+    width: 30,
+    height: 120,
+    backgroundColor: '#1E3A8A', // Dark Blue
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomRightRadius: 12,
+  },
+  verticalTextContainer: {
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    transform: [{ rotate: '-90deg' }],
+  },
+  verticalText: {
+    color: 'white',
+    fontFamily: 'Inter_18pt-Bold',
+    fontSize: 12,
+  },
+  cardContent: {
+    flex: 1,
+    padding: spacing.m,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.m,
+  },
+  badgeLabel: {
+    backgroundColor: '#FEF3C7', // Light yellow
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginRight: spacing.s,
+  },
+  badgeText: {
+    color: '#D97706',
+    fontSize: 12,
+    fontFamily: 'Inter_18pt-Medium',
+  },
+  dateText: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-SemiBold',
+    color: 'black',
+  },
+  flightRouteContainer: {
+    flexDirection: 'row',
+    marginBottom: spacing.s,
+    height: 100, // Fixed height to help with layout alignment
+  },
+  timeColumn: {
+    justifyContent: 'space-between',
+    paddingVertical: 2,
+    marginRight: spacing.s,
+  },
+  graphicColumn: {
+    alignItems: 'center',
+    marginRight: spacing.s,
+    paddingTop: 4,
+  },
+  verticalLine: {
+    width: 1,
+    flex: 1,
+    backgroundColor: '#bfebe9', // Light teal line
+    marginVertical: 2,
+  },
+  destinationDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#20A39E',
+    marginBottom: 6,
+  },
+  detailsColumn: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  airlineInfoBlock: {
+    paddingVertical: 2,
+  },
+  airlineLogo: {
+    width: 125,
+    height: 35,
+    resizeMode: 'contain',
+    marginRight: 4,
+    marginLeft: -4, // slight adjustment to align visual weight
+  },
+  airlineRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  timeText: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-SemiBold',
+    color: 'black',
+  },
+  airlineText: {
+    fontSize: 12,
+    color: '#666',
+    fontFamily: 'Inter_18pt-Regular',
+  },
+  verifiedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  verifiedText: {
+    fontSize: 12,
+    color: '#4ADE80',
+    fontFamily: 'Inter_18pt-Medium',
+  },
+  durationText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  cityText: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  seeDetailsLink: {
+    color: '#20A39E',
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Medium',
+    marginTop: spacing.s,
+  },
+  hotelName: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+    marginBottom: 4,
+  },
+  ratingRow: {
+    flexDirection: 'row',
+    marginBottom: 4,
+  },
+  distanceText: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: spacing.m,
+  },
+  amenitiesContainer: {
+    marginBottom: spacing.s,
+  },
+  amenityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  amenityText: {
+    fontSize: 14,
+    color: '#374151',
+    fontFamily: 'Inter_18pt-Regular',
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.m,
+    marginBottom: spacing.m,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: '#20A39E',
+    fontFamily: 'Inter_18pt-Medium',
+  },
+  advantagesList: {
+    paddingHorizontal: spacing.m,
+  },
+  advantageItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.m,
+  },
+  advantageIcon: {
+    width: 32,
+    height: 32,
+    resizeMode: 'contain',
+    marginRight: spacing.m,
+  },
+  advantageTitle: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Medium',
+    color: 'black',
+  },
+  facilitiesList: {
+    paddingHorizontal: spacing.m,
+  },
+  facilityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.m,
+  },
+  facilityIcon: {
+    marginRight: spacing.m,
+  },
+  facilityTitle: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Medium',
+    color: 'black',
+  },
+  bottomBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: spacing.m,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+    paddingBottom: spacing.l, // Extra padding for safe area logic usually, or explicitly provided
+  },
+  priceContainer: {
+    flex: 1,
+  },
+  totalPriceLabel: {
+    fontSize: 14,
+    color: '#666',
+    fontFamily: 'Inter_18pt-Medium',
+    marginBottom: 4,
+  },
+  taxLabel: {
+    fontSize: 12,
+    color: '#999',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  priceValue: {
+    fontSize: 20,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  orderButton: {
+    backgroundColor: '#20A39E',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+  },
+  orderButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Bold',
+  },
+  itineraryList: {
+    paddingHorizontal: spacing.m,
+  },
+  itineraryRow: {
+    flexDirection: 'row',
+    marginBottom: spacing.l,
+  },
+  dayColumn: {
+    width: 60,
+    alignItems: 'flex-start',
+  },
+  dayText: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-SemiBold',
+    color: 'black',
+  },
+  dayDateText: {
+    fontSize: 12,
+    color: '#666',
+    fontFamily: 'Inter_18pt-Regular',
+  },
+  iconColumn: {
+    width: 30,
+    alignItems: 'center',
+    marginRight: spacing.s,
+  },
+  iconCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#E0F2F1', // Light teal bg
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contentColumn: {
+    flex: 1,
+  },
+  itineraryCard: {
+    borderWidth: 1,
+    borderColor: '#20A39E',
+    borderRadius: 8,
+    padding: spacing.m,
+  },
+  itineraryCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.m,
+  },
+  itineraryCardDate: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-SemiBold',
+    color: 'black',
+  },
+  itineraryCardBody: {
+    flexDirection: 'row',
+  },
+  itTimeCol: {
+    justifyContent: 'space-between',
+    paddingVertical: 2,
+    marginRight: 8,
+  },
+  itTimeText: {
+    fontSize: 14,
+    color: 'black',
+    fontFamily: 'Inter_18pt-Regular',
+  },
+  itLineCol: {
+    width: 2,
+    backgroundColor: '#bfebe9',
+    marginRight: 8,
+  },
+  itLine: {
+    flex: 1,
+    backgroundColor: '#bfebe9',
+  },
+  itDetailCol: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  itLocText: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  itAirlineBlock: {
+    marginVertical: 4,
+  },
+  itAirlineLogo: {
+    width: 60,
+    height: 20,
+    resizeMode: 'contain',
+  },
+  itAirlineName: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+  },
+  itDurationText: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  simpleItinerary: {
+    minHeight: 40,
+  },
+  simpleTime: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+    marginBottom: 2,
+  },
+  simpleTitle: {
+    fontSize: 14,
+    color: '#333',
+    fontFamily: 'Inter_18pt-Regular',
+    lineHeight: 20,
+  },
+  vendorContainer: {
+    paddingHorizontal: spacing.m,
+  },
+  vendorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.m,
+  },
+  vendorLogo: {
+    width: 80,
+    height: 30,
+    resizeMode: 'contain',
+    marginRight: spacing.m,
+  },
+  vendorInfo: {
+    flex: 1,
+  },
+  vendorName: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  vendorLocation: {
+    fontSize: 12,
+    color: '#666',
+    fontFamily: 'Inter_18pt-Regular',
+  },
+  visitButton: {
+    backgroundColor: '#bfebe9',
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+  },
+  visitButtonText: {
+    color: '#0D9488', // Darker Teal
+    fontSize: 12,
+    fontFamily: 'Inter_18pt-Medium',
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#F3F4F6',
+    marginBottom: spacing.m,
+  },
+  vendorStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.m,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+    marginBottom: 2,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#666',
+    fontFamily: 'Inter_18pt-Regular',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.m,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  modalContent: {
+    padding: spacing.m,
+  },
+  fullAdvantageItem: {
+    flexDirection: 'row',
+    marginBottom: spacing.l,
+    alignItems: 'flex-start',
+  },
+  fullAdvantageIconContainer: {
+    marginRight: spacing.m,
+    paddingTop: 4,
+  },
+  fullAdvantageImage: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  fullAdvantageIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullAdvantageTextContainer: {
+    flex: 1,
+  },
+  fullAdvantageTitle: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-SemiBold',
+    color: 'black',
+    marginBottom: 4,
+  },
+  fullAdvantageDest: {
+    fontSize: 14,
+    color: '#4B5563',
+    fontFamily: 'Inter_18pt-Regular',
+    lineHeight: 20,
+  },
+});

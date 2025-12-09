@@ -34,10 +34,12 @@ const bannerImage = require('../assets/banner/umrah.png');
 
 interface UmrahPackageScreenProps {
   onBackPress: () => void;
+  onSearchPress?: () => void;
 }
 
 export const UmrahPackageScreen = ({
   onBackPress,
+  onSearchPress,
 }: UmrahPackageScreenProps) => {
   const [passengers, setPassengers] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState('Malaysia');
@@ -251,7 +253,7 @@ export const UmrahPackageScreen = ({
             </View>
           </View>
 
-          <TouchableOpacity style={styles.searchButton}>
+          <TouchableOpacity style={styles.searchButton} onPress={onSearchPress}>
             <Text style={styles.searchButtonText}>Search</Text>
           </TouchableOpacity>
         </ScrollView>
