@@ -61,6 +61,10 @@ function App() {
         setShowBookingScreen(false);
         return true;
       }
+      if (showVoucherScreen) {
+        setShowVoucherScreen(false);
+        return true;
+      }
       if (showTripEnhanceScreen) {
         setShowTripEnhanceScreen(false);
         return true;
@@ -93,8 +97,8 @@ function App() {
         setShowPromoCodeScreen(false);
         return true;
       }
-      if (showVoucherScreen) {
-        setShowVoucherScreen(false);
+      if (showPromoCodeScreen) {
+        setShowPromoCodeScreen(false);
         return true;
       }
       if (showNotificationScreen) {
@@ -320,13 +324,21 @@ function App() {
             onGuest={handleGuest}
           />
         )
+      ) : showVoucherScreen ? (
+        <VoucherScreen
+          onBackPress={handleBackFromVoucher}
+          onPromoPress={handlePromoPress}
+        />
       ) : showVendorDetailScreen ? (
         <VendorDetailScreen
           onBackPress={handleCloseVendorDetail}
           onPackagePress={handleOpenPackageDetail}
         />
       ) : showTripEnhanceScreen ? (
-        <TripEnhanceScreen onBackPress={handleCloseTripEnhance} />
+        <TripEnhanceScreen
+          onBackPress={handleCloseTripEnhance}
+          onPromoPress={handleVoucherPress}
+        />
       ) : showPassengerDetailScreen ? (
         <PassengerDetailScreen
           onBackPress={handleClosePassengerDetail}
@@ -363,11 +375,8 @@ function App() {
         <ChatDetailScreen onBackPress={handleBackFromChatDetail} />
       ) : showPromoCodeScreen ? (
         <PromoCodeScreen onBackPress={handleBackFromPromo} />
-      ) : showVoucherScreen ? (
-        <VoucherScreen
-          onBackPress={handleBackFromVoucher}
-          onPromoPress={handlePromoPress}
-        />
+      ) : showPromoCodeScreen ? (
+        <PromoCodeScreen onBackPress={handleBackFromPromo} />
       ) : showNotificationScreen ? (
         <NotificationScreen onBackPress={handleBackFromNotification} />
       ) : (
