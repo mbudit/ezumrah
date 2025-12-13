@@ -21,6 +21,11 @@ import { PackageDetailScreen } from './src/screens/PackageDetailScreen';
 import { BookingScreen } from './src/screens/BookingScreen';
 import { PassengerDetailScreen } from './src/screens/PassengerDetailScreen';
 import { TripEnhanceScreen } from './src/screens/TripEnhanceScreen';
+import { OrderProcessingScreen } from './src/screens/OrderProcessingScreen';
+import { CompletePaymentScreen } from './src/screens/CompletePaymentScreen';
+import { PaymentMethodScreen } from './src/screens/PaymentMethodScreen';
+import { PaymentInstructionScreen } from './src/screens/PaymentInstructionScreen';
+import { OrderHistoryScreen } from './src/screens/OrderHistoryScreen';
 
 function App() {
   const [isShowSplash, setIsShowSplash] = useState(true);
@@ -42,6 +47,15 @@ function App() {
   const [showPassengerDetailScreen, setShowPassengerDetailScreen] =
     useState(false);
   const [showTripEnhanceScreen, setShowTripEnhanceScreen] = useState(false);
+  const [showOrderProcessingScreen, setShowOrderProcessingScreen] =
+    useState(false);
+  const [showCompletePaymentScreen, setShowCompletePaymentScreen] =
+    useState(false);
+  const [showPaymentMethodScreen, setShowPaymentMethodScreen] = useState(false);
+  const [showPaymentInstructionScreen, setShowPaymentInstructionScreen] =
+    useState(false);
+  const [showOrderHistoryScreen, setShowOrderHistoryScreen] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -63,6 +77,26 @@ function App() {
       }
       if (showVoucherScreen) {
         setShowVoucherScreen(false);
+        return true;
+      }
+      if (showOrderHistoryScreen) {
+        setShowOrderHistoryScreen(false);
+        return true;
+      }
+      if (showPaymentInstructionScreen) {
+        setShowPaymentInstructionScreen(false);
+        return true;
+      }
+      if (showPaymentMethodScreen) {
+        setShowPaymentMethodScreen(false);
+        return true;
+      }
+      if (showCompletePaymentScreen) {
+        setShowCompletePaymentScreen(false);
+        return true;
+      }
+      if (showOrderProcessingScreen) {
+        // Prevent back during processing or handle if needed
         return true;
       }
       if (showTripEnhanceScreen) {
@@ -298,6 +332,54 @@ function App() {
     setShowTripEnhanceScreen(false);
   };
 
+  const handleOpenOrderProcessing = () => {
+    setShowTripEnhanceScreen(false);
+    setShowOrderProcessingScreen(true);
+  };
+
+  const handleOrderProcessingComplete = () => {
+    setShowOrderProcessingScreen(false);
+    setShowCompletePaymentScreen(true);
+  };
+
+  const handleCloseCompletePayment = () => {
+    setShowCompletePaymentScreen(false);
+  };
+
+  const handleOpenPaymentInstruction = () => {
+    setShowPaymentInstructionScreen(true);
+  };
+
+  const handleClosePaymentInstruction = () => {
+    setShowPaymentInstructionScreen(false);
+  };
+
+  const handleChangePaymentMethod = () => {
+    setShowPaymentInstructionScreen(false);
+    setShowPaymentMethodScreen(true);
+  };
+
+  const handleCheckStatus = () => {
+    setShowOrderHistoryScreen(true);
+  };
+
+  const handleCloseOrderHistory = () => {
+    setShowOrderHistoryScreen(false);
+  };
+
+  const handleOpenPaymentMethod = () => {
+    setShowPaymentMethodScreen(true);
+  };
+
+  const handleClosePaymentMethod = () => {
+    setShowPaymentMethodScreen(false);
+  };
+
+  const handlePaymentMethodSelect = (method: string) => {
+    setSelectedPaymentMethod(method);
+    setShowPaymentMethodScreen(false);
+  };
+
   return (
     <SafeAreaProvider>
       {isShowSplash ? (
@@ -338,6 +420,34 @@ function App() {
         <TripEnhanceScreen
           onBackPress={handleCloseTripEnhance}
           onPromoPress={handleVoucherPress}
+          onContinuePress={handleOpenOrderProcessing}
+        />
+      ) : showOrderProcessingScreen ? (
+        <OrderProcessingScreen onComplete={handleOrderProcessingComplete} />
+      ) : showOrderHistoryScreen ? (
+        <OrderHistoryScreen
+          onBackPress={handleCloseOrderHistory}
+          onCompletePayment={() => setShowOrderHistoryScreen(false)}
+        />
+      ) : showPaymentInstructionScreen ? (
+        <PaymentInstructionScreen
+          onBackPress={handleClosePaymentInstruction}
+          onChangePaymentMethod={handleChangePaymentMethod}
+          onCheckStatus={handleCheckStatus}
+          paymentMethod={selectedPaymentMethod}
+        />
+      ) : showPaymentMethodScreen ? (
+        <PaymentMethodScreen
+          onBackPress={handleClosePaymentMethod}
+          onSelectMethod={handlePaymentMethodSelect}
+          selectedMethod={selectedPaymentMethod}
+        />
+      ) : showCompletePaymentScreen ? (
+        <CompletePaymentScreen
+          onBackPress={handleCloseCompletePayment}
+          onPaymentMethodPress={handleOpenPaymentMethod}
+          onPayNow={handleOpenPaymentInstruction}
+          selectedPaymentMethod={selectedPaymentMethod}
         />
       ) : showPassengerDetailScreen ? (
         <PassengerDetailScreen

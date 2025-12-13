@@ -29,11 +29,13 @@ import { colors, spacing } from '../theme/theme';
 interface TripEnhanceScreenProps {
   onBackPress: () => void;
   onPromoPress: () => void;
+  onContinuePress: () => void;
 }
 
 export const TripEnhanceScreen = ({
   onBackPress,
   onPromoPress,
+  onContinuePress,
 }: TripEnhanceScreenProps) => {
   const [isFullPayment, setIsFullPayment] = React.useState(false);
   const [showPaymentDropdown, setShowPaymentDropdown] = React.useState(false);
@@ -383,7 +385,10 @@ export const TripEnhanceScreen = ({
           </View>
         </View>
 
-        <TouchableOpacity style={styles.continueButton}>
+        <TouchableOpacity
+          style={styles.continueButton}
+          onPress={onContinuePress}
+        >
           <Text style={styles.continueButtonText}>Continue to Payment</Text>
         </TouchableOpacity>
       </View>
