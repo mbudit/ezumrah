@@ -31,6 +31,8 @@ interface HomeScreenProps {
   onVoucherPress: () => void;
   onAllProductsPress: () => void;
   onChatPress: () => void;
+  onUmrahPress: () => void;
+  onFlightPress: () => void;
 }
 
 export const HomeScreen = ({
@@ -38,6 +40,8 @@ export const HomeScreen = ({
   onVoucherPress,
   onAllProductsPress,
   onChatPress,
+  onUmrahPress,
+  onFlightPress,
 }: HomeScreenProps) => {
   const [activeTab, setActiveTab] = React.useState<
     'Home' | 'Orders' | 'Wishlist' | 'Chat' | 'Profile'
@@ -46,6 +50,10 @@ export const HomeScreen = ({
   const handleServicePress = (id: string) => {
     if (id === 'others') {
       onAllProductsPress();
+    } else if (id === 'umrah') {
+      onUmrahPress();
+    } else if (id === 'flight') {
+      onFlightPress();
     }
   };
 

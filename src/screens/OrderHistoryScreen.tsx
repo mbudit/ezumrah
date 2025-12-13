@@ -15,6 +15,7 @@ import { colors, spacing } from '../theme/theme';
 interface OrderHistoryScreenProps {
   onBackPress?: () => void; // Optional if we want a back button, though design shows top level
   onCompletePayment?: () => void;
+  onHomePress?: () => void;
 }
 
 const { width } = Dimensions.get('window');
@@ -22,6 +23,7 @@ const { width } = Dimensions.get('window');
 export const OrderHistoryScreen = ({
   onBackPress,
   onCompletePayment,
+  onHomePress,
 }: OrderHistoryScreenProps) => {
   // Mock state: 'waiting' | 'success'
   const [orderStatus, setOrderStatus] = useState<'waiting' | 'success'>(
@@ -201,6 +203,10 @@ export const OrderHistoryScreen = ({
             </View>
           ))}
         </ScrollView>
+
+        <TouchableOpacity style={styles.homeButton} onPress={onHomePress}>
+          <Text style={styles.homeButtonText}>Go to Home</Text>
+        </TouchableOpacity>
 
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -446,5 +452,19 @@ const styles = StyleSheet.create({
   taxText: {
     fontSize: 10,
     color: '#9CA3AF',
+  },
+  homeButton: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#0D9488',
+    paddingVertical: spacing.m,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginVertical: spacing.l,
+  },
+  homeButtonText: {
+    color: '#0D9488',
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Bold',
   },
 });

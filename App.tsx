@@ -26,6 +26,7 @@ import { CompletePaymentScreen } from './src/screens/CompletePaymentScreen';
 import { PaymentMethodScreen } from './src/screens/PaymentMethodScreen';
 import { PaymentInstructionScreen } from './src/screens/PaymentInstructionScreen';
 import { OrderHistoryScreen } from './src/screens/OrderHistoryScreen';
+import { FlightSearchScreen } from './src/screens/FlightSearchScreen';
 
 function App() {
   const [isShowSplash, setIsShowSplash] = useState(true);
@@ -55,6 +56,7 @@ function App() {
   const [showPaymentInstructionScreen, setShowPaymentInstructionScreen] =
     useState(false);
   const [showOrderHistoryScreen, setShowOrderHistoryScreen] = useState(false);
+  const [showFlightSearchScreen, setShowFlightSearchScreen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
   useEffect(() => {
@@ -81,6 +83,10 @@ function App() {
       }
       if (showOrderHistoryScreen) {
         setShowOrderHistoryScreen(false);
+        return true;
+      }
+      if (showFlightSearchScreen) {
+        setShowFlightSearchScreen(false);
         return true;
       }
       if (showPaymentInstructionScreen) {
@@ -300,6 +306,14 @@ function App() {
     setShowVendorDetailScreen(false);
   };
 
+  const handleOpenFlightSearch = () => {
+    setShowFlightSearchScreen(true);
+  };
+
+  const handleCloseFlightSearch = () => {
+    setShowFlightSearchScreen(false);
+  };
+
   const handleOpenPackageDetail = () => {
     setShowPackageDetailScreen(true);
   };
@@ -380,6 +394,20 @@ function App() {
     setShowPaymentMethodScreen(false);
   };
 
+  const handleGoToHome = () => {
+    setShowOrderHistoryScreen(false);
+    setShowPaymentInstructionScreen(false);
+    setShowCompletePaymentScreen(false);
+    setShowOrderProcessingScreen(false);
+    setShowTripEnhanceScreen(false);
+    setShowPassengerDetailScreen(false);
+    setShowBookingScreen(false);
+    setShowPackageDetailScreen(false);
+    setShowVendorDetailScreen(false);
+    setShowFlightSearchScreen(false);
+    // Reset any other flow screens if necessary
+  };
+
   return (
     <SafeAreaProvider>
       {isShowSplash ? (
@@ -428,7 +456,10 @@ function App() {
         <OrderHistoryScreen
           onBackPress={handleCloseOrderHistory}
           onCompletePayment={() => setShowOrderHistoryScreen(false)}
+          onHomePress={handleGoToHome}
         />
+      ) : showFlightSearchScreen ? (
+        <FlightSearchScreen onBackPress={handleCloseFlightSearch} />
       ) : showPaymentInstructionScreen ? (
         <PaymentInstructionScreen
           onBackPress={handleClosePaymentInstruction}
@@ -495,6 +526,8 @@ function App() {
           onVoucherPress={handleVoucherPress}
           onAllProductsPress={handleAllProductsPress}
           onChatPress={handleChatPress}
+          onUmrahPress={handleUmrahPress}
+          onFlightPress={handleOpenFlightSearch}
         />
       )}
     </SafeAreaProvider>

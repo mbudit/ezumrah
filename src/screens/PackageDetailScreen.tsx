@@ -38,6 +38,9 @@ import {
   Armchair,
 } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
+import { packageService } from '../services/packageService';
+import { PackageDetail } from '../types';
+import { ActivityIndicator } from 'react-native';
 
 interface PackageDetailScreenProps {
   onBackPress: () => void;
@@ -56,57 +59,49 @@ export const PackageDetailScreen = ({
     React.useState(false);
   const [itineraryModalVisible, setItineraryModalVisible] =
     React.useState(false);
+
   const [itinerarySelectedDay, setItinerarySelectedDay] =
     React.useState('Day 01');
 
-  const FLIGHT_DATA = [
-    {
-      id: '1',
-      type: 'Depart',
-      date: 'Wed, 04 Sept 2025',
-      departureTime: '15:50',
-      departureCity: 'Jakarta (CGK)',
-      arrivalTime: '21:45',
-      arrivalCity: 'Jeddah (Jed)',
-      airline: 'Garuda Indonesia',
-      duration: '9h 50m Direct',
-      isVerified: true,
-    },
-    {
-      id: '2',
-      type: 'Return',
-      date: 'Wed, 18 Sept 2025',
-      departureTime: '05:30',
-      departureCity: 'Jeddah (Jed)',
-      arrivalTime: '20:01',
-      arrivalCity: 'Jakarta (CGK)',
-      airline: 'Garuda Indonesia',
-      duration: '9h 30m Direct',
-      isVerified: true,
-    },
-  ];
+  const [packageDetail, setPackageDetail] =
+    React.useState<PackageDetail | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
-  const ACCOMMODATION_DATA = [
-    {
-      id: '1',
-      city: 'Makkah',
-      date: '04-20 Sept 2025',
-      hotel: 'Address Jamal Omar',
-      rating: 5,
-      distance: '500m from Masjidil Haram',
-      amenities: ['1 Twin bed', 'Non-smoking Room'],
-    },
-    {
-      id: '2',
-      city: 'Madinah',
-      date: '20-24 Sept 2025',
-      hotel: 'Pullman Zamzam',
-      rating: 5,
-      distance: '100m from Masjid Nabawi',
-      amenities: ['1 Twin bed', 'Non-smoking Room'],
-    },
-  ];
+  React.useEffect(() => {
+    const fetchPackage = async () => {
+      try {
+        const data = await packageService.getPackageDetail('1'); // Mock ID
+        setPackageDetail(data || null);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPackage();
+  }, []);
 
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (!packageDetail) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Package not found</Text>
+      </View>
+    );
+  }
+
+  // Derived data for backward compatibility with render functions
+  const FLIGHT_DATA = packageDetail.flights;
+  const ACCOMMODATION_DATA = packageDetail.hotels;
+
+  // Keep static for now or move to mock if needed
   const ADVANTAGES_DATA = [
     {
       id: '1',
@@ -679,7 +674,7 @@ export const PackageDetailScreen = ({
           <Text style={styles.dateText}>{item.date}</Text>
         </View>
 
-        <Text style={styles.hotelName}>{item.hotel}</Text>
+        <Text style={styles.hotelName}>{item.name}</Text>
         <View style={styles.ratingRow}>
           {[...Array(item.rating)].map((_, i) => (
             <Star

@@ -75,8 +75,8 @@ export const ServiceGrid = ({ onServicePress }: ServiceGridProps) => {
                 style={styles.icon}
                 resizeMode="contain"
               />
+              <Text style={styles.label}>{service.label}</Text>
             </View>
-            <Text style={styles.label}>{service.label}</Text>
           </TouchableOpacity>
         );
       })}
@@ -102,11 +102,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.xs,
+    // marginBottom: spacing.xs, // Removed bottom margin as label is now inside
   },
   icon: {
-    width: 48,
-    height: 48,
+    width: 32, // Reduced icon size slightly to fit text
+    height: 32,
+    marginBottom: 4,
   },
   label: {
     fontSize: 12,
