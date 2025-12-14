@@ -27,6 +27,8 @@ import { PaymentMethodScreen } from './src/screens/PaymentMethodScreen';
 import { PaymentInstructionScreen } from './src/screens/PaymentInstructionScreen';
 import { OrderHistoryScreen } from './src/screens/OrderHistoryScreen';
 import { FlightSearchScreen } from './src/screens/FlightSearchScreen';
+import { FlightResultsScreen } from './src/screens/FlightResultsScreen';
+import { FlightBookingScreen } from './src/screens/FlightBookingScreen';
 
 function App() {
   const [isShowSplash, setIsShowSplash] = useState(true);
@@ -55,8 +57,9 @@ function App() {
   const [showPaymentMethodScreen, setShowPaymentMethodScreen] = useState(false);
   const [showPaymentInstructionScreen, setShowPaymentInstructionScreen] =
     useState(false);
-  const [showOrderHistoryScreen, setShowOrderHistoryScreen] = useState(false);
-  const [showFlightSearchScreen, setShowFlightSearchScreen] = useState(false);
+  const [showOrderHistoryScreen, setShowOrderHistoryScreen] = useState(false); /* State to manage which screen is visible */
+  const [currentScreen, setCurrentScreen] = useState<'search' | 'results' | 'booking' | 'none'>('none');
+  const [selectedFlight, setSelectedFlight] = useState<any>(null); // Using any for now to match FlightData
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
   useEffect(() => {
@@ -66,6 +69,63 @@ function App() {
 
     return () => clearTimeout(timer);
   }, []);
+
+
+  const handleOpenFlightSearch = () => {
+    setCurrentScreen('search');
+    // We also need to reset the flight flow state if needed, but 'search' is the start.
+    // If this is called from Home, it starts the flow.
+  };
+
+  /* Flight Handlers managed by currentScreen state */
+  const handleOpenFlightResults = () => {
+    setCurrentScreen('results');
+  };
+
+  const handleCloseFlightResults = () => {
+    setCurrentScreen('search');
+  };
+
+  const handleOpenBooking = (flight: any) => {
+    setSelectedFlight(flight);
+    setCurrentScreen('booking');
+  };
+
+  const handleCloseBooking = () => {
+    setSelectedFlight(null);
+    setCurrentScreen('results');
+  };
+
+  const handleCloseFlightSearch = () => {
+    // Return to Home
+    setCurrentScreen('none');
+  };
+
+  /* Handle Android Back Button */
+  useEffect(() => {
+    const onBackPress = () => {
+      if (currentScreen === 'booking') {
+        handleCloseBooking();
+        return true;
+      }
+      if (currentScreen === 'results') {
+        handleCloseFlightResults();
+        return true;
+      }
+      if (currentScreen === 'search') {
+        handleCloseFlightSearch();
+        return true; // Prevent default behavior if needed, or false to exit
+      }
+      return false;
+    };
+
+    const backHandlerSubscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      onBackPress,
+    );
+
+    return () => backHandlerSubscription.remove();
+  }, [currentScreen]);
 
   useEffect(() => {
     const backAction = () => {
@@ -83,10 +143,6 @@ function App() {
       }
       if (showOrderHistoryScreen) {
         setShowOrderHistoryScreen(false);
-        return true;
-      }
-      if (showFlightSearchScreen) {
-        setShowFlightSearchScreen(false);
         return true;
       }
       if (showPaymentInstructionScreen) {
@@ -306,14 +362,6 @@ function App() {
     setShowVendorDetailScreen(false);
   };
 
-  const handleOpenFlightSearch = () => {
-    setShowFlightSearchScreen(true);
-  };
-
-  const handleCloseFlightSearch = () => {
-    setShowFlightSearchScreen(false);
-  };
-
   const handleOpenPackageDetail = () => {
     setShowPackageDetailScreen(true);
   };
@@ -322,13 +370,8 @@ function App() {
     setShowPackageDetailScreen(false);
   };
 
-  const handleOpenBooking = () => {
-    setShowBookingScreen(true);
-  };
-
-  const handleCloseBooking = () => {
-    setShowBookingScreen(false);
-  };
+  /* Flight Handlers managed by currentScreen state at top of component */
+  // handleOpenFlightSearch, handleCloseFlightSearch, etc are defined above.
 
   const handleOpenPassengerDetail = () => {
     setShowPassengerDetailScreen(true);
@@ -404,7 +447,9 @@ function App() {
     setShowBookingScreen(false);
     setShowPackageDetailScreen(false);
     setShowVendorDetailScreen(false);
-    setShowFlightSearchScreen(false);
+    // setShowFlightResultsScreen(false); // Removed legacy
+    // setShowFlightSearchScreen(false); // Removed legacy
+    setCurrentScreen('none');
     // Reset any other flow screens if necessary
   };
 
@@ -458,8 +503,21 @@ function App() {
           onCompletePayment={() => setShowOrderHistoryScreen(false)}
           onHomePress={handleGoToHome}
         />
-      ) : showFlightSearchScreen ? (
-        <FlightSearchScreen onBackPress={handleCloseFlightSearch} />
+      ) : currentScreen === 'booking' && selectedFlight ? (
+        <FlightBookingScreen
+          onBackPress={handleCloseBooking}
+          flight={selectedFlight}
+        />
+      ) : currentScreen === 'results' ? (
+        <FlightResultsScreen
+          onBackPress={handleCloseFlightResults}
+          onFlightSelect={handleOpenBooking}
+        />
+      ) : currentScreen === 'search' ? (
+        <FlightSearchScreen
+          onBackPress={handleCloseFlightSearch}
+          onSearchPress={handleOpenFlightResults}
+        />
       ) : showPaymentInstructionScreen ? (
         <PaymentInstructionScreen
           onBackPress={handleClosePaymentInstruction}
@@ -494,7 +552,7 @@ function App() {
         <PackageDetailScreen
           onBackPress={handleClosePackageDetail}
           onVendorPress={handleOpenVendorDetail}
-          onOrderPress={handleOpenBooking}
+          onOrderPress={() => handleOpenBooking(null)}
         />
       ) : showPackageListScreen ? (
         <PackageListScreen

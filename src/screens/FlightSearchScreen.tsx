@@ -9,6 +9,8 @@ import {
   Dimensions,
   TextInput,
   Switch,
+  Modal,
+  FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -21,11 +23,54 @@ import {
   Info,
   Copy,
   ChevronRight,
+  X,
+  MapPin,
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing } from '../theme/theme';
 
 const { width, height } = Dimensions.get('window');
+
+const AIRPORTS = [
+  { city: 'Jakarta', code: 'CGK', name: 'Bandara Soekarno-Hatta' },
+  { city: 'Bali', code: 'DPS', name: 'Ngurah Rai International Airport' },
+  { city: 'Surabaya', code: 'SUB', name: 'Juanda International Airport' },
+  { city: 'Singapore', code: 'SIN', name: 'Changi Airport' },
+  { city: 'Kuala Lumpur', code: 'KUL', name: 'Kuala Lumpur International Airport' },
+  { city: 'Jeddah', code: 'JED', name: 'King Abdulaziz International Airport' },
+  { city: 'Madinah', code: 'MED', name: 'Prince Mohammad Bin Abdulaziz' },
+];
+
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const getFormattedDate = (date: Date) => {
+  const day = DAYS[date.getDay()];
+  const dd = date.getDate().toString().padStart(2, '0');
+  const mon = MONTHS[date.getMonth()];
+  const year = date.getFullYear();
+  return `${day}, ${dd} ${mon} ${year}`;
+};
+
+const generateDates = () => {
+  const dates = [];
+  const today = new Date();
+  for (let i = 0; i < 90; i++) {
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + i);
+    dates.push({
+      id: i.toString(),
+      dateObj: nextDate,
+      formatted: getFormattedDate(nextDate),
+    });
+  }
+  return dates;
+};
+
+const AVAILABLE_DATES = generateDates();
+
+const SEAT_CLASSES = ['Economy', 'Premium Economy', 'Business', 'First Class'];
+const PASSENGER_OPTIONS = ['1 Passenger', '2 Passengers', '3 Passengers', '4 Passengers', '5 Passengers', '6 Passengers'];
 
 interface FlightSearchScreenProps {
   onBackPress: () => void;
@@ -37,21 +82,40 @@ export const FlightSearchScreen = ({
   onSearchPress,
 }: FlightSearchScreenProps) => {
   const [isRoundTrip, setIsRoundTrip] = useState(false);
-  const [departureCity, setDepartureCity] = useState(
-    'Bandara Soekarno-Hatta (CGK)',
-  );
-  const [arrivalCity, setArrivalCity] = useState('Bali / Denpasar (DPS)');
-  const [date, setDate] = useState('Thurs, 02 Oct 2025');
+  const [departureCity, setDepartureCity] = useState(AIRPORTS[0]);
+  const [arrivalCity, setArrivalCity] = useState(AIRPORTS[1]);
+  const [date, setDate] = useState(AVAILABLE_DATES[0].formatted);
   const [passengers, setPassengers] = useState('1 Passenger');
   const [seatClass, setSeatClass] = useState('Economy');
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [dateModalVisible, setDateModalVisible] = useState(false);
+  const [passengerModalVisible, setPassengerModalVisible] = useState(false);
+  const [classModalVisible, setClassModalVisible] = useState(false);
+  const [selectionMode, setSelectionMode] = useState<'from' | 'to'>('from');
+
+  const handleSelectAirport = (airport: typeof AIRPORTS[0]) => {
+    if (selectionMode === 'from') {
+      setDepartureCity(airport);
+    } else {
+      setArrivalCity(airport);
+    }
+    setModalVisible(false);
+  };
+
+  const openSelection = (mode: 'from' | 'to') => {
+    setSelectionMode(mode);
+    setModalVisible(true);
+  };
 
   const renderInput = (
     label: string,
     value: string,
     icon: React.ReactNode,
     placeholder?: string,
+    onPress?: () => void,
   ) => (
-    <View style={styles.inputContainer}>
+    <TouchableOpacity onPress={onPress} activeOpacity={onPress ? 0.7 : 1} style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
       <View style={styles.inputWrapper}>
         <View style={styles.inputIcon}>{icon}</View>
@@ -60,9 +124,10 @@ export const FlightSearchScreen = ({
           value={value}
           placeholder={placeholder}
           editable={false}
+          onPressIn={onPress} // Ensure tap works even on TextInput area
         />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -98,24 +163,28 @@ export const FlightSearchScreen = ({
           <View style={styles.formSection}>
             {renderInput(
               'From',
-              departureCity,
+              `${departureCity.city} (${departureCity.code})`,
               <Plane
                 size={20}
                 color="#555"
                 style={{ transform: [{ rotate: '-45deg' }] }}
               />,
+              undefined,
+              () => openSelection('from')
             )}
 
             <View style={{ height: spacing.m }} />
 
             {renderInput(
               'To',
-              arrivalCity,
+              `${arrivalCity.city} (${arrivalCity.code})`,
               <Plane
                 size={20}
                 color="#555"
                 style={{ transform: [{ rotate: '45deg' }] }}
               />,
+              undefined,
+              () => openSelection('to')
             )}
 
             <View style={styles.separator} />
@@ -123,7 +192,13 @@ export const FlightSearchScreen = ({
             {/* Date & Toggle */}
             <View style={styles.dateRow}>
               <View style={{ flex: 1 }}>
-                {renderInput('Time', date, <Calendar size={20} color="#555" />)}
+                {renderInput(
+                  'Time',
+                  date,
+                  <Calendar size={20} color="#555" />,
+                  undefined,
+                  () => setDateModalVisible(true)
+                )}
               </View>
               <View style={styles.roundTripToggle}>
                 <Text style={styles.toggleLabel}>Roundtrip?</Text>
@@ -139,12 +214,14 @@ export const FlightSearchScreen = ({
             <View style={{ height: spacing.m }} />
 
             {/* Passengers & Class */}
-            <View style={styles.row}>
+            <View style={styles.optionRow}>
               <View style={{ flex: 1, marginRight: spacing.s }}>
                 {renderInput(
                   'Passengers',
                   passengers,
                   <Users size={20} color="#555" />,
+                  undefined,
+                  () => setPassengerModalVisible(true)
                 )}
               </View>
               <View style={{ flex: 1, marginLeft: spacing.s }}>
@@ -152,6 +229,8 @@ export const FlightSearchScreen = ({
                   'Seat Class',
                   seatClass,
                   <Armchair size={20} color="#555" />,
+                  undefined,
+                  () => setClassModalVisible(true)
                 )}
               </View>
             </View>
@@ -280,6 +359,188 @@ export const FlightSearchScreen = ({
           <View style={{ height: 40 }} />
         </View>
       </ScrollView>
+
+      {/* Airport Selection Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+        statusBarTranslucent
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                Select {selectionMode === 'from' ? 'Departure' : 'Arrival'}
+              </Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <X color="black" size={24} />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={AIRPORTS}
+              keyExtractor={(item) => item.code}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.airportItem}
+                  onPress={() => handleSelectAirport(item)}
+                >
+                  <View style={styles.airportIconBg}>
+                    <MapPin color="white" size={20} />
+                  </View>
+                  <View style={styles.airportItemContent}>
+                    <Text style={styles.airportCity}>{item.city} ({item.code})</Text>
+                    <Text style={styles.airportName}>{item.name}</Text>
+                  </View>
+                  {((selectionMode === 'from' && departureCity.code === item.code) ||
+                    (selectionMode === 'to' && arrivalCity.code === item.code)) && (
+                      <View style={styles.selectedDot} />
+                    )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Date Selection Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={dateModalVisible}
+        onRequestClose={() => setDateModalVisible(false)}
+        statusBarTranslucent
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Date</Text>
+              <TouchableOpacity onPress={() => setDateModalVisible(false)}>
+                <X color="black" size={24} />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={AVAILABLE_DATES}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.dateItemWrapper}
+                  onPress={() => {
+                    setDate(item.formatted);
+                    setDateModalVisible(false);
+                  }}
+                >
+                  <View style={styles.dateIconBg}>
+                    <Calendar color={date === item.formatted ? 'white' : colors.primary} size={20} />
+                  </View>
+                  <Text style={[
+                    styles.dateText,
+                    date === item.formatted && { color: colors.primary, fontFamily: 'Inter_18pt-Bold' }
+                  ]}>
+                    {item.formatted}
+                  </Text>
+                  {date === item.formatted && (
+                    <View style={styles.selectedDot} />
+                  )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Passenger Selection Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={passengerModalVisible}
+        onRequestClose={() => setPassengerModalVisible(false)}
+        statusBarTranslucent
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Passengers</Text>
+              <TouchableOpacity onPress={() => setPassengerModalVisible(false)}>
+                <X color="black" size={24} />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={PASSENGER_OPTIONS}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.modalItemWrapper}
+                  onPress={() => {
+                    setPassengers(item);
+                    setPassengerModalVisible(false);
+                  }}
+                >
+                  <View style={styles.modalIconBg}>
+                    <Users color={passengers === item ? 'white' : colors.primary} size={20} />
+                  </View>
+                  <Text style={[
+                    styles.modalItemText,
+                    passengers === item && { color: colors.primary, fontFamily: 'Inter_18pt-Bold' }
+                  ]}>
+                    {item}
+                  </Text>
+                  {passengers === item && (
+                    <View style={styles.selectedDot} />
+                  )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Seat Class Selection Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={classModalVisible}
+        onRequestClose={() => setClassModalVisible(false)}
+        statusBarTranslucent
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Seat Class</Text>
+              <TouchableOpacity onPress={() => setClassModalVisible(false)}>
+                <X color="black" size={24} />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={SEAT_CLASSES}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.modalItemWrapper}
+                  onPress={() => {
+                    setSeatClass(item);
+                    setClassModalVisible(false);
+                  }}
+                >
+                  <View style={styles.modalIconBg}>
+                    <Armchair color={seatClass === item ? 'white' : colors.primary} size={20} />
+                  </View>
+                  <Text style={[
+                    styles.modalItemText,
+                    seatClass === item && { color: colors.primary, fontFamily: 'Inter_18pt-Bold' }
+                  ]}>
+                    {item}
+                  </Text>
+                  {seatClass === item && (
+                    <View style={styles.selectedDot} />
+                  )}
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -596,5 +857,123 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#F3F4F6',
     marginVertical: 4,
+  },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    height: '75%',
+    paddingTop: spacing.m,
+    paddingHorizontal: spacing.m,
+    paddingBottom: 40, // Extra padding for bottom safe area/nav bar
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.l,
+    paddingBottom: spacing.s,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  airportItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.m,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  airportIconBg: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E6F6F6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.m,
+  },
+  airportItemContent: {
+    flex: 1,
+  },
+  airportCity: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+    marginBottom: 2,
+  },
+  airportName: {
+    fontSize: 12,
+    color: '#666',
+  },
+  selectedDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.primary,
+  },
+
+  // Date Modal Styles
+  dateItemWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.m,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  dateIconBg: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E6F6F6', // Or primary if selected
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.m,
+  },
+  dateText: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Medium',
+    color: '#333',
+    flex: 1,
+  },
+
+  // Generic Modal Item Styles (reused)
+  modalItemWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.m,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  modalIconBg: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E6F6F6', // Or primary if selected
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.m,
+  },
+  modalItemText: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Medium',
+    color: '#333',
+    flex: 1,
+  },
+
+  // Option Row
+  optionRow: {
+    flexDirection: 'row',
   },
 });
