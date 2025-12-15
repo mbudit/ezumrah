@@ -32,15 +32,12 @@ import { COUNTRIES, Country } from '../data/countries';
 
 const bannerImage = require('../assets/banner/umrah.png');
 
-interface UmrahPackageScreenProps {
-  onBackPress: () => void;
-  onSearchPress?: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const UmrahPackageScreen = ({
-  onBackPress,
-  onSearchPress,
-}: UmrahPackageScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'UmrahPackage'>;
+
+export const UmrahPackageScreen = ({ navigation }: Props) => {
   const [passengers, setPassengers] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState('Malaysia');
   const [selectedCity, setSelectedCity] = useState(
@@ -175,7 +172,10 @@ export const UmrahPackageScreen = ({
           style={styles.gradient}
         />
         <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
-          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <ArrowLeft color="white" size={24} />
           </TouchableOpacity>
         </SafeAreaView>
@@ -253,7 +253,10 @@ export const UmrahPackageScreen = ({
             </View>
           </View>
 
-          <TouchableOpacity style={styles.searchButton} onPress={onSearchPress}>
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={() => navigation.navigate('PackageList')}
+          >
             <Text style={styles.searchButtonText}>Search</Text>
           </TouchableOpacity>
         </ScrollView>

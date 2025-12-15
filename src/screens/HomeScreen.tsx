@@ -17,49 +17,37 @@ import { PromoSection } from '../components/PromoSection';
 import { HotelDealsSection } from '../components/HotelDealsSection';
 import { NotificationCard } from '../components/NotificationCard';
 import { BottomTabNavigator } from '../components/BottomTabNavigator';
-
-interface HomeScreenProps {
-  onNotificationPress: () => void;
-  onVoucherPress: () => void;
-  onAllProductsPress: () => void;
-}
-
 import { ChatScreen } from './ChatScreen';
 
-interface HomeScreenProps {
-  onNotificationPress: () => void;
-  onVoucherPress: () => void;
-  onAllProductsPress: () => void;
-  onChatPress: () => void;
-  onUmrahPress: () => void;
-  onFlightPress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const HomeScreen = ({
-  onNotificationPress,
-  onVoucherPress,
-  onAllProductsPress,
-  onChatPress,
-  onUmrahPress,
-  onFlightPress,
-}: HomeScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+export const HomeScreen = ({ navigation }: Props) => {
   const [activeTab, setActiveTab] = React.useState<
     'Home' | 'Orders' | 'Wishlist' | 'Chat' | 'Profile'
   >('Home');
 
   const handleServicePress = (id: string) => {
     if (id === 'others') {
-      onAllProductsPress();
+      navigation.navigate('AllProducts');
     } else if (id === 'umrah') {
-      onUmrahPress();
+      navigation.navigate('UmrahPackage');
     } else if (id === 'flight') {
-      onFlightPress();
+      navigation.navigate('FlightSearch');
     }
   };
 
   const renderContent = () => {
     if (activeTab === 'Chat') {
-      return <ChatScreen onChatPress={onChatPress} />;
+      // ChatScreen needs to be refactored to accept navigation or we pass it here?
+      // Since ChatScreen will be a child, it can use useNavigation hook or we can wrap it.
+      // Or if it simply uses navigation prop, we can cast it or use useNavigation inside ChatScreen.
+      // For now, let's assume ChatScreen uses useNavigation or similar.
+      // Actually, ChatScreen was receiving onChatPress.
+      // If ChatScreen lists chats, clicking one goes to ChatDetail.
+      return <ChatScreen />;
     }
 
     if (activeTab === 'Home') {
@@ -88,13 +76,13 @@ export const HomeScreen = ({
                 <View style={styles.headerIcons}>
                   <TouchableOpacity
                     style={styles.iconButton}
-                    onPress={onNotificationPress}
+                    onPress={() => navigation.navigate('Notification')}
                   >
                     <Bell color="#20A39E" size={20} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.iconButton}
-                    onPress={onVoucherPress}
+                    onPress={() => navigation.navigate('Voucher')}
                   >
                     <Percent color="#20A39E" size={20} />
                   </TouchableOpacity>

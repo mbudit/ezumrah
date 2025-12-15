@@ -1,22 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { colors, spacing, typography } from '../theme/theme';
 
-interface OtpScreenProps {
-  onBack: () => void;
-  onVerify: (code: string) => void;
-  phoneNumber?: string;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const OtpScreen: React.FC<OtpScreenProps> = ({ onBack, onVerify, phoneNumber = '+60123456789' }) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Otp'>;
+
+export const OtpScreen: React.FC<Props> = ({ navigation, route }) => {
+  const phoneNumber = route.params?.phoneNumber || '+60123456789';
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [timer, setTimer] = useState(167); // 02:47 in seconds
   const inputs = useRef<Array<TextInput | null>>([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimer((prev) => {
+      setTimer(prev => {
         if (prev <= 0) {
           clearInterval(interval);
           return 0;
@@ -43,12 +50,15 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({ onBack, onVerify, phoneNum
       inputs.current[index + 1]?.focus();
     }
 
-    if (newOtp.every((digit) => digit !== '')) {
-        // Auto verify or wait for button? Design doesn't show button, usually auto or keyboard enter.
-        // Let's just log for now or call verify if complete
+    if (newOtp.every(digit => digit !== '')) {
+      // Auto verify or wait for button? Design doesn't show button, usually auto or keyboard enter.
+      // Let's just log for now or call verify if complete
+      if (newOtp.join('').length === 6) {
         if (newOtp.join('').length === 6) {
-            onVerify(newOtp.join(''));
+          // onVerify(newOtp.join(''));
+          navigation.replace('Home');
         }
+      }
     }
   };
 
@@ -61,7 +71,10 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({ onBack, onVerify, phoneNum
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
         <Text style={[typography.h3, styles.headerTitle]}>OTP</Text>
@@ -71,18 +84,21 @@ export const OtpScreen: React.FC<OtpScreenProps> = ({ onBack, onVerify, phoneNum
         <Text style={[typography.h2, styles.title]}>Enter the OTP code</Text>
         <Text style={[typography.body, styles.description]}>
           The code has been sent to WhatsApp{' '}
-          <Text style={styles.boldText}>{phoneNumber}</Text>. Please check your messages if received.
+          <Text style={styles.boldText}>{phoneNumber}</Text>. Please check your
+          messages if received.
         </Text>
 
         <View style={styles.otpContainer}>
           {otp.map((digit, index) => (
             <TextInput
               key={index}
-              ref={(ref) => { inputs.current[index] = ref; }}
+              ref={ref => {
+                inputs.current[index] = ref;
+              }}
               style={styles.otpInput}
               value={digit}
-              onChangeText={(value) => handleOtpChange(value, index)}
-              onKeyPress={(e) => handleKeyPress(e, index)}
+              onChangeText={value => handleOtpChange(value, index)}
+              onKeyPress={e => handleKeyPress(e, index)}
               keyboardType="number-pad"
               maxLength={1}
               selectTextOnFocus

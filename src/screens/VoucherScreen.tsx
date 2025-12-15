@@ -14,11 +14,6 @@ import { ArrowLeft, Search, Percent, User } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, typography } from '../theme/theme';
 
-interface VoucherScreenProps {
-  onBackPress: () => void;
-  onPromoPress: () => void;
-}
-
 const bannerImage = require('../assets/banner/bannerrvoucher.png');
 const umrahIcon = require('../assets/icons/umrah.png');
 const hotelIcon = require('../assets/icons/hotel.png');
@@ -39,10 +34,12 @@ const categories = [
   { id: 'flight', label: 'Flight', icon: flightIcon },
 ];
 
-export const VoucherScreen = ({
-  onBackPress,
-  onPromoPress,
-}: VoucherScreenProps) => {
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Voucher'>;
+
+export const VoucherScreen = ({ navigation }: Props) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const renderItem = ({ item }: { item: (typeof vouchers)[0] }) => (
@@ -65,7 +62,10 @@ export const VoucherScreen = ({
       >
         <SafeAreaView edges={['top']} style={styles.safeArea}>
           <View style={styles.topBar}>
-            <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            >
               <ArrowLeft color="white" size={24} />
             </TouchableOpacity>
             <View style={styles.searchContainer}>
@@ -100,7 +100,7 @@ export const VoucherScreen = ({
       <View style={styles.promoInputContainer}>
         <TouchableOpacity
           style={styles.promoInputWrapper}
-          onPress={onPromoPress}
+          onPress={() => navigation.navigate('PromoCode')}
         >
           <View style={styles.percentIconContainer}>
             <Percent color="white" size={12} />

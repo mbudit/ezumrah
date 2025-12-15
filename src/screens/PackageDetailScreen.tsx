@@ -42,17 +42,12 @@ import { packageService } from '../services/packageService';
 import { PackageDetail } from '../types';
 import { ActivityIndicator } from 'react-native';
 
-interface PackageDetailScreenProps {
-  onBackPress: () => void;
-  onVendorPress: () => void;
-  onOrderPress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const PackageDetailScreen = ({
-  onBackPress,
-  onVendorPress,
-  onOrderPress,
-}: PackageDetailScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'PackageDetail'>;
+
+export const PackageDetailScreen = ({ navigation }: Props) => {
   const [advantagesModalVisible, setAdvantagesModalVisible] =
     React.useState(false);
   const [facilitiesModalVisible, setFacilitiesModalVisible] =
@@ -516,7 +511,10 @@ export const PackageDetailScreen = ({
           <ChevronDown color="#333" size={20} style={{ marginLeft: 4 }} />
         </View>
       </View>
-      <TouchableOpacity style={styles.orderButton} onPress={onOrderPress}>
+      <TouchableOpacity
+        style={styles.orderButton}
+        onPress={() => navigation.navigate('Booking')}
+      >
         <Text style={styles.orderButtonText}>Order</Text>
       </TouchableOpacity>
     </View>
@@ -534,7 +532,10 @@ export const PackageDetailScreen = ({
             <Text style={styles.vendorName}>Ezumrah</Text>
             <Text style={styles.vendorLocation}>Kuala Lumpur, Malaysia</Text>
           </View>
-          <TouchableOpacity style={styles.visitButton} onPress={onVendorPress}>
+          <TouchableOpacity
+            style={styles.visitButton}
+            onPress={() => navigation.navigate('VendorDetail')}
+          >
             <Text style={styles.visitButtonText}>Visit</Text>
           </TouchableOpacity>
         </View>
@@ -569,7 +570,7 @@ export const PackageDetailScreen = ({
       <View style={styles.overlay} />
       <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
         <View style={styles.headerButtons}>
-          <TouchableOpacity onPress={onBackPress}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <ArrowLeft color="white" size={24} />
           </TouchableOpacity>
           <View style={styles.headerRightButtons}>

@@ -34,9 +34,10 @@ import {
 } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
 
-interface PackageListScreenProps {
-  onBackPress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'PackageList'>;
 
 const PACKAGE_DATA = [
   {
@@ -227,24 +228,17 @@ const POPULAR_CITIES = [
   'Kuala Lumpur (All airports)',
 ];
 
-interface PackageListScreenProps {
-  onBackPress: () => void;
-  onVendorPress?: () => void;
-  onPackagePress?: () => void;
-}
-
-export const PackageListScreen = ({
-  onBackPress,
-  onVendorPress,
-  onPackagePress,
-}: PackageListScreenProps) => {
+export const PackageListScreen = ({ navigation }: Props) => {
   const [activeTab, setActiveTab] = useState<'Product' | 'Vendor'>('Product');
 
   const renderHeader = () => (
     <View style={styles.header}>
       <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
         <View style={styles.headerContent}>
-          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <ArrowLeft color="black" size={24} />
           </TouchableOpacity>
           <View style={styles.headerTexts}>
@@ -345,7 +339,10 @@ export const PackageListScreen = ({
   );
 
   const renderCard = ({ item }: { item: (typeof PACKAGE_DATA)[0] }) => (
-    <TouchableOpacity style={styles.card} onPress={onPackagePress}>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('PackageDetail')}
+    >
       {/* Image Section */}
       <View style={styles.imageContainer}>
         <Image source={item.image} style={styles.cardImage} />
@@ -429,7 +426,10 @@ export const PackageListScreen = ({
   );
 
   const renderVendorCard = ({ item }: { item: (typeof VENDOR_DATA)[0] }) => (
-    <TouchableOpacity style={styles.vendorCard} onPress={onVendorPress}>
+    <TouchableOpacity
+      style={styles.vendorCard}
+      onPress={() => navigation.navigate('VendorDetail')}
+    >
       {/* Logo/Header Placeholder */}
       <View style={styles.vendorHeader}>
         {/* Using Text as Logo placeholder since we don't have the image asset handy yet,

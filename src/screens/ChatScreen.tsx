@@ -54,13 +54,18 @@ const chatData: ChatItem[] = [
   },
 ];
 
-interface ChatScreenProps {
-  onChatPress: () => void;
-}
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const ChatScreen = ({ onChatPress }: ChatScreenProps) => {
+export const ChatScreen = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const renderItem = ({ item }: { item: ChatItem }) => (
-    <TouchableOpacity style={styles.chatItem} onPress={onChatPress}>
+    <TouchableOpacity
+      style={styles.chatItem}
+      onPress={() => navigation.navigate('ChatDetail')}
+    >
       <Image source={logoImage} style={styles.avatar} resizeMode="contain" />
       <View style={styles.chatContent}>
         <View style={styles.chatHeader}>

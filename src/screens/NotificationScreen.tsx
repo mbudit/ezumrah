@@ -1,18 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image, StatusBar } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Image,
+  StatusBar,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, X, Bell } from 'lucide-react-native';
 import { colors, spacing, typography } from '../theme/theme';
-
-interface NotificationScreenProps {
-  onBackPress: () => void;
-}
 
 const notifications = [
   {
     id: '1',
     title: 'Your Payment is Pending',
-    description: 'Kindly complete the payment of RM 30.334 for your order ID 1999120524 before 29-09-2026 08:00 AM to avoid cancellation',
+    description:
+      'Kindly complete the payment of RM 30.334 for your order ID 1999120524 before 29-09-2026 08:00 AM to avoid cancellation',
     timestamp: '03-03-2026 07:37',
     image: 'https://placehold.co/100x100/png', // Placeholder for Kaaba image
     type: 'payment_pending',
@@ -20,7 +25,8 @@ const notifications = [
   {
     id: '2',
     title: 'Your Payment is Pending',
-    description: 'Kindly complete the payment of RM 30.334 for your order ID 1999120524 before 29-09-2026 08:00 AM to avoid cancellation',
+    description:
+      'Kindly complete the payment of RM 30.334 for your order ID 1999120524 before 29-09-2026 08:00 AM to avoid cancellation',
     timestamp: '03-03-2026 07:37',
     image: 'https://placehold.co/100x100/png',
     type: 'payment_pending',
@@ -28,7 +34,8 @@ const notifications = [
   {
     id: '3',
     title: 'Confirm Receipt',
-    description: 'Kindly verify that your order ID 1999120524 has been paid. Thank you for shopping with Ezumrah.com!',
+    description:
+      'Kindly verify that your order ID 1999120524 has been paid. Thank you for shopping with Ezumrah.com!',
     timestamp: '03-03-2026 07:37',
     image: 'https://placehold.co/100x100/png',
     type: 'confirm_receipt',
@@ -36,7 +43,8 @@ const notifications = [
   {
     id: '4',
     title: 'Confirm Receipt',
-    description: 'Kindly verify that your order ID 1999120524 has been paid. Thank you for shopping with Ezumrah.com!',
+    description:
+      'Kindly verify that your order ID 1999120524 has been paid. Thank you for shopping with Ezumrah.com!',
     timestamp: '03-03-2026 07:37',
     image: 'https://placehold.co/100x100/png',
     type: 'confirm_receipt',
@@ -44,15 +52,21 @@ const notifications = [
   {
     id: '5',
     title: 'Confirm Receipt',
-    description: 'Kindly verify that your order ID 1999120524 has been paid. Thank you for shopping with Ezumrah.com!',
+    description:
+      'Kindly verify that your order ID 1999120524 has been paid. Thank you for shopping with Ezumrah.com!',
     timestamp: '03-03-2026 07:37',
     image: 'https://placehold.co/100x100/png',
     type: 'confirm_receipt',
   },
 ];
 
-export const NotificationScreen = ({ onBackPress }: NotificationScreenProps) => {
-  const renderItem = ({ item }: { item: typeof notifications[0] }) => (
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Notification'>;
+
+export const NotificationScreen = ({ navigation }: Props) => {
+  const renderItem = ({ item }: { item: (typeof notifications)[0] }) => (
     <View style={styles.notificationItem}>
       <Image source={{ uri: item.image }} style={styles.itemImage} />
       <View style={styles.itemContent}>
@@ -60,11 +74,17 @@ export const NotificationScreen = ({ onBackPress }: NotificationScreenProps) => 
         <Text style={styles.itemDescription}>
           {item.type === 'payment_pending' ? (
             <>
-              Kindly complete the payment of <Text style={styles.highlightText}>RM 30.334</Text> for your order ID <Text style={styles.highlightText}>1999120524</Text> before <Text style={styles.highlightText}>29-09-2026 08:00 AM</Text> to avoid cancellation
+              Kindly complete the payment of{' '}
+              <Text style={styles.highlightText}>RM 30.334</Text> for your order
+              ID <Text style={styles.highlightText}>1999120524</Text> before{' '}
+              <Text style={styles.highlightText}>29-09-2026 08:00 AM</Text> to
+              avoid cancellation
             </>
           ) : (
             <>
-              Kindly verify that your order ID <Text style={styles.highlightText}>1999120524</Text> has been paid. Thank you for shopping with Ezumrah.com!
+              Kindly verify that your order ID{' '}
+              <Text style={styles.highlightText}>1999120524</Text> has been
+              paid. Thank you for shopping with Ezumrah.com!
             </>
           )}
         </Text>
@@ -76,10 +96,13 @@ export const NotificationScreen = ({ onBackPress }: NotificationScreenProps) => 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
-      
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <ArrowLeft color="black" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notification</Text>
@@ -88,11 +111,16 @@ export const NotificationScreen = ({ onBackPress }: NotificationScreenProps) => 
       {/* Banner */}
       <View style={styles.banner}>
         <View style={styles.bannerIconContainer}>
-           <Image source={require('../assets/icons/notif.png')} style={styles.bannerIcon} resizeMode="contain" />
+          <Image
+            source={require('../assets/icons/notif.png')}
+            style={styles.bannerIcon}
+            resizeMode="contain"
+          />
         </View>
         <View style={styles.bannerContent}>
           <Text style={styles.bannerText}>
-            Allow notifcation and get the latest updates on orders and promos. <Text style={styles.allowLink}>Allow</Text>
+            Allow notifcation and get the latest updates on orders and promos.{' '}
+            <Text style={styles.allowLink}>Allow</Text>
           </Text>
         </View>
         <TouchableOpacity>
@@ -104,7 +132,7 @@ export const NotificationScreen = ({ onBackPress }: NotificationScreenProps) => 
       <FlatList
         data={notifications}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />

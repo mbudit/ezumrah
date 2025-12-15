@@ -26,31 +26,32 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-interface PaymentMethodScreenProps {
-  onBackPress: () => void;
-  onSelectMethod: (method: string) => void;
-  selectedMethod: string;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-interface PaymentMethodItem {
-  id: string;
-  label: string;
-  image?: any;
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'PaymentMethod'>;
 
-interface PaymentCategory {
-  title: string;
-  data: PaymentMethodItem[];
-}
+export const PaymentMethodScreen = ({ navigation, route }: Props) => {
+  const { orderId } = route.params || {};
+  // Track selected method locally if needed, or pass back immediately on select
+  const [selectedMethod, setSelectedMethod] = useState(
+    route.params?.selectedPaymentMethod || '',
+  );
 
-export const PaymentMethodScreen = ({
-  onBackPress,
-  onSelectMethod,
-  selectedMethod,
-}: PaymentMethodScreenProps) => {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(
     'QRIS Payment',
   );
+
+  interface PaymentMethodItem {
+    id: string;
+    label: string;
+    image?: any;
+  }
+
+  interface PaymentCategory {
+    title: string;
+    data: PaymentMethodItem[];
+  }
 
   const PAYMENT_CATEGORIES: PaymentCategory[] = [
     {
@@ -146,15 +147,21 @@ export const PaymentMethodScreen = ({
   };
 
   const handleSelect = (method: string) => {
-    onSelectMethod(method);
-    onBackPress();
+    navigation.navigate({
+      name: 'CompletePayment',
+      params: { selectedPaymentMethod: method, orderId: route.params?.orderId }, // Preserve orderId if needed
+      merge: true,
+    });
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <ArrowLeft color="black" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Payment Method</Text>

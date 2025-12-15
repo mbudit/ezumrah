@@ -27,15 +27,12 @@ import { Modal } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
-interface BookingScreenProps {
-  onBackPress: () => void;
-  onPassengerPress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const BookingScreen = ({
-  onBackPress,
-  onPassengerPress,
-}: BookingScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Booking'>;
+
+export const BookingScreen = ({ navigation }: Props) => {
   const [passengerCount, setPassengerCount] = useState(0);
   const [isSameAsContact, setIsSameAsContact] = useState(false);
   const [contactModalVisible, setContactModalVisible] = useState(false);
@@ -205,7 +202,10 @@ export const BookingScreen = ({
         edges={['bottom', 'left', 'right']}
       >
         <View style={styles.header}>
-          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <ArrowLeft color="white" size={24} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Complete Your Booking</Text>
@@ -290,7 +290,9 @@ export const BookingScreen = ({
               <View style={styles.divider} />
               <TouchableOpacity
                 style={styles.passengerRow}
-                onPress={onPassengerPress}
+                onPress={() =>
+                  navigation.navigate('PassengerDetail', { passengerCount: 1 })
+                }
               >
                 <Text style={styles.passengerLabel}>
                   Passenger 1 (Adult)<Text style={{ color: 'red' }}>*</Text>
@@ -302,7 +304,9 @@ export const BookingScreen = ({
             <View style={styles.passengerCard}>
               <TouchableOpacity
                 style={styles.passengerRow}
-                onPress={onPassengerPress}
+                onPress={() =>
+                  navigation.navigate('PassengerDetail', { passengerCount: 2 })
+                }
               >
                 <Text style={styles.passengerLabel}>
                   Passenger 2 (Adult)<Text style={{ color: 'red' }}>*</Text>

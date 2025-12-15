@@ -20,29 +20,21 @@ import {
 } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
 
-interface CompletePaymentScreenProps {
-  onBackPress: () => void;
-  onPaymentMethodPress?: () => void;
-  onPayNow?: () => void;
-  selectedPaymentMethod?: string;
-  orderId?: string;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const CompletePaymentScreen = ({
-  onBackPress,
-  onPaymentMethodPress,
-  onPayNow,
-  selectedPaymentMethod,
-  orderId = '1999120524',
-}: CompletePaymentScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'CompletePayment'>;
+
+export const CompletePaymentScreen = ({ navigation, route }: Props) => {
+  const { orderId = '1999120524' } = route.params || {};
   const [paymentType, setPaymentType] = useState('Full payment');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [secondsRemaining, setSecondsRemaining] = useState(3580); // 00:59:40
   useEffect(() => {
-    if (selectedPaymentMethod) {
-      setPaymentMethod(selectedPaymentMethod);
+    if (route.params?.selectedPaymentMethod) {
+      setPaymentMethod(route.params.selectedPaymentMethod);
     }
-  }, [selectedPaymentMethod]);
+  }, [route.params?.selectedPaymentMethod]);
 
   const PAYMENT_METHODS_LOOKUP: Record<string, { label: string; image: any }> =
     {
@@ -157,7 +149,10 @@ export const CompletePaymentScreen = ({
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <ArrowLeft color="black" size={24} />
         </TouchableOpacity>
         <View>
@@ -235,7 +230,9 @@ export const CompletePaymentScreen = ({
         <View style={styles.card}>
           <View style={styles.methodHeader}>
             <Text style={styles.sectionTitle}>Payment Method</Text>
-            <TouchableOpacity onPress={onPaymentMethodPress}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('PaymentMethod')}
+            >
               <Text style={styles.seeAllText}>See all</Text>
             </TouchableOpacity>
           </View>
@@ -306,7 +303,10 @@ export const CompletePaymentScreen = ({
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={styles.payButton} onPress={onPayNow}>
+        <TouchableOpacity
+          style={styles.payButton}
+          onPress={() => navigation.navigate('PaymentInstruction')}
+        >
           <Text style={styles.payButtonText}>Pay Now</Text>
         </TouchableOpacity>
       </View>

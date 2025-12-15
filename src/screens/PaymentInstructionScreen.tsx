@@ -27,13 +27,10 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-interface PaymentInstructionScreenProps {
-  onBackPress: () => void;
-  onChangePaymentMethod: () => void;
-  onCheckStatus: () => void;
-  paymentMethod: string;
-  orderId?: string;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'PaymentInstruction'>;
 
 const PAYMENT_METHODS_LOOKUP: Record<string, { label: string; image: any }> = {
   QRIS: { label: 'QRIS', image: require('../assets/icons/qris.png') },
@@ -78,13 +75,8 @@ const PAYMENT_METHODS_LOOKUP: Record<string, { label: string; image: any }> = {
   },
 };
 
-export const PaymentInstructionScreen = ({
-  onBackPress,
-  onChangePaymentMethod,
-  onCheckStatus,
-  paymentMethod,
-  orderId = '1999120524',
-}: PaymentInstructionScreenProps) => {
+export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
+  const { paymentMethod = 'BCA', orderId = '1999120524' } = route.params || {};
   const [secondsRemaining, setSecondsRemaining] = useState(3580); // 00:59:40
   const [expandedInstruction, setExpandedInstruction] = useState<string | null>(
     null,
@@ -165,7 +157,10 @@ export const PaymentInstructionScreen = ({
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <ArrowLeft color="black" size={24} />
         </TouchableOpacity>
         <View>
@@ -277,13 +272,13 @@ export const PaymentInstructionScreen = ({
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.checkStatusButton}
-          onPress={onCheckStatus}
+          onPress={() => navigation.navigate('OrderHistory')}
         >
           <Text style={styles.checkStatusText}>Check the Payment Status</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.changeMethodButton}
-          onPress={onChangePaymentMethod}
+          onPress={() => navigation.navigate('PaymentMethod')}
         >
           <Text style={styles.changeMethodText}>Change Payment Method</Text>
         </TouchableOpacity>

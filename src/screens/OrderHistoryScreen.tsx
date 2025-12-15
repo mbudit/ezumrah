@@ -12,19 +12,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ClipboardList, MoreHorizontal, Star } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
 
-interface OrderHistoryScreenProps {
-  onBackPress?: () => void; // Optional if we want a back button, though design shows top level
-  onCompletePayment?: () => void;
-  onHomePress?: () => void;
-}
-
 const { width } = Dimensions.get('window');
 
-export const OrderHistoryScreen = ({
-  onBackPress,
-  onCompletePayment,
-  onHomePress,
-}: OrderHistoryScreenProps) => {
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'OrderHistory'>;
+
+export const OrderHistoryScreen = ({ navigation }: Props) => {
   // Mock state: 'waiting' | 'success'
   const [orderStatus, setOrderStatus] = useState<'waiting' | 'success'>(
     'waiting',
@@ -140,7 +135,7 @@ export const OrderHistoryScreen = ({
           {orderStatus === 'waiting' ? (
             <TouchableOpacity
               style={styles.completePaymentButton}
-              onPress={onCompletePayment}
+              onPress={() => navigation.navigate('CompletePayment')}
             >
               <Text style={styles.completePaymentText}>
                 Complete the Payment
@@ -204,7 +199,10 @@ export const OrderHistoryScreen = ({
           ))}
         </ScrollView>
 
-        <TouchableOpacity style={styles.homeButton} onPress={onHomePress}>
+        <TouchableOpacity
+          style={styles.homeButton}
+          onPress={() => navigation.navigate('Home')}
+        >
           <Text style={styles.homeButtonText}>Go to Home</Text>
         </TouchableOpacity>
 

@@ -13,11 +13,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { colors, spacing, typography } from '../theme/theme';
 
-interface PromoCodeScreenProps {
-  onBackPress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const PromoCodeScreen = ({ onBackPress }: PromoCodeScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'PromoCode'>;
+
+export const PromoCodeScreen = ({ navigation }: Props) => {
   const [promoCode, setPromoCode] = useState('');
 
   return (
@@ -26,7 +27,10 @@ export const PromoCodeScreen = ({ onBackPress }: PromoCodeScreenProps) => {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <ArrowLeft color="black" size={24} />
         </TouchableOpacity>
       </View>

@@ -1,5 +1,5 @@
 export const colors = {
-  primary: '#10B981', // Emerald Green - Fresh & Islamic friendly
+  primary: '#20A39E', // Emerald Green - Fresh & Islamic friendly
   primaryDark: '#059669',
   secondary: '#F59E0B', // Amber/Gold - Premium accent
   background: '#F9FAFB', // Light Gray - Clean background

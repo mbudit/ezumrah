@@ -29,9 +29,10 @@ import {
 } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
 
-interface VendorDetailScreenProps {
-  onBackPress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'VendorDetail'>;
 
 const MUTAWWIF_DATA = [
   {
@@ -245,15 +246,7 @@ const CATEGORIES_DATA = [
   { id: '5', title: 'Umrah + Turki', count: 12 },
 ];
 
-interface VendorDetailScreenProps {
-  onBackPress: () => void;
-  onPackagePress?: () => void;
-}
-
-export const VendorDetailScreen = ({
-  onBackPress,
-  onPackagePress,
-}: VendorDetailScreenProps) => {
+export const VendorDetailScreen = ({ navigation }: Props) => {
   const [activeTab, setActiveTab] = useState('Vendor');
   const [staffModalVisible, setStaffModalVisible] = useState(false);
 
@@ -275,7 +268,10 @@ export const VendorDetailScreen = ({
       <View style={styles.overlay} />
       <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
         <View style={styles.headerTop}>
-          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <ArrowLeft color="black" size={24} />
           </TouchableOpacity>
           <View style={styles.searchBar}>
@@ -409,7 +405,7 @@ export const VendorDetailScreen = ({
           <TouchableOpacity
             key={item.id}
             style={styles.recommendCard}
-            onPress={onPackagePress}
+            onPress={() => navigation.navigate('PackageDetail')}
           >
             <Image source={item.image} style={styles.recommendImage} />
             <View style={styles.recommendContent}>
@@ -479,7 +475,7 @@ export const VendorDetailScreen = ({
         <TouchableOpacity
           key={item.id}
           style={styles.productCard}
-          onPress={onPackagePress}
+          onPress={() => navigation.navigate('PackageDetail')}
         >
           <Image source={item.image} style={styles.productImage} />
           <View style={styles.productContent}>

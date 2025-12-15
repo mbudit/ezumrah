@@ -26,17 +26,12 @@ import { Switch, Modal } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing } from '../theme/theme';
 
-interface TripEnhanceScreenProps {
-  onBackPress: () => void;
-  onPromoPress: () => void;
-  onContinuePress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const TripEnhanceScreen = ({
-  onBackPress,
-  onPromoPress,
-  onContinuePress,
-}: TripEnhanceScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'TripEnhance'>;
+
+export const TripEnhanceScreen = ({ navigation }: Props) => {
   const [isFullPayment, setIsFullPayment] = React.useState(false);
   const [showPaymentDropdown, setShowPaymentDropdown] = React.useState(false);
   const [showPriceDetail, setShowPriceDetail] = React.useState(false);
@@ -95,7 +90,10 @@ export const TripEnhanceScreen = ({
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <ArrowLeft color="black" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Enhance your trip</Text>
@@ -316,7 +314,10 @@ export const TripEnhanceScreen = ({
             </View>
             <Text style={styles.promoText}>Save more with the best promo</Text>
           </View>
-          <TouchableOpacity style={styles.applyButton} onPress={onPromoPress}>
+          <TouchableOpacity
+            style={styles.applyButton}
+            onPress={() => navigation.navigate('PromoCode')}
+          >
             <Text style={styles.applyButtonText}>Apply</Text>
           </TouchableOpacity>
         </View>
@@ -387,7 +388,7 @@ export const TripEnhanceScreen = ({
 
         <TouchableOpacity
           style={styles.continueButton}
-          onPress={onContinuePress}
+          onPress={() => navigation.navigate('OrderProcessing')}
         >
           <Text style={styles.continueButtonText}>Continue to Payment</Text>
         </TouchableOpacity>

@@ -11,15 +11,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { X } from 'lucide-react-native';
 import { colors, spacing, typography } from '../theme/theme';
 
-interface AllProductsScreenProps {
-  onClose: () => void;
-  onUmrahPress?: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const AllProductsScreen = ({
-  onClose,
-  onUmrahPress,
-}: AllProductsScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'AllProducts'>;
+
+export const AllProductsScreen = ({ navigation }: Props) => {
   const services = [
     {
       id: 'flight',
@@ -79,7 +76,7 @@ export const AllProductsScreen = ({
 
   const handlePress = (id: string) => {
     if (id === 'umrah') {
-      onUmrahPress?.();
+      navigation.navigate('UmrahPackage');
     }
   };
 
@@ -89,7 +86,10 @@ export const AllProductsScreen = ({
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.closeButton}
+        >
           <X color="black" size={24} />
         </TouchableOpacity>
         <Text style={styles.title}>All Products</Text>

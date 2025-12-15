@@ -36,13 +36,30 @@ const AIRPORTS = [
   { city: 'Bali', code: 'DPS', name: 'Ngurah Rai International Airport' },
   { city: 'Surabaya', code: 'SUB', name: 'Juanda International Airport' },
   { city: 'Singapore', code: 'SIN', name: 'Changi Airport' },
-  { city: 'Kuala Lumpur', code: 'KUL', name: 'Kuala Lumpur International Airport' },
+  {
+    city: 'Kuala Lumpur',
+    code: 'KUL',
+    name: 'Kuala Lumpur International Airport',
+  },
   { city: 'Jeddah', code: 'JED', name: 'King Abdulaziz International Airport' },
   { city: 'Madinah', code: 'MED', name: 'Prince Mohammad Bin Abdulaziz' },
 ];
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 const getFormattedDate = (date: Date) => {
   const day = DAYS[date.getDay()];
@@ -70,17 +87,21 @@ const generateDates = () => {
 const AVAILABLE_DATES = generateDates();
 
 const SEAT_CLASSES = ['Economy', 'Premium Economy', 'Business', 'First Class'];
-const PASSENGER_OPTIONS = ['1 Passenger', '2 Passengers', '3 Passengers', '4 Passengers', '5 Passengers', '6 Passengers'];
+const PASSENGER_OPTIONS = [
+  '1 Passenger',
+  '2 Passengers',
+  '3 Passengers',
+  '4 Passengers',
+  '5 Passengers',
+  '6 Passengers',
+];
 
-interface FlightSearchScreenProps {
-  onBackPress: () => void;
-  onSearchPress?: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const FlightSearchScreen = ({
-  onBackPress,
-  onSearchPress,
-}: FlightSearchScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'FlightSearch'>;
+
+export const FlightSearchScreen = ({ navigation }: Props) => {
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [departureCity, setDepartureCity] = useState(AIRPORTS[0]);
   const [arrivalCity, setArrivalCity] = useState(AIRPORTS[1]);
@@ -94,7 +115,7 @@ export const FlightSearchScreen = ({
   const [classModalVisible, setClassModalVisible] = useState(false);
   const [selectionMode, setSelectionMode] = useState<'from' | 'to'>('from');
 
-  const handleSelectAirport = (airport: typeof AIRPORTS[0]) => {
+  const handleSelectAirport = (airport: (typeof AIRPORTS)[0]) => {
     if (selectionMode === 'from') {
       setDepartureCity(airport);
     } else {
@@ -115,7 +136,11 @@ export const FlightSearchScreen = ({
     placeholder?: string,
     onPress?: () => void,
   ) => (
-    <TouchableOpacity onPress={onPress} activeOpacity={onPress ? 0.7 : 1} style={styles.inputContainer}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+      style={styles.inputContainer}
+    >
       <Text style={styles.inputLabel}>{label}</Text>
       <View style={styles.inputWrapper}>
         <View style={styles.inputIcon}>{icon}</View>
@@ -149,7 +174,10 @@ export const FlightSearchScreen = ({
           />
           <SafeAreaView edges={['top']} style={styles.headerSafeArea}>
             <View style={styles.headerRow}>
-              <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.backButton}
+              >
                 <ArrowLeft color="black" size={24} />
               </TouchableOpacity>
             </View>
@@ -170,7 +198,7 @@ export const FlightSearchScreen = ({
                 style={{ transform: [{ rotate: '-45deg' }] }}
               />,
               undefined,
-              () => openSelection('from')
+              () => openSelection('from'),
             )}
 
             <View style={{ height: spacing.m }} />
@@ -184,7 +212,7 @@ export const FlightSearchScreen = ({
                 style={{ transform: [{ rotate: '45deg' }] }}
               />,
               undefined,
-              () => openSelection('to')
+              () => openSelection('to'),
             )}
 
             <View style={styles.separator} />
@@ -197,7 +225,7 @@ export const FlightSearchScreen = ({
                   date,
                   <Calendar size={20} color="#555" />,
                   undefined,
-                  () => setDateModalVisible(true)
+                  () => setDateModalVisible(true),
                 )}
               </View>
               <View style={styles.roundTripToggle}>
@@ -221,7 +249,7 @@ export const FlightSearchScreen = ({
                   passengers,
                   <Users size={20} color="#555" />,
                   undefined,
-                  () => setPassengerModalVisible(true)
+                  () => setPassengerModalVisible(true),
                 )}
               </View>
               <View style={{ flex: 1, marginLeft: spacing.s }}>
@@ -230,7 +258,7 @@ export const FlightSearchScreen = ({
                   seatClass,
                   <Armchair size={20} color="#555" />,
                   undefined,
-                  () => setClassModalVisible(true)
+                  () => setClassModalVisible(true),
                 )}
               </View>
             </View>
@@ -238,7 +266,18 @@ export const FlightSearchScreen = ({
             {/* Search Button */}
             <TouchableOpacity
               style={styles.searchButton}
-              onPress={onSearchPress}
+              onPress={() =>
+                navigation.navigate('FlightResults', {
+                  searchParams: {
+                    departureCity,
+                    arrivalCity,
+                    date,
+                    passengers,
+                    seatClass,
+                    isRoundTrip,
+                  },
+                })
+              }
             >
               <Text style={styles.searchButtonText}>Search</Text>
             </TouchableOpacity>
@@ -380,7 +419,7 @@ export const FlightSearchScreen = ({
             </View>
             <FlatList
               data={AIRPORTS}
-              keyExtractor={(item) => item.code}
+              keyExtractor={item => item.code}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.airportItem}
@@ -390,13 +429,17 @@ export const FlightSearchScreen = ({
                     <MapPin color="white" size={20} />
                   </View>
                   <View style={styles.airportItemContent}>
-                    <Text style={styles.airportCity}>{item.city} ({item.code})</Text>
+                    <Text style={styles.airportCity}>
+                      {item.city} ({item.code})
+                    </Text>
                     <Text style={styles.airportName}>{item.name}</Text>
                   </View>
-                  {((selectionMode === 'from' && departureCity.code === item.code) ||
-                    (selectionMode === 'to' && arrivalCity.code === item.code)) && (
-                      <View style={styles.selectedDot} />
-                    )}
+                  {((selectionMode === 'from' &&
+                    departureCity.code === item.code) ||
+                    (selectionMode === 'to' &&
+                      arrivalCity.code === item.code)) && (
+                    <View style={styles.selectedDot} />
+                  )}
                 </TouchableOpacity>
               )}
             />
@@ -422,7 +465,7 @@ export const FlightSearchScreen = ({
             </View>
             <FlatList
               data={AVAILABLE_DATES}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.dateItemWrapper}
@@ -432,12 +475,20 @@ export const FlightSearchScreen = ({
                   }}
                 >
                   <View style={styles.dateIconBg}>
-                    <Calendar color={date === item.formatted ? 'white' : colors.primary} size={20} />
+                    <Calendar
+                      color={date === item.formatted ? 'white' : colors.primary}
+                      size={20}
+                    />
                   </View>
-                  <Text style={[
-                    styles.dateText,
-                    date === item.formatted && { color: colors.primary, fontFamily: 'Inter_18pt-Bold' }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.dateText,
+                      date === item.formatted && {
+                        color: colors.primary,
+                        fontFamily: 'Inter_18pt-Bold',
+                      },
+                    ]}
+                  >
                     {item.formatted}
                   </Text>
                   {date === item.formatted && (
@@ -468,7 +519,7 @@ export const FlightSearchScreen = ({
             </View>
             <FlatList
               data={PASSENGER_OPTIONS}
-              keyExtractor={(item) => item}
+              keyExtractor={item => item}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.modalItemWrapper}
@@ -478,17 +529,23 @@ export const FlightSearchScreen = ({
                   }}
                 >
                   <View style={styles.modalIconBg}>
-                    <Users color={passengers === item ? 'white' : colors.primary} size={20} />
+                    <Users
+                      color={passengers === item ? 'white' : colors.primary}
+                      size={20}
+                    />
                   </View>
-                  <Text style={[
-                    styles.modalItemText,
-                    passengers === item && { color: colors.primary, fontFamily: 'Inter_18pt-Bold' }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.modalItemText,
+                      passengers === item && {
+                        color: colors.primary,
+                        fontFamily: 'Inter_18pt-Bold',
+                      },
+                    ]}
+                  >
                     {item}
                   </Text>
-                  {passengers === item && (
-                    <View style={styles.selectedDot} />
-                  )}
+                  {passengers === item && <View style={styles.selectedDot} />}
                 </TouchableOpacity>
               )}
             />
@@ -514,7 +571,7 @@ export const FlightSearchScreen = ({
             </View>
             <FlatList
               data={SEAT_CLASSES}
-              keyExtractor={(item) => item}
+              keyExtractor={item => item}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.modalItemWrapper}
@@ -524,17 +581,23 @@ export const FlightSearchScreen = ({
                   }}
                 >
                   <View style={styles.modalIconBg}>
-                    <Armchair color={seatClass === item ? 'white' : colors.primary} size={20} />
+                    <Armchair
+                      color={seatClass === item ? 'white' : colors.primary}
+                      size={20}
+                    />
                   </View>
-                  <Text style={[
-                    styles.modalItemText,
-                    seatClass === item && { color: colors.primary, fontFamily: 'Inter_18pt-Bold' }
-                  ]}>
+                  <Text
+                    style={[
+                      styles.modalItemText,
+                      seatClass === item && {
+                        color: colors.primary,
+                        fontFamily: 'Inter_18pt-Bold',
+                      },
+                    ]}
+                  >
                     {item}
                   </Text>
-                  {seatClass === item && (
-                    <View style={styles.selectedDot} />
-                  )}
+                  {seatClass === item && <View style={styles.selectedDot} />}
                 </TouchableOpacity>
               )}
             />

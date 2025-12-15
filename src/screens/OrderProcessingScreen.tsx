@@ -3,20 +3,19 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing } from '../theme/theme';
 
-interface OrderProcessingScreenProps {
-  onComplete: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const OrderProcessingScreen = ({
-  onComplete,
-}: OrderProcessingScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'OrderProcessing'>;
+
+export const OrderProcessingScreen = ({ navigation }: Props) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      onComplete();
+      navigation.replace('CompletePayment');
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [onComplete]);
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

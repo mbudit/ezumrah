@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
 import { colors, spacing, typography } from '../theme/theme';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 
-interface RegisterScreenProps {
-  onLoginPress: () => void;
-  onSignUp: () => void;
-  onBack: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const RegisterScreen: React.FC<RegisterScreenProps> = ({
-  onLoginPress,
-  onSignUp,
-  onBack,
-}) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
+
+export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [icNumber, setIcNumber] = useState('');
@@ -25,14 +27,19 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
 
   const handleSignUp = () => {
     console.log('Sign Up pressed', { fullName, phoneNumber, icNumber, email });
-    onSignUp();
+    // onSignUp();
+    // Assuming registration succeeds and logs in
+    navigation.replace('Home');
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-            <ArrowLeft color={colors.text} size={24} />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <ArrowLeft color={colors.text} size={24} />
         </TouchableOpacity>
         <Text style={[typography.h3, styles.headerTitle]}>Register</Text>
       </View>
@@ -76,7 +83,13 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!isPasswordVisible}
-            rightIcon={isPasswordVisible ? <Eye color={colors.textLight} size={24} /> : <EyeOff color={colors.textLight} size={24} />}
+            rightIcon={
+              isPasswordVisible ? (
+                <Eye color={colors.textLight} size={24} />
+              ) : (
+                <EyeOff color={colors.textLight} size={24} />
+              )
+            }
             onRightIconPress={() => setIsPasswordVisible(!isPasswordVisible)}
           />
 
@@ -90,7 +103,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already have an account? </Text>
-          <TouchableOpacity onPress={onLoginPress}>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
             <Text style={styles.loginText}>Let’s log in!</Text>
           </TouchableOpacity>
         </View>

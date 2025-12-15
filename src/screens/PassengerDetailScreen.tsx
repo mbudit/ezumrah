@@ -26,17 +26,13 @@ import {
 import { Modal } from 'react-native';
 import { colors, spacing } from '../theme/theme';
 
-interface PassengerDetailScreenProps {
-  onBackPress: () => void;
-  passengerNumber?: number;
-  onContinuePress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const PassengerDetailScreen = ({
-  onBackPress,
-  passengerNumber = 1,
-  onContinuePress,
-}: PassengerDetailScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'PassengerDetail'>;
+
+export const PassengerDetailScreen = ({ navigation, route }: Props) => {
+  const passengerNumber = route.params?.passengerNumber || 1;
   const [selectedTitle, setSelectedTitle] = useState('Mr.');
   const [singleName, setSingleName] = useState(false);
   const [gender, setGender] = useState('');
@@ -153,7 +149,10 @@ export const PassengerDetailScreen = ({
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <ArrowLeft color="black" size={24} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
@@ -429,9 +428,9 @@ export const PassengerDetailScreen = ({
 
         <TouchableOpacity
           style={styles.continueButton}
-          onPress={onContinuePress}
+          onPress={() => navigation.navigate('TripEnhance')}
         >
-          <Text style={styles.continueButtonText}>Continue to Payment</Text>
+          <Text style={styles.continueButtonText}>Continue to Add-ons</Text>
         </TouchableOpacity>
       </View>
       {renderPriceDetailModal()}

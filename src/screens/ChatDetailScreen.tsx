@@ -33,11 +33,12 @@ interface Message {
   isSender: boolean;
 }
 
-interface ChatDetailScreenProps {
-  onBackPress: () => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const ChatDetailScreen = ({ onBackPress }: ChatDetailScreenProps) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'ChatDetail'>;
+
+export const ChatDetailScreen = ({ navigation }: Props) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -102,7 +103,10 @@ export const ChatDetailScreen = ({ onBackPress }: ChatDetailScreenProps) => {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <ArrowLeft color="black" size={24} />
           </TouchableOpacity>
           <Image

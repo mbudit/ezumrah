@@ -1,26 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Image,
+} from 'react-native';
 import { colors, spacing, typography } from '../theme/theme';
 import { Button } from '../components/Button';
 
-interface LanguageSelectionScreenProps {
-  onSelectLanguage: (language: string) => void;
-}
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
 
-export const LanguageSelectionScreen: React.FC<LanguageSelectionScreenProps> = ({
-  onSelectLanguage,
-}) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'LanguageSelection'>;
+
+export const LanguageSelectionScreen: React.FC<Props> = ({ navigation }) => {
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
 
   const languages = [
-    { code: 'ar', label: 'Arab', flag: require('../assets/flags/arab_flag.png') },
-    { code: 'id', label: 'Indonesia', flag: require('../assets/flags/id_flag.png') },
-    { code: 'en', label: 'English', flag: require('../assets/flags/eng_flag.png') },
+    {
+      code: 'ar',
+      label: 'Arab',
+      flag: require('../assets/flags/arab_flag.png'),
+    },
+    {
+      code: 'id',
+      label: 'Indonesia',
+      flag: require('../assets/flags/id_flag.png'),
+    },
+    {
+      code: 'en',
+      label: 'English',
+      flag: require('../assets/flags/eng_flag.png'),
+    },
   ];
 
   const handleNext = () => {
     if (selectedLanguage) {
-      onSelectLanguage(selectedLanguage);
+      // onSelectLanguage(selectedLanguage); // Local state for now, or Context later
+      navigation.navigate('LoginSelection');
     }
   };
 
@@ -28,27 +47,41 @@ export const LanguageSelectionScreen: React.FC<LanguageSelectionScreenProps> = (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={styles.header}>
-          <Text style={[typography.h1, styles.title]}>Let’s fulfill your sacred calling!</Text>
+          <Text style={[typography.h1, styles.title]}>
+            Let’s fulfill your sacred calling!
+          </Text>
           <Text style={[typography.body, styles.subtitle]}>
             Choose the language that feels comfortable for you
           </Text>
         </View>
 
         <View style={styles.optionsContainer}>
-          {languages.map((lang) => {
+          {languages.map(lang => {
             const isSelected = selectedLanguage === lang.code;
             return (
               <TouchableOpacity
                 key={lang.code}
-                style={[styles.languageOption, isSelected && styles.languageOptionSelected]}
+                style={[
+                  styles.languageOption,
+                  isSelected && styles.languageOptionSelected,
+                ]}
                 onPress={() => setSelectedLanguage(lang.code)}
                 activeOpacity={0.7}
               >
                 <View style={styles.labelContainer}>
-                  <Image source={lang.flag} style={styles.flag} resizeMode="contain" />
+                  <Image
+                    source={lang.flag}
+                    style={styles.flag}
+                    resizeMode="contain"
+                  />
                   <Text style={typography.h3}>{lang.label}</Text>
                 </View>
-                <View style={[styles.radioOuter, isSelected && styles.radioOuterSelected]}>
+                <View
+                  style={[
+                    styles.radioOuter,
+                    isSelected && styles.radioOuterSelected,
+                  ]}
+                >
                   {isSelected && <View style={styles.radioInner} />}
                 </View>
               </TouchableOpacity>
@@ -61,7 +94,10 @@ export const LanguageSelectionScreen: React.FC<LanguageSelectionScreenProps> = (
         <Button
           title="Next"
           onPress={handleNext}
-          style={[styles.nextButton, !selectedLanguage && styles.disabledButton]}
+          style={[
+            styles.nextButton,
+            !selectedLanguage && styles.disabledButton,
+          ]}
           textStyle={styles.nextButtonText}
           loading={false}
         />
