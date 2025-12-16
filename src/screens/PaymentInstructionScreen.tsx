@@ -272,7 +272,7 @@ export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.checkStatusButton}
-          onPress={() => navigation.navigate('OrderHistory')}
+          onPress={() => navigation.navigate('Order')}
         >
           <Text style={styles.checkStatusText}>Check the Payment Status</Text>
         </TouchableOpacity>

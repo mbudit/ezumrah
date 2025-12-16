@@ -4,10 +4,14 @@ import { colors, spacing, typography } from '../theme/theme';
 
 interface ServiceGridProps {
   onServicePress?: (id: string) => void;
+  mode?: 'preview' | 'full';
 }
 
-export const ServiceGrid = ({ onServicePress }: ServiceGridProps) => {
-  const services = [
+export const ServiceGrid = ({
+  onServicePress,
+  mode = 'preview',
+}: ServiceGridProps) => {
+  const ALL_SERVICES = [
     {
       id: 'flight',
       label: 'Flight',
@@ -51,15 +55,34 @@ export const ServiceGrid = ({ onServicePress }: ServiceGridProps) => {
       color: '#e8f3ee',
     },
     {
-      id: 'others',
-      label: 'Others',
-      image: require('../assets/icons/appgrid.png'),
+      id: 'hijriah',
+      label: 'Hijriah Calender',
+      image: require('../assets/icons/hijrahcalendar.png'),
+      color: '#e8f3ee',
+    },
+    {
+      id: 'hajj',
+      label: 'Hajj',
+      image: require('../assets/icons/haji.png'),
       color: '#e8f3ee',
     },
   ];
 
+  const services =
+    mode === 'preview'
+      ? [
+          ...ALL_SERVICES.slice(0, 7),
+          {
+            id: 'others',
+            label: 'Others',
+            image: require('../assets/icons/appgrid.png'),
+            color: '#e8f3ee',
+          },
+        ]
+      : ALL_SERVICES;
+
   return (
-    <View style={styles.container}>
+    <View style={mode === 'full' ? styles.fullContainer : styles.container}>
       {services.map(service => {
         return (
           <TouchableOpacity
@@ -88,25 +111,29 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    padding: spacing.m,
+    paddingHorizontal: spacing.s, // Reduced padding to allow fitted items
+  },
+  fullContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: spacing.s,
   },
   item: {
-    width: '23%', // 4 items per row
+    width: '25%', // Exactly 4 items per row
     alignItems: 'center',
     marginBottom: spacing.l,
+    paddingHorizontal: 4, // Inner padding instead of gap
   },
   iconContainer: {
-    width: 80,
-    height: 80,
+    width: 90,
+    height: 90,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    // marginBottom: spacing.xs, // Removed bottom margin as label is now inside
   },
   icon: {
-    width: 32, // Reduced icon size slightly to fit text
-    height: 32,
+    width: 45, // Reduced icon size slightly to fit text
+    height: 45,
     marginBottom: 4,
   },
   label: {

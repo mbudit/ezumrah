@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
+import { LinearGradient } from 'react-native-linear-gradient';
 import { Search, Bell, Percent, MapPin } from 'lucide-react-native';
 import { colors, spacing, typography } from '../theme/theme';
 import { ServiceGrid } from '../components/ServiceGrid';
@@ -18,9 +18,12 @@ import { HotelDealsSection } from '../components/HotelDealsSection';
 import { NotificationCard } from '../components/NotificationCard';
 import { BottomTabNavigator } from '../components/BottomTabNavigator';
 import { ChatScreen } from './ChatScreen';
+import { ProfileScreen } from './ProfileScreen';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { OrderScreen } from './OrderScreen';
+import { useHomeData } from '../hooks/useHomeData';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -29,6 +32,9 @@ export const HomeScreen = ({ navigation }: Props) => {
     'Home' | 'Orders' | 'Wishlist' | 'Chat' | 'Profile'
   >('Home');
 
+  const { data, isLoading } = useHomeData();
+  const prayerData = data?.prayerData;
+
   const handleServicePress = (id: string) => {
     if (id === 'others') {
       navigation.navigate('AllProducts');
@@ -36,20 +42,23 @@ export const HomeScreen = ({ navigation }: Props) => {
       navigation.navigate('UmrahPackage');
     } else if (id === 'flight') {
       navigation.navigate('FlightSearch');
+    } else if (id === 'hotel') {
+      navigation.navigate('HotelSearch');
     }
   };
 
   const renderContent = () => {
     if (activeTab === 'Chat') {
-      // ChatScreen needs to be refactored to accept navigation or we pass it here?
-      // Since ChatScreen will be a child, it can use useNavigation hook or we can wrap it.
-      // Or if it simply uses navigation prop, we can cast it or use useNavigation inside ChatScreen.
-      // For now, let's assume ChatScreen uses useNavigation or similar.
-      // Actually, ChatScreen was receiving onChatPress.
-      // If ChatScreen lists chats, clicking one goes to ChatDetail.
       return <ChatScreen />;
     }
 
+    if (activeTab === 'Profile') {
+      return <ProfileScreen />;
+    }
+
+    if (activeTab === 'Orders') {
+      return <OrderScreen />;
+    }
     if (activeTab === 'Home') {
       return (
         <ScrollView
@@ -65,6 +74,7 @@ export const HomeScreen = ({ navigation }: Props) => {
           >
             <SafeAreaView edges={['top']}>
               <View style={styles.header}>
+                {/* Search ... unchanged ... */}
                 <View style={styles.searchContainer}>
                   <Search color="#20A39E" size={20} style={styles.searchIcon} />
                   <TextInput
@@ -90,18 +100,28 @@ export const HomeScreen = ({ navigation }: Props) => {
               </View>
 
               <View style={styles.heroContent}>
-                <View style={styles.locationContainer}>
-                  <MapPin color="red" size={16} />
-                  <Text style={styles.locationText}>
-                    Masjidil Haram, Makkah al-Mukarramah
-                  </Text>
-                </View>
+                {isLoading ? (
+                  <Text style={{ color: 'white' }}>Loading...</Text>
+                ) : (
+                  <>
+                    <View style={styles.locationContainer}>
+                      <MapPin color="red" size={16} />
+                      <Text style={styles.locationText}>
+                        {prayerData?.location || 'Loading Location...'}
+                      </Text>
+                    </View>
 
-                <Text style={styles.prayerName}>Subuh 04.46 WAS</Text>
-                <Text style={styles.countdown}>— 05 : 25 : 22</Text>
-                <Text style={styles.date}>
-                  31 Agustus 2025 / 7 Rabiul Awal 1447
-                </Text>
+                    <Text style={styles.prayerName}>
+                      {prayerData?.nextPrayerName} {prayerData?.nextPrayerTime}
+                    </Text>
+                    <Text style={styles.countdown}>
+                      {prayerData?.countdown}
+                    </Text>
+                    <Text style={styles.date}>
+                      {prayerData?.dateString} / {prayerData?.hijriDateString}
+                    </Text>
+                  </>
+                )}
               </View>
             </SafeAreaView>
           </LinearGradient>
@@ -127,8 +147,18 @@ export const HomeScreen = ({ navigation }: Props) => {
   return (
     <View style={styles.container}>
       <StatusBar
-        barStyle={activeTab === 'Chat' ? 'dark-content' : 'light-content'}
-        backgroundColor={activeTab === 'Chat' ? 'white' : '#20A39E'}
+        barStyle={
+          activeTab === 'Chat' || activeTab === 'Profile'
+            ? 'dark-content'
+            : 'light-content'
+        }
+        backgroundColor={
+          activeTab === 'Chat' || activeTab === 'Profile'
+            ? '#1D938E'
+            : activeTab === 'Home'
+            ? '#20A39E'
+            : 'white'
+        }
       />
 
       {renderContent()}
@@ -145,8 +175,8 @@ const styles = StyleSheet.create({
   },
   greenBackground: {
     paddingBottom: 80,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     paddingHorizontal: spacing.m,
     paddingTop: 0,
   },
@@ -213,6 +243,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter_18pt-Regular',
     marginBottom: spacing.xs,
+    minHeight: 20,
   },
   date: {
     color: 'white',

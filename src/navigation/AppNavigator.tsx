@@ -13,6 +13,7 @@ import { RegisterScreen } from '../screens/RegisterScreen';
 import { OtpScreen } from '../screens/OtpScreen';
 import { NotificationScreen } from '../screens/NotificationScreen';
 import { PromoCodeScreen } from '../screens/PromoCodeScreen';
+import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { AllProductsScreen } from '../screens/AllProductsScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ChatDetailScreen } from '../screens/ChatDetailScreen';
@@ -28,11 +29,14 @@ import { OrderProcessingScreen } from '../screens/OrderProcessingScreen';
 import { CompletePaymentScreen } from '../screens/CompletePaymentScreen';
 import { PaymentMethodScreen } from '../screens/PaymentMethodScreen';
 import { PaymentInstructionScreen } from '../screens/PaymentInstructionScreen';
-import { OrderHistoryScreen } from '../screens/OrderHistoryScreen';
 import { FlightSearchScreen } from '../screens/FlightSearchScreen';
 import { FlightResultsScreen } from '../screens/FlightResultsScreen';
 import { FlightBookingScreen } from '../screens/FlightBookingScreen';
 import { FlightCompleteBookingScreen } from '../screens/FlightCompleteBookingScreen';
+import { HotelSearchScreen } from '../screens/HotelSearchScreen';
+import { HotelResultsScreen } from '../screens/HotelResultsScreen';
+import { OrderScreen } from '../screens/OrderScreen';
+import { HistoryScreen } from '../screens/HistoryScreen'; // Import HistoryScreen
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -60,6 +64,7 @@ export const AppNavigator = () => {
         <Stack.Screen name="Notification" component={NotificationScreen} />
         <Stack.Screen name="Voucher" component={VoucherScreen} />
         <Stack.Screen name="PromoCode" component={PromoCodeScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="AllProducts" component={AllProductsScreen} />
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="ChatDetail" component={ChatDetailScreen} />
@@ -88,7 +93,8 @@ export const AppNavigator = () => {
           name="PaymentInstruction"
           component={PaymentInstructionScreen}
         />
-        <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
+        <Stack.Screen name="Order" component={OrderScreen} />
+        <Stack.Screen name="History" component={HistoryScreen} />
 
         {/* Flight Flow */}
         <Stack.Screen name="FlightSearch" component={FlightSearchScreen} />
@@ -98,6 +104,8 @@ export const AppNavigator = () => {
           name="FlightCompleteBooking"
           component={FlightCompleteBookingScreen}
         />
+        <Stack.Screen name="HotelSearch" component={HotelSearchScreen} />
+        <Stack.Screen name="HotelResults" component={HotelResultsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

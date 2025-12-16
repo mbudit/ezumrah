@@ -7,6 +7,8 @@ import {
   ScrollView,
   Image,
   Dimensions,
+  Modal,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ClipboardList, MoreHorizontal, Star } from 'lucide-react-native';
@@ -14,16 +16,20 @@ import { colors, spacing } from '../theme/theme';
 
 const { width } = Dimensions.get('window');
 
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'OrderHistory'>;
+export const OrderScreen = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-export const OrderHistoryScreen = ({ navigation }: Props) => {
   // Mock state: 'waiting' | 'success'
   const [orderStatus, setOrderStatus] = useState<'waiting' | 'success'>(
     'waiting',
   );
+  const [modalVisible, setModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   const [secondsRemaining, setSecondsRemaining] = useState(792); // 00:13:12
 
@@ -87,7 +93,7 @@ export const OrderHistoryScreen = ({ navigation }: Props) => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Your Orders</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('History')}>
           <ClipboardList color="black" size={24} />
         </TouchableOpacity>
       </View>
@@ -102,7 +108,10 @@ export const OrderHistoryScreen = ({ navigation }: Props) => {
         <View style={styles.card}>
           <View style={styles.orderHeader}>
             <Text style={styles.orderId}>Order ID: 1999120524</Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
               <MoreHorizontal color="#666" size={20} />
             </TouchableOpacity>
           </View>
@@ -199,15 +208,90 @@ export const OrderHistoryScreen = ({ navigation }: Props) => {
           ))}
         </ScrollView>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.homeButton}
           onPress={() => navigation.navigate('Home')}
         >
           <Text style={styles.homeButtonText}>Go to Home</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Options Modal */}
+      {/* Options Modal */}
+      {modalVisible && (
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setModalVisible(false)}
+        >
+          <TouchableWithoutFeedback>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <Text style={{ fontSize: 20, color: 'black' }}>✕</Text>
+                </TouchableOpacity>
+                <Text style={styles.modalTitle}>Options</Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.modalOption}
+                onPress={() => {
+                  setModalVisible(false);
+                  // Handle See Details
+                }}
+              >
+                <Text style={styles.modalOptionText}>See Details</Text>
+              </TouchableOpacity>
+              <View style={styles.modalSeparator} />
+              <TouchableOpacity
+                style={styles.modalOption}
+                onPress={() => {
+                  setModalVisible(false);
+                  setTimeout(() => setDeleteModalVisible(true), 300); // 300ms delay for smooth transition
+                }}
+              >
+                <Text style={styles.modalOptionTextDelete}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
+        </TouchableOpacity>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Modal */}
+      {deleteModalVisible && (
+        <View style={styles.deleteModalOverlay}>
+          <TouchableWithoutFeedback
+            onPress={() => setDeleteModalVisible(false)}
+          >
+            <View style={styles.deleteModalOverlayBackground} />
+          </TouchableWithoutFeedback>
+          <View style={styles.deleteModalContent}>
+            <Text style={styles.deleteModalTitle}>Delete Order</Text>
+            <Text style={styles.deleteModalDesc}>
+              All related orders will be removed and cannot be restored once
+              deleted.
+            </Text>
+            <TouchableOpacity
+              style={styles.deleteConfirmButton}
+              onPress={() => {
+                setDeleteModalVisible(false);
+                // Handle Delete Logic
+              }}
+            >
+              <Text style={styles.deleteConfirmButtonText}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteCancelButton}
+              onPress={() => setDeleteModalVisible(false)}
+            >
+              <Text style={styles.deleteCancelButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -392,6 +476,7 @@ const styles = StyleSheet.create({
   },
   recentList: {
     paddingRight: spacing.m,
+    paddingBottom: spacing.m,
   },
   recentCard: {
     width: width * 0.45,
@@ -460,8 +545,119 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: spacing.l,
   },
-  homeButtonText: {
-    color: '#0D9488',
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: spacing.m,
+    paddingBottom: 40,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginBottom: spacing.m,
+    paddingBottom: spacing.s,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  modalTitle: {
+    marginHorizontal: spacing.s,
+    fontSize: 18,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+  },
+  modalOption: {
+    paddingVertical: spacing.m,
+    // paddingHorizontal: spacing.m, // Removed as parent has padding
+    // alignItems: 'center', // Default align left for list items usually better in bottom sheet? Or center? Reference had center items? Reference location modal had list items.
+    // I'll keep default flex-start (left) for standard list look, or center if user wants.
+    // Let's stick to standard layout. Reference LocationModal uses Row with Icon and Text.
+    // Simple text options => default row or text block.
+  },
+  modalOptionText: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Medium',
+    color: 'black',
+  },
+  modalOptionTextDelete: {
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Medium',
+    color: '#EF4444', // Red
+  },
+  modalSeparator: {
+    height: 1,
+    backgroundColor: '#F3F4F6',
+  },
+  /* Delete Modal Styles */
+  deleteModalOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dim background
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2000, // Higher than options modal (1000)
+  },
+  deleteModalOverlayBackground: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  deleteModalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: spacing.l,
+    alignItems: 'center',
+  },
+  deleteModalTitle: {
+    fontSize: 18,
+    fontFamily: 'Inter_18pt-Bold',
+    color: 'black',
+    marginBottom: spacing.s,
+    textAlign: 'center',
+  },
+  deleteModalDesc: {
+    fontSize: 14,
+    fontFamily: 'Inter_18pt-Regular',
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: spacing.l,
+    lineHeight: 20,
+  },
+  deleteConfirmButton: {
+    width: '100%',
+    backgroundColor: '#FEE2E2', // Light red
+    paddingVertical: spacing.m,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: spacing.m,
+  },
+  deleteConfirmButtonText: {
+    color: '#EF4444', // Red
+    fontSize: 16,
+    fontFamily: 'Inter_18pt-Bold',
+  },
+  deleteCancelButton: {
+    width: '100%',
+    backgroundColor: '#0D9488', // Primary Teal
+    paddingVertical: spacing.m,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  deleteCancelButtonText: {
+    color: 'white',
     fontSize: 16,
     fontFamily: 'Inter_18pt-Bold',
   },

@@ -9,6 +9,7 @@ export type RootStackParamList = {
   Notification: undefined;
   Voucher: undefined;
   PromoCode: undefined;
+  EditProfile: undefined;
   AllProducts: undefined;
   Chat: undefined;
   ChatDetail: undefined | { chatId?: string };
@@ -23,11 +24,14 @@ export type RootStackParamList = {
   CompletePayment: undefined | { orderId?: string; selectedPaymentMethod?: string };
   PaymentMethod: undefined | { orderId?: string; selectedPaymentMethod?: string };
   PaymentInstruction: undefined | { paymentMethod?: string; orderId?: string };
-  OrderHistory: undefined;
+  Order: undefined;
+  History: undefined;
   
   // Flight Flow
   FlightSearch: undefined;
   FlightResults: undefined | { searchParams?: any };
+  HotelSearch: undefined;
+  HotelResults: undefined | { searchParams?: any };
   FlightBooking: undefined | { flight?: any };
   FlightCompleteBooking: undefined | { flight?: any; ticket?: any };
 };

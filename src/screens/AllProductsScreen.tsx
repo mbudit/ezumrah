@@ -16,67 +16,18 @@ import { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AllProducts'>;
 
+import { ServiceGrid } from '../components/ServiceGrid';
+
 export const AllProductsScreen = ({ navigation }: Props) => {
-  const services = [
-    {
-      id: 'flight',
-      label: 'Flight',
-      image: require('../assets/icons/flight.png'),
-      color: '#e8f3ee',
-    },
-    {
-      id: 'hotel',
-      label: 'Hotel',
-      image: require('../assets/icons/hotel.png'),
-      color: '#e8f3ee',
-    },
-    {
-      id: 'umrah',
-      label: 'Umrah',
-      image: require('../assets/icons/umrah.png'),
-      color: '#e8f3ee',
-    },
-    {
-      id: 'mutawwif',
-      label: 'Mutawwif',
-      image: require('../assets/icons/mutawwif.png'),
-      color: '#e8f3ee',
-    },
-    {
-      id: 'quran',
-      label: 'Al-Quran',
-      image: require('../assets/icons/quran.png'),
-      color: '#e8f3ee',
-    },
-    {
-      id: 'kiblat',
-      label: 'Kiblat',
-      image: require('../assets/icons/kiblat.png'),
-      color: '#e8f3ee',
-    },
-    {
-      id: 'prayer',
-      label: 'Prayer Times',
-      image: require('../assets/icons/time.png'),
-      color: '#e8f3ee',
-    },
-    {
-      id: 'hijriah',
-      label: 'Hijriah Calender',
-      image: require('../assets/icons/hijrahcalendar.png'),
-      color: '#e8f3ee',
-    },
-    {
-      id: 'hajj',
-      label: 'Hajj',
-      image: require('../assets/icons/haji.png'),
-      color: '#e8f3ee',
-    },
-  ];
+  // services array moved to ServiceGrid component
 
   const handlePress = (id: string) => {
     if (id === 'umrah') {
       navigation.navigate('UmrahPackage');
+    } else if (id === 'flight') {
+      navigation.navigate('FlightSearch');
+    } else if (id === 'hotel') {
+      navigation.navigate('HotelSearch');
     }
   };
 
@@ -96,22 +47,7 @@ export const AllProductsScreen = ({ navigation }: Props) => {
       </View>
 
       {/* Grid */}
-      <View style={styles.gridContainer}>
-        {services.map(service => (
-          <TouchableOpacity
-            key={service.id}
-            style={[styles.item, { backgroundColor: service.color }]}
-            onPress={() => handlePress(service.id)}
-          >
-            <Image
-              source={service.image}
-              style={styles.icon}
-              resizeMode="contain"
-            />
-            <Text style={styles.label}>{service.label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <ServiceGrid mode="full" onServicePress={handlePress} />
     </SafeAreaView>
   );
 };
@@ -134,31 +70,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Inter_18pt-SemiBold',
     color: 'black',
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: spacing.m,
-    justifyContent: 'space-between', // Distribute space evenly
-  },
-  item: {
-    width: 90,
-    height: 90,
-    alignItems: 'center',
-    marginBottom: spacing.s,
-    borderRadius: 12,
-    justifyContent: 'center',
-    padding: 4,
-  },
-  icon: {
-    width: 50,
-    height: 50,
-    marginBottom: 4,
-  },
-  label: {
-    fontSize: 12,
-    fontFamily: 'Inter_18pt-Medium',
-    color: colors.text,
-    textAlign: 'center',
   },
 });
