@@ -12,15 +12,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ClipboardList, MoreHorizontal, Star } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 const { width } = Dimensions.get('window');
 
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
-import { useOrderData } from '../hooks/useOrderData';
+import { useOrderData } from '../../hooks/useOrderData';
 
 export const OrderScreen = () => {
   const navigation =

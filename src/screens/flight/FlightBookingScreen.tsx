@@ -18,7 +18,7 @@ import {
   Check,
   Luggage, // Using Briefcase as proxy if Luggage not available in lucide-react-native standard set, checking imports
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 // Interface for Flight Data (should potentially be shared)
 interface FlightData {
@@ -36,9 +36,9 @@ interface FlightData {
 }
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 import { useState } from 'react';
-import { TicketOption } from '../types/flight';
+import { TicketOption } from '../../types/flight';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlightBooking'>;
 
@@ -168,7 +168,7 @@ export const FlightBookingScreen = ({ navigation, route }: Props) => {
                       <Image
                         source={
                           flight?.logo ||
-                          require('../assets/airlines/scoot.png')
+                          require('../../assets/airlines/scoot.png')
                         }
                         style={styles.airlineLogo}
                       />
@@ -229,7 +229,7 @@ export const FlightBookingScreen = ({ navigation, route }: Props) => {
               <View style={styles.benefitsContainer}>
                 <View style={styles.benefitRow}>
                   <Image
-                    source={require('../assets/airlines/scoot.png')}
+                    source={require('../../assets/airlines/scoot.png')}
                     style={styles.iconCircle}
                     resizeMode="contain"
                   />

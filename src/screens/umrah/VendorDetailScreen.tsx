@@ -25,15 +25,15 @@ import {
   ArrowUpDown,
   ChevronRight,
 } from 'lucide-react-native';
-import { spacing } from '../theme/theme';
+import { spacing } from '../../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VendorDetail'>;
 
-import { useVendorDetail } from '../hooks/useVendorDetail';
-import { VendorStaff, VendorReview, VendorProduct } from '../types/vendor';
+import { useVendorDetail } from '../../hooks/useVendorDetail';
+import { VendorStaff, VendorReview, VendorProduct } from '../../types/vendor';
 
 export const VendorDetailScreen = ({ navigation }: Props) => {
   const { data, isLoading } = useVendorDetail('1'); // Mock ID
@@ -64,7 +64,7 @@ export const VendorDetailScreen = ({ navigation }: Props) => {
 
   const renderHeader = () => (
     <ImageBackground
-      source={require('../assets/banner/umrah.png')} // Fallback/Placeholder background
+      source={require('../../assets/banner/umrah.png')} // Fallback/Placeholder background
       style={styles.headerBackground}
     >
       <View style={styles.overlay} />
@@ -92,7 +92,7 @@ export const VendorDetailScreen = ({ navigation }: Props) => {
         <View style={styles.vendorProfile}>
           <View style={styles.vendorLogoContainer}>
             <Image
-              source={require('../assets/logo/Logo2.png')}
+              source={require('../../assets/logo/Logo2.png')}
               style={styles.vendorLogo}
             />
           </View>
@@ -144,8 +144,8 @@ export const VendorDetailScreen = ({ navigation }: Props) => {
               <Image
                 source={
                   type === 'Mutawwif'
-                    ? require('../assets/icons/vendor_mutawwif.png')
-                    : require('../assets/icons/vendor_mutawwifah.png')
+                    ? require('../../assets/icons/vendor_mutawwif.png')
+                    : require('../../assets/icons/vendor_mutawwifah.png')
                 }
                 style={styles.staffIcon}
                 resizeMode="contain"
@@ -347,8 +347,8 @@ export const VendorDetailScreen = ({ navigation }: Props) => {
                 <Image
                   source={
                     staffType === 'Mutawwif'
-                      ? require('../assets/icons/vendor_mutawwif.png')
-                      : require('../assets/icons/vendor_mutawwifah.png')
+                      ? require('../../assets/icons/vendor_mutawwif.png')
+                      : require('../../assets/icons/vendor_mutawwifah.png')
                   }
                   style={styles.modalStaffIcon}
                   resizeMode="contain"

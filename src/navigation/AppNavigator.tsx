@@ -3,42 +3,65 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { RootStackParamList } from './types';
 
-// Screens
-import { HomeScreen } from '../screens/HomeScreen';
-import { SplashScreen } from '../screens/SplashScreen';
-import { LanguageSelectionScreen } from '../screens/LanguageSelectionScreen';
-import { LoginSelectionScreen } from '../screens/LoginSelectionScreen';
-import { LoginScreen } from '../screens/LoginScreen';
-import { RegisterScreen } from '../screens/RegisterScreen';
-import { OtpScreen } from '../screens/OtpScreen';
-import { NotificationScreen } from '../screens/NotificationScreen';
-import { PromoCodeScreen } from '../screens/PromoCodeScreen';
-import { EditProfileScreen } from '../screens/EditProfileScreen';
-import { AllProductsScreen } from '../screens/AllProductsScreen';
-import { ChatScreen } from '../screens/ChatScreen';
-import { ChatDetailScreen } from '../screens/ChatDetailScreen';
-import { ChatRoomScreen } from '../screens/ChatRoomScreen';
-import { UmrahSearchScreen } from '../screens/UmrahSearchScreen';
-import { HajjSearchScreen } from '../screens/HajjSearchScreen';
-import { VoucherScreen } from '../screens/VoucherScreen';
-import { PackageListScreen } from '../screens/PackageListScreen';
-import { VendorDetailScreen } from '../screens/VendorDetailScreen';
-import { PackageDetailScreen } from '../screens/PackageDetailScreen';
-import { BookingScreen } from '../screens/BookingScreen';
-import { PassengerDetailScreen } from '../screens/PassengerDetailScreen';
-import { TripEnhanceScreen } from '../screens/TripEnhanceScreen';
-import { OrderProcessingScreen } from '../screens/OrderProcessingScreen';
-import { CompletePaymentScreen } from '../screens/CompletePaymentScreen';
-import { PaymentMethodScreen } from '../screens/PaymentMethodScreen';
-import { PaymentInstructionScreen } from '../screens/PaymentInstructionScreen';
-import { FlightSearchScreen } from '../screens/FlightSearchScreen';
-import { FlightResultsScreen } from '../screens/FlightResultsScreen';
-import { FlightBookingScreen } from '../screens/FlightBookingScreen';
-import { FlightCompleteBookingScreen } from '../screens/FlightCompleteBookingScreen';
-import { HotelSearchScreen } from '../screens/HotelSearchScreen';
-import { HotelResultsScreen } from '../screens/HotelResultsScreen';
-import { OrderScreen } from '../screens/OrderScreen';
-import { HistoryScreen } from '../screens/HistoryScreen'; // Import HistoryScreen
+// Auth Screens
+import { SplashScreen } from '../screens/auth/SplashScreen';
+import { LanguageSelectionScreen } from '../screens/auth/LanguageSelectionScreen';
+import { LoginSelectionScreen } from '../screens/auth/LoginSelectionScreen';
+import { LoginScreen } from '../screens/auth/LoginScreen';
+import { RegisterScreen } from '../screens/auth/RegisterScreen';
+import { OtpScreen } from '../screens/auth/OtpScreen';
+
+// Home Screens
+import { HomeScreen } from '../screens/home/HomeScreen';
+import { AllProductsScreen } from '../screens/home/AllProductsScreen';
+
+// Profile Screens
+import { ProfileScreen } from '../screens/profile/ProfileScreen';
+import { EditProfileScreen } from '../screens/profile/EditProfileScreen';
+
+// Umrah Screens
+import { UmrahSearchScreen } from '../screens/umrah/UmrahSearchScreen';
+import { PackageListScreen } from '../screens/umrah/PackageListScreen';
+import { VendorDetailScreen } from '../screens/umrah/VendorDetailScreen';
+import { PackageDetailScreen } from '../screens/umrah/PackageDetailScreen';
+
+// Hajj Screens
+import { HajjSearchScreen } from '../screens/hajj/HajjSearchScreen';
+
+// Booking Screens
+import { BookingScreen } from '../screens/booking/BookingScreen';
+import { PassengerDetailScreen } from '../screens/booking/PassengerDetailScreen';
+import { TripEnhanceScreen } from '../screens/booking/TripEnhanceScreen';
+import { OrderProcessingScreen } from '../screens/booking/OrderProcessingScreen';
+
+// Payment Screens
+import { CompletePaymentScreen } from '../screens/payment/CompletePaymentScreen';
+import { PaymentMethodScreen } from '../screens/payment/PaymentMethodScreen';
+import { PaymentInstructionScreen } from '../screens/payment/PaymentInstructionScreen';
+
+// Flight Screens
+import { FlightSearchScreen } from '../screens/flight/FlightSearchScreen';
+import { FlightResultsScreen } from '../screens/flight/FlightResultsScreen';
+import { FlightBookingScreen } from '../screens/flight/FlightBookingScreen';
+import { FlightCompleteBookingScreen } from '../screens/flight/FlightCompleteBookingScreen';
+
+// Hotel Screens
+import { HotelSearchScreen } from '../screens/hotel/HotelSearchScreen';
+import { HotelResultsScreen } from '../screens/hotel/HotelResultsScreen';
+
+// Chat Screens
+import { ChatScreen } from '../screens/chat/ChatScreen';
+import { ChatDetailScreen } from '../screens/chat/ChatDetailScreen';
+import { ChatRoomScreen } from '../screens/chat/ChatRoomScreen';
+
+// Order Screens
+import { OrderScreen } from '../screens/orders/OrderScreen';
+import { HistoryScreen } from '../screens/orders/HistoryScreen';
+
+// Voucher Screens
+import { VoucherScreen } from '../screens/vouchers/VoucherScreen';
+import { PromoCodeScreen } from '../screens/vouchers/PromoCodeScreen';
+import { NotificationScreen } from '../screens/vouchers/NotificationScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

@@ -24,15 +24,15 @@ import {
   Image as ImageIcon,
 } from 'lucide-react-native';
 import { Modal } from 'react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { useBooking } from '../hooks/useBooking';
-import { Passenger } from '../types/booking';
-import { SelectionModal } from '../components/SelectionModal';
-import { DatePickerModal } from '../components/DatePickerModal';
-import { useReferenceData } from '../hooks/useReferenceData';
+import { RootStackParamList } from '../../navigation/types';
+import { useBooking } from '../../hooks/useBooking';
+import { Passenger } from '../../types/booking';
+import { SelectionModal } from '../../components/SelectionModal';
+import { DatePickerModal } from '../../components/DatePickerModal';
+import { useReferenceData } from '../../hooks/useReferenceData';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PassengerDetail'>;
 

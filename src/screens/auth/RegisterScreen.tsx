@@ -8,12 +8,12 @@ import {
   ScrollView,
 } from 'react-native';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react-native';
-import { colors, spacing, typography } from '../theme/theme';
-import { Button } from '../components/Button';
-import { Input } from '../components/Input';
+import { colors, spacing, typography } from '../../theme/theme';
+import { Button } from '../../components/Button';
+import { Input } from '../../components/Input';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 

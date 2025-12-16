@@ -15,7 +15,7 @@ import {
   ArrowUpDown,
   Calendar,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 const DATES = [
   { day: 'Wed', date: '01 Oct 2025', price: 'IDR 412,000' },
@@ -38,7 +38,7 @@ const FLIGHTS = [
     class: 'Economy',
     price: '417,100',
     nonRefundable: true,
-    logo: require('../assets/airlines/scoot.png'),
+    logo: require('../../assets/airlines/scoot.png'),
   },
   {
     id: 2,
@@ -53,7 +53,7 @@ const FLIGHTS = [
     class: 'Economy',
     price: '450,000',
     nonRefundable: false,
-    logo: require('../assets/airlines/scoot.png'),
+    logo: require('../../assets/airlines/scoot.png'),
   },
   {
     id: 3,
@@ -68,7 +68,7 @@ const FLIGHTS = [
     class: 'Economy',
     price: '520,000',
     nonRefundable: true,
-    logo: require('../assets/airlines/scoot.png'),
+    logo: require('../../assets/airlines/scoot.png'),
   },
   {
     id: 4,
@@ -83,13 +83,13 @@ const FLIGHTS = [
     class: 'Economy',
     price: '390,000',
     nonRefundable: true,
-    logo: require('../assets/airlines/scoot.png'),
+    logo: require('../../assets/airlines/scoot.png'),
   },
 ];
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { useFlightSearch } from '../hooks/useFlightSearch';
+import { RootStackParamList } from '../../navigation/types';
+import { useFlightSearch } from '../../hooks/useFlightSearch';
 import { useEffect } from 'react';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlightResults'>;

@@ -24,13 +24,13 @@ import {
 } from 'lucide-react-native';
 import { Switch, Modal } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { useBooking } from '../hooks/useBooking';
-import { useTripEnhancements } from '../hooks/useTripEnhancements';
-import { Enhancement } from '../types/enhancement';
+import { RootStackParamList } from '../../navigation/types';
+import { useBooking } from '../../hooks/useBooking';
+import { useTripEnhancements } from '../../hooks/useTripEnhancements';
+import { Enhancement } from '../../types/enhancement';
 
 // Lucide Icon Mapping
 const ICON_MAP: Record<string, any> = {

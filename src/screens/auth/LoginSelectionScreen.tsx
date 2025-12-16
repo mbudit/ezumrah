@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
-import { colors, spacing, typography } from '../theme/theme';
-import { Button } from '../components/Button';
+import { colors, spacing, typography } from '../../theme/theme';
+import { Button } from '../../components/Button';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LoginSelection'>;
 
@@ -15,7 +15,7 @@ export const LoginSelectionScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.header}>
           {/* Placeholder for Logo - using text for now or the logo asset if available */}
           <Image
-            source={require('../assets/logo/Logo2.png')}
+            source={require('../../assets/logo/Logo2.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -39,7 +39,7 @@ export const LoginSelectionScreen: React.FC<Props> = ({ navigation }) => {
             textStyle={styles.buttonText}
             icon={
               <Image
-                source={require('../assets/vector/hp.png')}
+                source={require('../../assets/vector/hp.png')}
                 style={styles.icon}
                 resizeMode="contain"
               />
@@ -52,7 +52,7 @@ export const LoginSelectionScreen: React.FC<Props> = ({ navigation }) => {
             textStyle={styles.buttonText}
             icon={
               <Image
-                source={require('../assets/vector/guest.png')}
+                source={require('../../assets/vector/guest.png')}
                 style={styles.icon}
                 resizeMode="contain"
               />

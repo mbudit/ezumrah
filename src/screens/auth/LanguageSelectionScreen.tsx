@@ -7,11 +7,11 @@ import {
   SafeAreaView,
   Image,
 } from 'react-native';
-import { colors, spacing, typography } from '../theme/theme';
-import { Button } from '../components/Button';
+import { colors, spacing, typography } from '../../theme/theme';
+import { Button } from '../../components/Button';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'LanguageSelection'>;
 
@@ -22,17 +22,17 @@ export const LanguageSelectionScreen: React.FC<Props> = ({ navigation }) => {
     {
       code: 'ar',
       label: 'Arab',
-      flag: require('../assets/flags/arab_flag.png'),
+      flag: require('../../assets/flags/arab_flag.png'),
     },
     {
       code: 'id',
       label: 'Indonesia',
-      flag: require('../assets/flags/id_flag.png'),
+      flag: require('../../assets/flags/id_flag.png'),
     },
     {
       code: 'en',
       label: 'English',
-      flag: require('../assets/flags/eng_flag.png'),
+      flag: require('../../assets/flags/eng_flag.png'),
     },
   ];
 

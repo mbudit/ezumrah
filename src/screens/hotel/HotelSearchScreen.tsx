@@ -23,9 +23,9 @@ import {
   Copy,
   Star,
 } from 'lucide-react-native';
-import { colors, spacing, typography } from '../theme/theme';
+import { colors, spacing, typography } from '../../theme/theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HotelSearch'>;
 
@@ -56,7 +56,7 @@ export const HotelSearchScreen = ({ navigation }: Props) => {
       reviewCount: 90,
       originalPrice: 'IDR 519,000',
       price: 'IDR 506,106',
-      image: require('../assets/banner/hotel.png'), // Placeholder needed
+      image: require('../../assets/banner/hotel.png'), // Placeholder needed
     },
     {
       id: '2',
@@ -65,7 +65,7 @@ export const HotelSearchScreen = ({ navigation }: Props) => {
       reviewCount: 90,
       originalPrice: 'IDR 519,000',
       price: 'IDR 506,106',
-      image: require('../assets/banner/hotel.png'), // Placeholder needed
+      image: require('../../assets/banner/hotel.png'), // Placeholder needed
     },
   ];
 

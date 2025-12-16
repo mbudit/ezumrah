@@ -18,7 +18,7 @@ import {
   Plane,
   ArrowRight,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 if (
   Platform.OS === 'android' &&
@@ -28,17 +28,17 @@ if (
 }
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PaymentInstruction'>;
 
-import { usePayment } from '../hooks/usePayment';
+import { usePayment } from '../../hooks/usePayment';
 import {
   PaymentInstruction,
   TransactionSummary,
   PaymentMethod,
-} from '../types/payment';
-import { useBooking } from '../hooks/useBooking';
+} from '../../types/payment';
+import { useBooking } from '../../hooks/useBooking';
 
 // ... (imports)
 

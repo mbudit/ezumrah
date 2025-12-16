@@ -11,10 +11,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Info } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { colors, spacing } from '../theme/theme';
+import { RootStackParamList } from '../../navigation/types';
+import { colors, spacing } from '../../theme/theme';
 
-import { useOrderData } from '../hooks/useOrderData';
+import { useOrderData } from '../../hooks/useOrderData';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'History'>;
 

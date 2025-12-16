@@ -23,9 +23,9 @@ import {
   Building,
   Tag,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 // Mock Data
 const HOTELS = [
@@ -39,8 +39,8 @@ const HOTELS = [
     originalPrice: 'IDR 1.100.000',
     discount: '-4%',
     images: [
-      require('../assets/banner/hotel2.jpg'),
-      require('../assets/banner/hotel.png'),
+      require('../../assets/banner/hotel2.jpg'),
+      require('../../assets/banner/hotel.png'),
     ],
     benefits: '100% Refund & Reschedule • Free Breakfast',
   },
@@ -54,8 +54,8 @@ const HOTELS = [
     originalPrice: 'IDR 2.650.000',
     discount: '-8%',
     images: [
-      require('../assets/banner/hotel2.jpg'),
-      require('../assets/banner/hotel.png'),
+      require('../../assets/banner/hotel2.jpg'),
+      require('../../assets/banner/hotel.png'),
     ],
     benefits: 'Free Cancellation • Breakfast Included',
   },
@@ -69,8 +69,8 @@ const HOTELS = [
     originalPrice: 'IDR 3.500.000',
     discount: '-10%',
     images: [
-      require('../assets/banner/hotel2.jpg'),
-      require('../assets/banner/hotel.png'),
+      require('../../assets/banner/hotel2.jpg'),
+      require('../../assets/banner/hotel.png'),
     ],
     benefits: 'Direct Haram Access',
   },

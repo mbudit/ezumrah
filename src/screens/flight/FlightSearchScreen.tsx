@@ -27,7 +27,7 @@ import {
   MapPin,
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -97,9 +97,9 @@ const PASSENGER_OPTIONS = [
 ];
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { useFlightSearch } from '../hooks/useFlightSearch';
-import { FlightSearchParams } from '../types/flight';
+import { RootStackParamList } from '../../navigation/types';
+import { useFlightSearch } from '../../hooks/useFlightSearch';
+import { FlightSearchParams } from '../../types/flight';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlightSearch'>;
 
@@ -187,7 +187,7 @@ export const FlightSearchScreen = ({ navigation }: Props) => {
         {/* Header Banner */}
         <View style={styles.header}>
           <Image
-            source={require('../assets/banner/flight.png')}
+            source={require('../../assets/banner/flight.png')}
             style={styles.headerImage}
             resizeMode="cover"
           />
@@ -370,7 +370,7 @@ export const FlightSearchScreen = ({ navigation }: Props) => {
               {[1, 2].map(i => (
                 <View key={i} style={styles.promoCard}>
                   <Image
-                    source={require('../assets/banner/umrah.png')} // Placeholder
+                    source={require('../../assets/banner/umrah.png')} // Placeholder
                     style={styles.promoImage}
                   />
                   <View style={styles.promoLabel}>

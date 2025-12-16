@@ -22,14 +22,14 @@ import {
   Camera,
   Image as ImageIcon,
 } from 'lucide-react-native';
-import { colors, spacing, typography } from '../theme/theme';
+import { colors, spacing, typography } from '../../theme/theme';
 
-const logoImage = require('../assets/logo/Logo.png');
+const logoImage = require('../../assets/logo/Logo.png');
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { useChat } from '../hooks/useChat';
-import { ChatMessage } from '../types/chat';
+import { RootStackParamList } from '../../navigation/types';
+import { useChat } from '../../hooks/useChat';
+import { ChatMessage } from '../../types/chat';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ChatRoom'>;
 

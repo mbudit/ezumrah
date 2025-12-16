@@ -32,15 +32,15 @@ import {
   Building2,
   Wallet,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PackageList'>;
 
-import { usePackageList } from '../hooks/usePackageList';
-import { Package, Vendor } from '../types/package';
+import { usePackageList } from '../../hooks/usePackageList';
+import { Package, Vendor } from '../../types/package';
 
 export const PackageListScreen = ({ navigation }: Props) => {
   const { data, isLoading } = usePackageList();

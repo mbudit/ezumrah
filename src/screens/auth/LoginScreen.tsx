@@ -7,12 +7,12 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import { colors, spacing, typography } from '../theme/theme';
-import { Button } from '../components/Button';
-import { Input } from '../components/Input';
+import { colors, spacing, typography } from '../../theme/theme';
+import { Button } from '../../components/Button';
+import { Input } from '../../components/Input';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
@@ -33,7 +33,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.content}>
         <View style={styles.header}>
           <Image
-            source={require('../assets/logo/Logo2.png')}
+            source={require('../../assets/logo/Logo2.png')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -55,7 +55,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
             textStyle={styles.buttonText}
             icon={
               <Image
-                source={require('../assets/vector/hp.png')}
+                source={require('../../assets/vector/hp.png')}
                 style={styles.icon}
                 resizeMode="contain"
               />

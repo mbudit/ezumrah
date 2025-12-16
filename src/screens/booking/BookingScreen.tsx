@@ -22,18 +22,18 @@ import {
   ChevronDown,
   ArrowRight,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 import LinearGradient from 'react-native-linear-gradient';
 import { Modal } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Booking'>;
 
-import { useBooking } from '../hooks/useBooking';
+import { useBooking } from '../../hooks/useBooking';
 import { ActivityIndicator } from 'react-native';
 
 export const BookingScreen = ({ navigation }: Props) => {

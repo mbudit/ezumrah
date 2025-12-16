@@ -22,12 +22,12 @@ import {
   ChevronDown,
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { useProfile } from '../hooks/useProfile';
-import { useFlightBooking } from '../hooks/useFlightBooking';
+import { RootStackParamList } from '../../navigation/types';
+import { useProfile } from '../../hooks/useProfile';
+import { useFlightBooking } from '../../hooks/useFlightBooking';
 import { useEffect } from 'react';
 
 type Props = NativeStackScreenProps<
@@ -223,7 +223,7 @@ export const FlightCompleteBookingScreen = ({ navigation, route }: Props) => {
 
           <View style={styles.flightMainInfo}>
             <Image
-              source={require('../assets/airlines/scoot.png')}
+              source={require('../../assets/airlines/scoot.png')}
               style={styles.airlineLogo}
               resizeMode="contain"
             />

@@ -22,9 +22,9 @@ import {
   Camera,
   Image as ImageIcon,
 } from 'lucide-react-native';
-import { colors, spacing, typography } from '../theme/theme';
+import { colors, spacing, typography } from '../../theme/theme';
 
-const logoImage = require('../assets/logo/Logo.png');
+const logoImage = require('../../assets/logo/Logo.png');
 
 interface Message {
   id: string;
@@ -34,7 +34,7 @@ interface Message {
 }
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ChatDetail'>;
 

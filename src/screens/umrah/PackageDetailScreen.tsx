@@ -37,20 +37,20 @@ import {
   Ticket,
   Armchair,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 // import { packageService } from '../services/packageService'; // Removed standard service usage
-import { usePackageDetail } from '../hooks/usePackageDetail';
-// import { PackageDetail } from '../types'; // Removed old type
+import { usePackageDetail } from '../../hooks/usePackageDetail';
+// import { PackageDetail } from '../../types'; // Removed old type
 import {
   PackageDetailExtended,
   ItineraryItem,
   Facility,
   Advantage,
-} from '../types/package';
+} from '../../types/package';
 import { ActivityIndicator } from 'react-native';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PackageDetail'>;
 
@@ -164,7 +164,7 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
                       <Text style={styles.itLocText}>{item.data.startLoc}</Text>
                       <View style={styles.itAirlineBlock}>
                         <Image
-                          source={require('../assets/logo/garuda.png')} // Reusing logo logic
+                          source={require('../../assets/logo/garuda.png')} // Reusing logo logic
                           style={styles.itAirlineLogo}
                         />
                         <Text style={styles.itAirlineName}>
@@ -283,7 +283,7 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
   const renderHeader = () => (
     <View style={styles.imageContainer}>
       <Image
-        source={require('../assets/banner/umrah.png')}
+        source={require('../../assets/banner/umrah.png')}
         style={styles.headerImage}
         resizeMode="cover"
       />
@@ -334,7 +334,7 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
           {/* Graphic Column */}
           <View style={styles.graphicColumn}>
             <Image
-              source={require('../assets/icons/plane_track.png')}
+              source={require('../../assets/icons/plane_track.png')}
               style={{
                 width: 24,
                 height: 24,
@@ -354,7 +354,7 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
             <View style={styles.airlineInfoBlock}>
               <View style={styles.airlineRow}>
                 <Image
-                  source={require('../assets/logo/garuda.png')}
+                  source={require('../../assets/logo/garuda.png')}
                   style={styles.airlineLogo}
                 />
                 {item.isVerified && (
@@ -651,7 +651,7 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
                           </Text>
                           <View style={styles.itAirlineBlock}>
                             <Image
-                              source={require('../assets/logo/garuda.png')} // Reusing logo logic
+                              source={require('../../assets/logo/garuda.png')} // Reusing logo logic
                               style={styles.itAirlineLogo}
                             />
                             <Text style={styles.itAirlineName}>

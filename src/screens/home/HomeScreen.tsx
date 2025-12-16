@@ -11,19 +11,19 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { Search, Bell, Percent, MapPin } from 'lucide-react-native';
-import { colors, spacing, typography } from '../theme/theme';
-import { ServiceGrid } from '../components/ServiceGrid';
-import { PromoSection } from '../components/PromoSection';
-import { HotelDealsSection } from '../components/HotelDealsSection';
-import { NotificationCard } from '../components/NotificationCard';
-import { BottomTabNavigator } from '../components/BottomTabNavigator';
-import { ChatScreen } from './ChatScreen';
-import { ProfileScreen } from './ProfileScreen';
+import { colors, spacing, typography } from '../../theme/theme';
+import { ServiceGrid } from '../../components/ServiceGrid';
+import { PromoSection } from '../../components/PromoSection';
+import { HotelDealsSection } from '../../components/HotelDealsSection';
+import { NotificationCard } from '../../components/NotificationCard';
+import { BottomTabNavigator } from '../../components/BottomTabNavigator';
+import { ChatScreen } from '../chat/ChatScreen';
+import { ProfileScreen } from '../profile/ProfileScreen';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { OrderScreen } from './OrderScreen';
-import { useHomeData } from '../hooks/useHomeData';
+import { RootStackParamList } from '../../navigation/types';
+import { OrderScreen } from '../orders/OrderScreen';
+import { useHomeData } from '../../hooks/useHomeData';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 

@@ -7,13 +7,17 @@ export const NotificationCard = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.headerTitle}>Turn on your notifications</Text>
-      
+
       <View style={styles.cardShadow}>
         <View style={styles.cardContent}>
           <View style={styles.iconContainer}>
-            <Image source={require('../assets/icons/notif.png')} style={styles.icon} resizeMode="contain" />
+            <Image
+              source={require('../assets/icons/notif.png')}
+              style={styles.icon}
+              resizeMode="contain"
+            />
           </View>
-          
+
           <View style={styles.textContent}>
             <View style={styles.titleRow}>
               <Text style={styles.title}>Turn on App Notification</Text>
@@ -21,11 +25,11 @@ export const NotificationCard = () => {
                 <X color={colors.textLight} size={20} />
               </TouchableOpacity>
             </View>
-            
+
             <Text style={styles.description}>
               Get exclusive offers and important information about your worship!
             </Text>
-            
+
             <TouchableOpacity>
               <Text style={styles.actionText}>Turn on now</Text>
             </TouchableOpacity>

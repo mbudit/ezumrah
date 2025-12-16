@@ -12,13 +12,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Search, Percent, User } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing, typography } from '../theme/theme';
+import { colors, spacing, typography } from '../../theme/theme';
 
-const bannerImage = require('../assets/banner/bannerrvoucher.png');
-const umrahIcon = require('../assets/icons/umrah.png');
-const hotelIcon = require('../assets/icons/hotel.png');
-const flightIcon = require('../assets/icons/flight.png');
-const mutawwifIcon = require('../assets/icons/mutawwif.png');
+const bannerImage = require('../../assets/banner/bannerrvoucher.png');
+const umrahIcon = require('../../assets/icons/umrah.png');
+const hotelIcon = require('../../assets/icons/hotel.png');
+const flightIcon = require('../../assets/icons/flight.png');
+const mutawwifIcon = require('../../assets/icons/mutawwif.png');
 
 const vouchers = [
   { id: '1', image: bannerImage },
@@ -35,7 +35,7 @@ const categories = [
 ];
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Voucher'>;
 

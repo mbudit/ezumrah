@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, X, Bell } from 'lucide-react-native';
-import { colors, spacing, typography } from '../theme/theme';
+import { colors, spacing, typography } from '../../theme/theme';
 
 const notifications = [
   {
@@ -61,7 +61,7 @@ const notifications = [
 ];
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Notification'>;
 
@@ -112,7 +112,7 @@ export const NotificationScreen = ({ navigation }: Props) => {
       <View style={styles.banner}>
         <View style={styles.bannerIconContainer}>
           <Image
-            source={require('../assets/icons/notif.png')}
+            source={require('../../assets/icons/notif.png')}
             style={styles.bannerIcon}
             resizeMode="contain"
           />

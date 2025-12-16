@@ -18,13 +18,13 @@ import {
   Plus,
   ChevronDown,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { usePayment } from '../hooks/usePayment';
-import { TransactionSummary, PaymentMethod } from '../types/payment';
-import { useBooking } from '../hooks/useBooking';
+import { RootStackParamList } from '../../navigation/types';
+import { usePayment } from '../../hooks/usePayment';
+import { TransactionSummary, PaymentMethod } from '../../types/payment';
+import { useBooking } from '../../hooks/useBooking';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CompletePayment'>;
 

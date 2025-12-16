@@ -27,14 +27,14 @@ import {
   X,
 } from 'lucide-react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { colors, spacing, typography } from '../theme/theme';
-import { useUmrahOptions } from '../hooks/useUmrahOptions';
-import { Country } from '../types/umrah';
+import { colors, spacing, typography } from '../../theme/theme';
+import { useUmrahOptions } from '../../hooks/useUmrahOptions';
+import { Country } from '../../types/umrah';
 
-const bannerImage = require('../assets/banner/hajj.jpeg');
+const bannerImage = require('../../assets/banner/hajj.jpeg');
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HajjSearch'>;
 

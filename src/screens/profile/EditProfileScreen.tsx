@@ -17,10 +17,10 @@ import {
   Edit2,
   User,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { useProfile } from '../hooks/useProfile';
+import { RootStackParamList } from '../../navigation/types';
+import { useProfile } from '../../hooks/useProfile';
 import { useEffect } from 'react';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EditProfile'>;

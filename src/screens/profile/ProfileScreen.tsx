@@ -12,7 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
+import { RootStackParamList } from '../../navigation/types';
 import {
   Edit2,
   ShieldCheck,
@@ -31,8 +31,8 @@ import {
   User,
   Trash2,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
-import { useProfile } from '../hooks/useProfile';
+import { colors, spacing } from '../../theme/theme';
+import { useProfile } from '../../hooks/useProfile';
 
 const SectionTitle = ({ title }: { title: string }) => (
   <Text style={styles.sectionTitle}>{title}</Text>

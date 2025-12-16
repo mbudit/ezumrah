@@ -17,7 +17,7 @@ import {
   ChevronUp,
   CheckCircle2,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 
 if (
   Platform.OS === 'android' &&
@@ -27,9 +27,9 @@ if (
 }
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../navigation/types';
-import { usePayment } from '../hooks/usePayment';
-import { PaymentCategory } from '../types/payment';
+import { RootStackParamList } from '../../navigation/types';
+import { usePayment } from '../../hooks/usePayment';
+import { PaymentCategory } from '../../types/payment';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PaymentMethod'>;
 
