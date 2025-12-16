@@ -32,6 +32,7 @@ import {
   Trash2,
 } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
+import { useProfile } from '../hooks/useProfile';
 
 const SectionTitle = ({ title }: { title: string }) => (
   <Text style={styles.sectionTitle}>{title}</Text>
@@ -67,6 +68,7 @@ const MenuItem = ({
 export const ProfileScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { profile, stats, isLoading } = useProfile();
 
   return (
     <View style={styles.container}>
@@ -93,9 +95,11 @@ export const ProfileScreen = () => {
                 {/* If we had an image: <Image source={...} style={styles.avatar} /> */}
               </View>
               <View style={styles.profileInfo}>
-                <Text style={styles.profileName}>Hasan Barsain</Text>
-                <Text style={styles.profileEmail}>Hasannagoro@gmail.com</Text>
-                <Text style={styles.profilePhone}>+60123456789</Text>
+                <Text style={styles.profileName}>
+                  {profile?.name || 'User'}
+                </Text>
+                <Text style={styles.profileEmail}>{profile?.email || ''}</Text>
+                <Text style={styles.profilePhone}>{profile?.phone || ''}</Text>
               </View>
               <TouchableOpacity
                 style={styles.editButton}

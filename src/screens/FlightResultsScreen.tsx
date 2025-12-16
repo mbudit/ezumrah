@@ -89,13 +89,25 @@ const FLIGHTS = [
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { useFlightSearch } from '../hooks/useFlightSearch';
+import { useEffect } from 'react';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlightResults'>;
 
-export const FlightResultsScreen = ({ navigation }: Props) => {
+export const FlightResultsScreen = ({ navigation, route }: Props) => {
+  const { searchParams } = route.params || {};
+  const { flights, searchFlights, isSearching } = useFlightSearch();
+
   const [selectedDate, setSelectedDate] = useState(DATES[1].date); // Default to Thu 02 Oct
 
-  const displayedFlights = FLIGHTS.filter(
+  // Trigger search on mount
+  useEffect(() => {
+    if (searchParams) {
+      searchFlights(searchParams);
+    }
+  }, [searchParams]);
+
+  const displayedFlights = flights.filter(
     flight => flight.date === selectedDate,
   );
 
@@ -179,12 +191,18 @@ export const FlightResultsScreen = ({ navigation }: Props) => {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {displayedFlights.length > 0 ? (
+        {isSearching ? (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Searching flights...</Text>
+          </View>
+        ) : displayedFlights.length > 0 ? (
           displayedFlights.map((flight, index) => (
             <TouchableOpacity
               key={index}
               style={styles.flightCard}
-              onPress={() => navigation.navigate('FlightBooking', { flight })}
+              onPress={() =>
+                navigation.navigate('FlightBooking', { flight, searchParams })
+              }
             >
               <View style={styles.flightMainRow}>
                 <View style={styles.flightRouteContainer}>
@@ -255,9 +273,10 @@ export const FlightResultsScreen = ({ navigation }: Props) => {
             </TouchableOpacity>
           ))
         ) : (
-          <View style={styles.noFlightsContainer}>
-            <Text style={styles.noFlightsText}>
-              No flights found for this date.
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No flights found</Text>
+            <Text style={styles.emptySubtext}>
+              Try adjusting your search criteria
             </Text>
           </View>
         )}
@@ -332,8 +351,34 @@ const styles = StyleSheet.create({
   },
   dateItemSelected: {
     backgroundColor: '#E6F6F6', // Light teal bg
-    borderBottomWidth: 2,
-    borderBottomColor: '#20A39E',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  loadingContainer: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+    fontFamily: 'Inter_18pt-Medium',
+  },
+  emptyContainer: {
+    padding: spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: 18,
+    color: '#333',
+    fontFamily: 'Inter_18pt-Bold',
+    marginBottom: spacing.xs,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#666',
+    fontFamily: 'Inter_18pt-Regular',
   },
   dateTextDay: {
     fontSize: 10,

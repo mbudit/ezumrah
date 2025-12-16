@@ -20,20 +20,34 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 
+import { useOrderData } from '../hooks/useOrderData';
+
 export const OrderScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-  // Mock state: 'waiting' | 'success'
-  const [orderStatus, setOrderStatus] = useState<'waiting' | 'success'>(
-    'waiting',
-  );
+  const { data, isLoading } = useOrderData();
+  const activeOrder = data?.activeOrder;
+  const RECENTLY_VIEWED = data?.recentlyViewed || [];
+
+  // Use state from hook data if available, or default to waiting
+  const orderStatus = activeOrder?.status || 'waiting';
+
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
-  const [secondsRemaining, setSecondsRemaining] = useState(792); // 00:13:12
+  // Timer logic - initializing from activeOrder.secondsRemaining
+  const [secondsRemaining, setSecondsRemaining] = useState(0);
 
   useEffect(() => {
+    if (activeOrder?.secondsRemaining) {
+      setSecondsRemaining(activeOrder.secondsRemaining);
+    }
+  }, [activeOrder]);
+
+  useEffect(() => {
+    if (secondsRemaining <= 0) return;
+
     const interval = setInterval(() => {
       setSecondsRemaining(prev => {
         if (prev <= 0) {
@@ -45,7 +59,14 @@ export const OrderScreen = () => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [secondsRemaining > 0]); // Dependency change to restart if seconds updated? Actually just [] or [secondsRemaining] careful with loops.
+  // Better: start interval once seconds is set > 0.
+  // Simplified:
+
+  /* 
+     Ideally, the hook should manage the timer or provide a timestamp to calculate diff, 
+     but for now we sync slightly.
+  */
 
   const formatTime = (totalSeconds: number) => {
     const hours = Math.floor(totalSeconds / 3600);
@@ -67,27 +88,6 @@ export const OrderScreen = () => {
     </View>
   );
 
-  const RECENTLY_VIEWED = [
-    {
-      id: '1',
-      title: 'Makkah Clock Royal Tower A Fairmont Hotel',
-      rating: 4.5,
-      reviews: 312,
-      price: 'IDR 3.825.552',
-      originalPrice: 'IDR 5.100.736',
-      image: require('../assets/icons/kaaba.png'), // Placeholder, reuse kaaba
-    },
-    {
-      id: '2',
-      title: 'Makkah Clock Royal Tower A Fairmont Hotel',
-      rating: 4.5,
-      reviews: 312,
-      price: 'IDR 3.825.552',
-      originalPrice: 'IDR 5.100.736',
-      image: require('../assets/icons/kaaba.png'),
-    },
-  ];
-
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
@@ -105,57 +105,58 @@ export const OrderScreen = () => {
         )}
 
         {/* Order Card */}
-        <View style={styles.card}>
-          <View style={styles.orderHeader}>
-            <Text style={styles.orderId}>Order ID: 1999120524</Text>
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <MoreHorizontal color="#666" size={20} />
-            </TouchableOpacity>
-          </View>
+        {activeOrder ? (
+          <View style={styles.card}>
+            <View style={styles.orderHeader}>
+              <Text style={styles.orderId}>Order ID: {activeOrder.id}</Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(true)}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <MoreHorizontal color="#666" size={20} />
+              </TouchableOpacity>
+            </View>
 
-          <View style={styles.separator} />
+            <View style={styles.separator} />
 
-          <View style={styles.orderContent}>
-            <Image
-              source={require('../assets/icons/kaaba.png')}
-              style={styles.orderThumb}
-            />
-            <View style={styles.orderInfo}>
-              <Text style={styles.orderTitle}>Haji Plus 2026</Text>
+            <View style={styles.orderContent}>
+              <Image source={activeOrder.image} style={styles.orderThumb} />
+              <View style={styles.orderInfo}>
+                <Text style={styles.orderTitle}>{activeOrder.title}</Text>
 
-              <View style={styles.priceRow}>
-                <Text style={styles.orderPrice}>IDR 240.000.000</Text>
-                {orderStatus === 'waiting' && (
-                  <View style={styles.timerContainer}>
-                    {renderTimerBox(time.h)}
-                    <Text style={styles.timerColon}>:</Text>
-                    {renderTimerBox(time.m)}
-                    <Text style={styles.timerColon}>:</Text>
-                    {renderTimerBox(time.s)}
-                  </View>
-                )}
+                <View style={styles.priceRow}>
+                  <Text style={styles.orderPrice}>{activeOrder.price}</Text>
+                  {orderStatus === 'waiting' && (
+                    <View style={styles.timerContainer}>
+                      {renderTimerBox(time.h)}
+                      <Text style={styles.timerColon}>:</Text>
+                      {renderTimerBox(time.m)}
+                      <Text style={styles.timerColon}>:</Text>
+                      {renderTimerBox(time.s)}
+                    </View>
+                  )}
+                </View>
               </View>
             </View>
-          </View>
 
-          {orderStatus === 'waiting' ? (
-            <TouchableOpacity
-              style={styles.completePaymentButton}
-              onPress={() => navigation.navigate('CompletePayment')}
-            >
-              <Text style={styles.completePaymentText}>
-                Complete the Payment
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.successFooter}>
-              <Text style={styles.successText}>Success</Text>
-            </View>
-          )}
-        </View>
+            {orderStatus === 'waiting' ? (
+              <TouchableOpacity
+                style={styles.completePaymentButton}
+                onPress={() => navigation.navigate('CompletePayment')}
+              >
+                <Text style={styles.completePaymentText}>
+                  Complete the Payment
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={styles.successFooter}>
+                <Text style={styles.successText}>Success</Text>
+              </View>
+            )}
+          </View>
+        ) : (
+          !isLoading && <Text>No active orders</Text>
+        )}
 
         {/* Support Banner */}
         <View style={styles.supportBanner}>

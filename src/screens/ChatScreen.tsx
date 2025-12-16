@@ -15,68 +15,45 @@ import { colors, spacing, typography } from '../theme/theme';
 
 const logoImage = require('../assets/logo/Logo.png');
 
-interface ChatItem {
-  id: string;
-  name: string;
-  message: string;
-  time: string;
-  unread: boolean;
-}
-
-const chatData: ChatItem[] = [
-  {
-    id: '1',
-    name: 'Ezumrah',
-    message: 'Is there anything I can help you?',
-    time: '09:18',
-    unread: true,
-  },
-  {
-    id: '2',
-    name: 'Ezumrah',
-    message: 'Is there anything I can help you?',
-    time: '09:18',
-    unread: true,
-  },
-  {
-    id: '3',
-    name: 'Ezumrah',
-    message: 'Is there anything I can help you?',
-    time: '09:18',
-    unread: true,
-  },
-  {
-    id: '4',
-    name: 'Ezumrah',
-    message: 'Is there anything I can help you?',
-    time: '09:18',
-    unread: true,
-  },
-];
-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { useChat } from '../hooks/useChat';
+import { ChatConversation } from '../types/chat';
 
 export const ChatScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const renderItem = ({ item }: { item: ChatItem }) => (
+  const { conversations, isLoading, getTotalUnreadCount } = useChat();
+
+  const renderItem = ({ item }: { item: ChatConversation }) => (
     <TouchableOpacity
       style={styles.chatItem}
-      onPress={() => navigation.navigate('ChatDetail')}
+      onPress={() =>
+        navigation.navigate('ChatRoom', {
+          conversationId: item.id,
+          vendorName: item.vendorName,
+        })
+      }
     >
-      <Image source={logoImage} style={styles.avatar} resizeMode="contain" />
+      <View style={styles.avatarContainer}>
+        <Image source={logoImage} style={styles.avatar} resizeMode="contain" />
+        {item.isOnline && <View style={styles.onlineIndicator} />}
+      </View>
       <View style={styles.chatContent}>
         <View style={styles.chatHeader}>
-          <Text style={styles.name}>{item.name}</Text>
-          {item.unread && <View style={styles.unreadDot} />}
+          <Text style={styles.name}>{item.vendorName}</Text>
+          {item.unreadCount > 0 && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadText}>{item.unreadCount}</Text>
+            </View>
+          )}
         </View>
         <View style={styles.chatFooter}>
           <Text style={styles.message} numberOfLines={1}>
-            {item.message}
+            {item.lastMessage}
           </Text>
-          <Text style={styles.time}>{item.time}</Text>
+          <Text style={styles.time}>{item.timestamp}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -88,7 +65,10 @@ export const ChatScreen = () => {
 
       <View style={styles.header}>
         <Text style={styles.title}>Chat</Text>
-        <Text style={styles.subtitle}>4 Unread messages</Text>
+        <Text style={styles.subtitle}>
+          {getTotalUnreadCount()} Unread message
+          {getTotalUnreadCount() !== 1 ? 's' : ''}
+        </Text>
       </View>
 
       <View style={styles.searchContainer}>
@@ -101,7 +81,7 @@ export const ChatScreen = () => {
       </View>
 
       <FlatList
-        data={chatData}
+        data={conversations}
         renderItem={renderItem}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
@@ -163,13 +143,27 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.s,
     alignItems: 'center',
   },
+  avatarContainer: {
+    position: 'relative',
+    marginRight: spacing.m,
+  },
   avatar: {
     width: 48,
     height: 48,
     borderRadius: 24,
     borderWidth: 1,
-    borderColor: colors.border, // Optional border
-    marginRight: spacing.m,
+    borderColor: colors.border,
+  },
+  onlineIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#10B981',
+    borderWidth: 2,
+    borderColor: 'white',
   },
   chatContent: {
     flex: 1,
@@ -185,11 +179,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_18pt-SemiBold',
     color: 'black',
   },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#20A39E',
+  unreadBadge: {
+    backgroundColor: '#EF4444',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    paddingHorizontal: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  unreadText: {
+    color: 'white',
+    fontSize: 11,
+    fontFamily: 'Inter_18pt-Bold',
   },
   chatFooter: {
     flexDirection: 'row',

@@ -26,6 +26,9 @@ import { colors, spacing } from '../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { useProfile } from '../hooks/useProfile';
+import { useFlightBooking } from '../hooks/useFlightBooking';
+import { useEffect } from 'react';
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -34,9 +37,49 @@ type Props = NativeStackScreenProps<
 
 export const FlightCompleteBookingScreen = ({ navigation, route }: Props) => {
   const { flight, ticket } = route.params || {};
+  const { profile } = useProfile();
+  const { createBooking, isLoading } = useFlightBooking();
+
   const [sameAsContact, setSameAsContact] = useState(false);
   const [passengerCount, setPassengerCount] = useState(1);
   const [contactModalVisible, setContactModalVisible] = useState(false);
+  const [contactName, setContactName] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
+  const [contactPhone, setContactPhone] = useState('');
+
+  // Pre-fill contact details from profile
+  useEffect(() => {
+    if (profile) {
+      setContactName(profile.name || '');
+      setContactEmail(profile.email || '');
+      setContactPhone(profile.phone || '');
+    }
+  }, [profile]);
+
+  const handleCompleteBooking = async () => {
+    // Generate passenger data from form
+    const passengers = Array.from({ length: passengerCount }, (_, i) => ({
+      id: `passenger-${i + 1}`,
+      title: 'Mr',
+      firstName: contactName.split(' ')[0] || '',
+      lastName: contactName.split(' ').slice(1).join(' ') || '',
+    }));
+
+    const contact = {
+      fullName: contactName,
+      phone: contactPhone,
+      email: contactEmail,
+    };
+
+    const booking = await createBooking(flight, ticket, passengers, contact);
+
+    if (booking) {
+      // Navigate to payment or confirmation
+      navigation.navigate('PaymentInstruction', {
+        orderId: booking.id,
+      });
+    }
+  };
 
   const renderContactModal = () => (
     <Modal

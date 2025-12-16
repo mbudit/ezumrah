@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -28,118 +28,31 @@ if (
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { usePayment } from '../hooks/usePayment';
+import { PaymentCategory } from '../types/payment';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PaymentMethod'>;
 
 export const PaymentMethodScreen = ({ navigation, route }: Props) => {
   const { orderId } = route.params || {};
-  // Track selected method locally if needed, or pass back immediately on select
   const [selectedMethod, setSelectedMethod] = useState(
     route.params?.selectedPaymentMethod || '',
   );
 
+  const { getPaymentCategories, isLoading } = usePayment();
+  const [categories, setCategories] = useState<PaymentCategory[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const data = await getPaymentCategories();
+      setCategories(data);
+    };
+    fetchCategories();
+  }, []);
+
   const [expandedCategory, setExpandedCategory] = useState<string | null>(
     'QRIS Payment',
   );
-
-  interface PaymentMethodItem {
-    id: string;
-    label: string;
-    image?: any;
-  }
-
-  interface PaymentCategory {
-    title: string;
-    data: PaymentMethodItem[];
-  }
-
-  const PAYMENT_CATEGORIES: PaymentCategory[] = [
-    {
-      title: 'QRIS Payment',
-      data: [
-        {
-          id: 'QRIS',
-          label: 'QRIS',
-          image: require('../assets/icons/qris.png'),
-        },
-      ],
-    },
-    {
-      title: 'Virtual Account',
-      data: [
-        {
-          id: 'BCA',
-          label: 'BCA Virtual Account',
-          image: require('../assets/icons/bca.png'),
-        },
-        {
-          id: 'Mandiri',
-          label: 'Mandiri Virtual Account',
-          image: require('../assets/icons/mandiri.png'),
-        },
-        {
-          id: 'BNI',
-          label: 'BNI Virtual Account',
-          image: require('../assets/icons/bni.png'),
-        },
-        {
-          id: 'BSI',
-          label: 'BSI Virtual Account',
-          image: require('../assets/icons/bsi.png'),
-        },
-        {
-          id: 'CIMB',
-          label: 'CIMB Niaga Virtual Account',
-          image: require('../assets/icons/cimbniaga.png'),
-        },
-        {
-          id: 'RHB',
-          label: 'RHB Bank Virtual Account',
-          image: require('../assets/icons/rhbank.png'),
-        },
-        {
-          id: 'Toyyibpay',
-          label: 'Toyyibpay Virtual Account',
-          image: require('../assets/icons/toyyibpay.png'),
-        },
-      ],
-    },
-    {
-      title: 'E-wallet',
-      data: [
-        {
-          id: 'GoPay',
-          label: 'GoPay',
-          image: require('../assets/icons/gopay.png'),
-        },
-        {
-          id: 'OVO',
-          label: 'OVO',
-          image: require('../assets/icons/ovo.png'),
-        },
-        {
-          id: 'ShopeePay',
-          label: 'ShopeePay',
-          image: require('../assets/icons/shopeepay.png'),
-        },
-        {
-          id: 'Dana',
-          label: 'Dana',
-          image: require('../assets/icons/dana.png'),
-        },
-      ],
-    },
-    {
-      title: 'Credit/Debit Card',
-      data: [
-        {
-          id: 'CC',
-          label: 'Visa/Mastercard',
-          image: require('../assets/icons/visamastercard.png'),
-        },
-      ],
-    },
-  ];
 
   const toggleExpand = (title: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -149,7 +62,7 @@ export const PaymentMethodScreen = ({ navigation, route }: Props) => {
   const handleSelect = (method: string) => {
     navigation.navigate({
       name: 'CompletePayment',
-      params: { selectedPaymentMethod: method, orderId: route.params?.orderId }, // Preserve orderId if needed
+      params: { selectedPaymentMethod: method, orderId: route.params?.orderId },
       merge: true,
     });
   };
@@ -169,7 +82,7 @@ export const PaymentMethodScreen = ({ navigation, route }: Props) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        {PAYMENT_CATEGORIES.map(category => {
+        {categories.map(category => {
           const isExpanded = expandedCategory === category.title;
           return (
             <View key={category.title} style={styles.categoryContainer}>

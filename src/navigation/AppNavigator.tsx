@@ -17,7 +17,9 @@ import { EditProfileScreen } from '../screens/EditProfileScreen';
 import { AllProductsScreen } from '../screens/AllProductsScreen';
 import { ChatScreen } from '../screens/ChatScreen';
 import { ChatDetailScreen } from '../screens/ChatDetailScreen';
-import { UmrahPackageScreen } from '../screens/UmrahPackageScreen';
+import { ChatRoomScreen } from '../screens/ChatRoomScreen';
+import { UmrahSearchScreen } from '../screens/UmrahSearchScreen';
+import { HajjSearchScreen } from '../screens/HajjSearchScreen';
 import { VoucherScreen } from '../screens/VoucherScreen';
 import { PackageListScreen } from '../screens/PackageListScreen';
 import { VendorDetailScreen } from '../screens/VendorDetailScreen';
@@ -68,7 +70,9 @@ export const AppNavigator = () => {
         <Stack.Screen name="AllProducts" component={AllProductsScreen} />
         <Stack.Screen name="Chat" component={ChatScreen} />
         <Stack.Screen name="ChatDetail" component={ChatDetailScreen} />
-        <Stack.Screen name="UmrahPackage" component={UmrahPackageScreen} />
+        <Stack.Screen name="ChatRoom" component={ChatRoomScreen} />
+        <Stack.Screen name="UmrahSearch" component={UmrahSearchScreen} />
+        <Stack.Screen name="HajjSearch" component={HajjSearchScreen} />
         <Stack.Screen name="PackageList" component={PackageListScreen} />
         <Stack.Screen name="VendorDetail" component={VendorDetailScreen} />
         <Stack.Screen name="PackageDetail" component={PackageDetailScreen} />

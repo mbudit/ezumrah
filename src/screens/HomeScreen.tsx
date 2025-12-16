@@ -39,7 +39,9 @@ export const HomeScreen = ({ navigation }: Props) => {
     if (id === 'others') {
       navigation.navigate('AllProducts');
     } else if (id === 'umrah') {
-      navigation.navigate('UmrahPackage');
+      navigation.navigate('UmrahSearch');
+    } else if (id === 'hajj') {
+      navigation.navigate('HajjSearch');
     } else if (id === 'flight') {
       navigation.navigate('FlightSearch');
     } else if (id === 'hotel') {

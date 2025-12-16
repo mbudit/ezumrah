@@ -23,7 +23,9 @@ export const AllProductsScreen = ({ navigation }: Props) => {
 
   const handlePress = (id: string) => {
     if (id === 'umrah') {
-      navigation.navigate('UmrahPackage');
+      navigation.navigate('UmrahSearch');
+    } else if (id === 'hajj') {
+      navigation.navigate('HajjSearch');
     } else if (id === 'flight') {
       navigation.navigate('FlightSearch');
     } else if (id === 'hotel') {

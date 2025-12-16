@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -28,21 +28,122 @@ import { colors, spacing } from '../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { useBooking } from '../hooks/useBooking';
+import { Passenger } from '../types/booking';
+import { SelectionModal } from '../components/SelectionModal';
+import { DatePickerModal } from '../components/DatePickerModal';
+import { useReferenceData } from '../hooks/useReferenceData';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PassengerDetail'>;
 
 export const PassengerDetailScreen = ({ navigation, route }: Props) => {
   const passengerNumber = route.params?.passengerNumber || 1;
-  const [selectedTitle, setSelectedTitle] = useState('Mr.');
-  const [singleName, setSingleName] = useState(false);
-  const [gender, setGender] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('Full Payment');
+  const passengerIndex = passengerNumber - 1;
+
+  const {
+    bookingState,
+    updatePassenger,
+    setPaymentType,
+    uploadPassengerDocument,
+  } = useBooking('1');
+  const passenger = bookingState.passengers[passengerIndex];
+
+  // Local state for form fields to avoid excessive re-renders/lag
+  const [localPassenger, setLocalPassenger] = useState<Partial<Passenger>>({});
+
+  useEffect(() => {
+    if (passenger) {
+      setLocalPassenger(passenger);
+    }
+  }, [passenger]);
+
+  // Sync back to context on blur or specific actions
+  const syncToGlobal = (updates: Partial<Passenger>) => {
+    if (passenger) {
+      updatePassenger(passenger.id, updates);
+    }
+  };
+
+  const handleTextChange = (field: keyof Passenger, value: string) => {
+    setLocalPassenger(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleBlur = (field: keyof Passenger) => {
+    if (localPassenger[field] !== undefined) {
+      syncToGlobal({ [field]: localPassenger[field] as any });
+    }
+  };
+
+  // Immediate update for toggles
+  const handleToggleSingleName = () => {
+    const newValue = !localPassenger.singleName;
+    setLocalPassenger(prev => ({ ...prev, singleName: newValue }));
+    syncToGlobal({ singleName: newValue });
+  };
+
+  const handleTitleSelect = (title: string) => {
+    setLocalPassenger(prev => ({ ...prev, title }));
+    syncToGlobal({ title });
+  };
+
   const [showPaymentDropdown, setShowPaymentDropdown] = useState(false);
   const [showPriceDetail, setShowPriceDetail] = useState(false);
   const [showUploadOptions, setShowUploadOptions] = useState(false);
+
   const [uploadType, setUploadType] = useState<'passport' | 'photo'>(
     'passport',
   );
+
+  const { jobs, nationalities, genders } = useReferenceData();
+
+  // Modal visibility states
+  const [showGenderModal, setShowGenderModal] = useState(false);
+  const [showJobModal, setShowJobModal] = useState(false);
+  const [showNationalityModal, setShowNationalityModal] = useState(false);
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [activeDateType, setActiveDateType] = useState<
+    'birthDate' | 'passportPublicationDate' | 'passportExpiry' | null
+  >(null);
+
+  const handleSelection = (field: keyof Passenger, value: string) => {
+    setLocalPassenger(prev => ({ ...prev, [field]: value }));
+    syncToGlobal({ [field]: value as any });
+  };
+
+  const openDatePicker = (
+    type: 'birthDate' | 'passportPublicationDate' | 'passportExpiry',
+  ) => {
+    setActiveDateType(type);
+    setShowDatePicker(true);
+  };
+
+  const handleDateSelect = (date: string) => {
+    if (activeDateType) {
+      handleSelection(activeDateType, date);
+    }
+  };
+
+  const handleUpload = (source: 'camera' | 'gallery') => {
+    // Mock File Selection
+    const mockUri =
+      source === 'camera'
+        ? 'file:///mock/camera/image.jpg'
+        : 'file:///mock/gallery/image.jpg';
+
+    if (passenger) {
+      uploadPassengerDocument(passenger.id, uploadType, mockUri);
+    }
+    setShowUploadOptions(false);
+  };
+
+  if (!passenger) {
+    return (
+      <View style={styles.container}>
+        <Text>Passenger not found</Text>
+      </View>
+    );
+  }
 
   const renderUploadOptionsModal = () => (
     <Modal
@@ -64,14 +165,20 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
             </Text>
           </View>
 
-          <TouchableOpacity style={styles.uploadOptionRow}>
+          <TouchableOpacity
+            style={styles.uploadOptionRow}
+            onPress={() => handleUpload('camera')}
+          >
             <Camera color="black" size={24} />
             <Text style={styles.uploadOptionText}>Scan</Text>
           </TouchableOpacity>
 
           <View style={{ height: spacing.m }} />
 
-          <TouchableOpacity style={styles.uploadOptionRow}>
+          <TouchableOpacity
+            style={styles.uploadOptionRow}
+            onPress={() => handleUpload('gallery')}
+          >
             <ImageIcon color="black" size={24} />
             <Text style={styles.uploadOptionText}>Upload from gallery</Text>
           </TouchableOpacity>
@@ -97,24 +204,36 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
             <View style={{ width: 24 }} />
           </View>
 
-          <Text style={styles.packageName}>Hajj Plus 2027</Text>
+          <Text style={styles.packageName}>
+            {bookingState.packageInfo?.title}
+          </Text>
 
           <View style={styles.priceDetailRow}>
-            <Text style={styles.priceDetailLabel}>2 Passengers</Text>
-            <Text style={styles.priceDetailValue}>$35.000</Text>
+            <Text style={styles.priceDetailLabel}>
+              {bookingState.passengers.length} Passengers
+            </Text>
+            <Text style={styles.priceDetailValue}>
+              $
+              {(bookingState.priceBreakdown?.basePrice || 0)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+            </Text>
           </View>
 
           <View style={styles.priceDetailRow}>
             <Text style={styles.priceDetailLabel}>Discount</Text>
             <Text style={[styles.priceDetailValue, { color: '#10B981' }]}>
-              -$0,67
+              -$
+              {(bookingState.priceBreakdown?.discount || 0)
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
             </Text>
           </View>
 
           <View style={styles.priceDetailRow}>
             <Text style={styles.priceDetailLabel}>Tax</Text>
             <Text style={[styles.priceDetailValue, { color: '#10B981' }]}>
-              Included
+              {bookingState.priceBreakdown?.taxIncluded ? 'Included' : '$0'}
             </Text>
           </View>
 
@@ -122,7 +241,12 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
 
           <View style={styles.totalRow}>
             <Text style={styles.modalTotalLabel}>TOTAL</Text>
-            <Text style={styles.modalTotalValue}>$34.999,33</Text>
+            <Text style={styles.modalTotalValue}>
+              $
+              {bookingState.totalPrice
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+            </Text>
           </View>
         </View>
       </View>
@@ -132,15 +256,17 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
   const renderRadioButton = (label: string) => (
     <TouchableOpacity
       style={styles.radioContainer}
-      onPress={() => setSelectedTitle(label)}
+      onPress={() => handleTitleSelect(label)}
     >
       <View
         style={[
           styles.radioCircle,
-          selectedTitle === label && styles.radioCircleSelected,
+          localPassenger.title === label && styles.radioCircleSelected,
         ]}
       >
-        {selectedTitle === label && <View style={styles.radioInnerCircle} />}
+        {localPassenger.title === label && (
+          <View style={styles.radioInnerCircle} />
+        )}
       </View>
       <Text style={styles.radioLabel}>{label}</Text>
     </TouchableOpacity>
@@ -168,9 +294,9 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
 
         <Text style={styles.label}>Title</Text>
         <View style={styles.radioGroup}>
-          {renderRadioButton('Mr.')}
-          {renderRadioButton('Mrs.')}
-          {renderRadioButton('Ms.')}
+          {renderRadioButton('Mr')}
+          {renderRadioButton('Mrs')}
+          {renderRadioButton('Ms')}
         </View>
 
         <View style={styles.inputGroup}>
@@ -179,6 +305,9 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
             style={styles.input}
             placeholder="First & Middle Name"
             placeholderTextColor="#9CA3AF"
+            value={localPassenger.givenName}
+            onChangeText={text => handleTextChange('givenName', text)}
+            onBlur={() => handleBlur('givenName')}
           />
           <Text style={styles.helperText}>
             Filled based on ID/passport (without punctuation and title)
@@ -187,12 +316,15 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
 
         <TouchableOpacity
           style={styles.checkboxContainer}
-          onPress={() => setSingleName(!singleName)}
+          onPress={handleToggleSingleName}
         >
           <View
-            style={[styles.checkbox, singleName && styles.checkboxSelected]}
+            style={[
+              styles.checkbox,
+              localPassenger.singleName && styles.checkboxSelected,
+            ]}
           >
-            {singleName && <Check size={14} color="white" />}
+            {localPassenger.singleName && <Check size={14} color="white" />}
           </View>
           <Text style={styles.checkboxLabel}>
             Passenger only have a single name
@@ -205,6 +337,10 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
             style={styles.input}
             placeholder="Family / Last Name"
             placeholderTextColor="#9CA3AF"
+            value={localPassenger.surname}
+            onChangeText={text => handleTextChange('surname', text)}
+            onBlur={() => handleBlur('surname')}
+            editable={!localPassenger.singleName}
           />
           <Text style={styles.helperText}>
             Filled based on ID/passport (without punctuation and title)
@@ -213,41 +349,56 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Date of birth</Text>
-          <View style={styles.inputIconContainer}>
-            <TextInput
-              style={[styles.input, styles.inputWithIcon]}
-              placeholder="Date of birth"
-              placeholderTextColor="#9CA3AF"
-            />
-            <Calendar size={20} color="#0D9488" style={styles.inputIcon} />
-          </View>
+          <TouchableOpacity onPress={() => openDatePicker('birthDate')}>
+            <View style={styles.inputIconContainer}>
+              <Text
+                style={[
+                  styles.input,
+                  styles.inputWithIcon,
+                  !localPassenger.birthDate && { color: '#9CA3AF' },
+                ]}
+              >
+                {localPassenger.birthDate || 'Date of birth'}
+              </Text>
+              <Calendar size={20} color="#0D9488" style={styles.inputIcon} />
+            </View>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Gender</Text>
-          <View style={styles.inputIconContainer}>
-            <TextInput
-              style={[styles.input, styles.inputWithIcon]}
-              placeholder="Gender"
-              placeholderTextColor="#9CA3AF"
-              editable={false}
-              value={gender}
-            />
-            <ChevronDown size={20} color="#0D9488" style={styles.inputIcon} />
-          </View>
+          <TouchableOpacity onPress={() => setShowGenderModal(true)}>
+            <View style={styles.inputIconContainer}>
+              <Text
+                style={[
+                  styles.input,
+                  styles.inputWithIcon,
+                  !localPassenger.gender && { color: '#9CA3AF' },
+                ]}
+              >
+                {localPassenger.gender || 'Gender'}
+              </Text>
+              <ChevronDown size={20} color="#0D9488" style={styles.inputIcon} />
+            </View>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Job</Text>
-          <View style={styles.inputIconContainer}>
-            <TextInput
-              style={[styles.input, styles.inputWithIcon]}
-              placeholder="Job"
-              placeholderTextColor="#9CA3AF"
-              editable={false}
-            />
-            <ChevronDown size={20} color="#0D9488" style={styles.inputIcon} />
-          </View>
+          <TouchableOpacity onPress={() => setShowJobModal(true)}>
+            <View style={styles.inputIconContainer}>
+              <Text
+                style={[
+                  styles.input,
+                  styles.inputWithIcon,
+                  !localPassenger.job && { color: '#9CA3AF' },
+                ]}
+              >
+                {localPassenger.job || 'Job'}
+              </Text>
+              <ChevronDown size={20} color="#0D9488" style={styles.inputIcon} />
+            </View>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.inputGroup}>
@@ -257,20 +408,28 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
             placeholder="Phone Number"
             placeholderTextColor="#9CA3AF"
             keyboardType="phone-pad"
+            value={localPassenger.phoneNumber}
+            onChangeText={text => handleTextChange('phoneNumber', text)}
+            onBlur={() => handleBlur('phoneNumber')}
           />
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Nationality</Text>
-          <View style={styles.inputIconContainer}>
-            <TextInput
-              style={[styles.input, styles.inputWithIcon]}
-              placeholder="Nationality"
-              placeholderTextColor="#9CA3AF"
-              editable={false}
-            />
-            <ChevronDown size={20} color="#0D9488" style={styles.inputIcon} />
-          </View>
+          <TouchableOpacity onPress={() => setShowNationalityModal(true)}>
+            <View style={styles.inputIconContainer}>
+              <Text
+                style={[
+                  styles.input,
+                  styles.inputWithIcon,
+                  !localPassenger.nationality && { color: '#9CA3AF' },
+                ]}
+              >
+                {localPassenger.nationality || 'Nationality'}
+              </Text>
+              <ChevronDown size={20} color="#0D9488" style={styles.inputIcon} />
+            </View>
+          </TouchableOpacity>
           <Text style={styles.helperText}>
             Please make sure your passport is still valid min. 6 months after
             departure date
@@ -287,6 +446,9 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
             style={styles.input}
             placeholder="Passport Number"
             placeholderTextColor="#9CA3AF"
+            value={localPassenger.passportNumber}
+            onChangeText={text => handleTextChange('passportNumber', text)}
+            onBlur={() => handleBlur('passportNumber')}
           />
           <Text style={styles.helperText}>
             Valid at least 6 months before departure
@@ -295,26 +457,42 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Publication Date</Text>
-          <View style={styles.inputIconContainer}>
-            <TextInput
-              style={[styles.input, styles.inputWithIcon]}
-              placeholder="Publication Date"
-              placeholderTextColor="#9CA3AF"
-            />
-            <Calendar size={20} color="#0D9488" style={styles.inputIcon} />
-          </View>
+          <TouchableOpacity
+            onPress={() => openDatePicker('passportPublicationDate')}
+          >
+            <View style={styles.inputIconContainer}>
+              <Text
+                style={[
+                  styles.input,
+                  styles.inputWithIcon,
+                  !localPassenger.passportPublicationDate && {
+                    color: '#9CA3AF',
+                  },
+                ]}
+              >
+                {localPassenger.passportPublicationDate || 'Publication Date'}
+              </Text>
+              <Calendar size={20} color="#0D9488" style={styles.inputIcon} />
+            </View>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Expiry Date</Text>
-          <View style={styles.inputIconContainer}>
-            <TextInput
-              style={[styles.input, styles.inputWithIcon]}
-              placeholder="Expiry Date"
-              placeholderTextColor="#9CA3AF"
-            />
-            <Calendar size={20} color="#0D9488" style={styles.inputIcon} />
-          </View>
+          <TouchableOpacity onPress={() => openDatePicker('passportExpiry')}>
+            <View style={styles.inputIconContainer}>
+              <Text
+                style={[
+                  styles.input,
+                  styles.inputWithIcon,
+                  !localPassenger.passportExpiry && { color: '#9CA3AF' },
+                ]}
+              >
+                {localPassenger.passportExpiry || 'Expiry Date'}
+              </Text>
+              <Calendar size={20} color="#0D9488" style={styles.inputIcon} />
+            </View>
+          </TouchableOpacity>
         </View>
 
         <Text style={styles.label}>Upload Passport Scan</Text>
@@ -331,7 +509,13 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
               color="#374151"
               style={{ marginBottom: 8 }}
             />
-            <Text style={styles.uploadTitle}>Choose a file or scan</Text>
+            {passenger.passportScan ? (
+              <Text style={[styles.uploadTitle, { color: '#0D9488' }]}>
+                Document Uploaded
+              </Text>
+            ) : (
+              <Text style={styles.uploadTitle}>Choose a file or scan</Text>
+            )}
             <Text style={styles.uploadSubtitle}>
               JPEG, PNG, PDG, and MP4 formats, up to 10MB
             </Text>
@@ -354,7 +538,13 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
               color="#374151"
               style={{ marginBottom: 8 }}
             />
-            <Text style={styles.uploadTitle}>Choose a file or scan</Text>
+            {passenger.photo ? (
+              <Text style={[styles.uploadTitle, { color: '#0D9488' }]}>
+                Photo Uploaded
+              </Text>
+            ) : (
+              <Text style={styles.uploadTitle}>Choose a file or scan</Text>
+            )}
             <Text style={styles.uploadSubtitle}>
               JPEG, PNG, PDG, and MP4 formats, up to 10MB
             </Text>
@@ -375,7 +565,11 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
                 style={styles.fullPaymentBadge}
                 onPress={() => setShowPaymentDropdown(!showPaymentDropdown)}
               >
-                <Text style={styles.fullPaymentText}>{paymentMethod}</Text>
+                <Text style={styles.fullPaymentText}>
+                  {bookingState.paymentType === 'Full'
+                    ? 'Full Payment'
+                    : 'Deposit'}
+                </Text>
                 <ChevronDown size={14} color="#D97706" />
               </TouchableOpacity>
               {showPaymentDropdown && (
@@ -383,7 +577,7 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
                   <TouchableOpacity
                     style={styles.dropdownItem}
                     onPress={() => {
-                      setPaymentMethod('Full Payment');
+                      setPaymentType('Full');
                       setShowPaymentDropdown(false);
                     }}
                   >
@@ -393,7 +587,7 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
                   <TouchableOpacity
                     style={styles.dropdownItem}
                     onPress={() => {
-                      setPaymentMethod('Deposit');
+                      setPaymentType('Deposit');
                       setShowPaymentDropdown(false);
                     }}
                   >
@@ -419,10 +613,17 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
               style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
               onPress={() => setShowPriceDetail(true)}
             >
-              <Text style={styles.totalPrice}>$35.00</Text>
+              <Text style={styles.totalPrice}>
+                $
+                {bookingState.totalPrice
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+              </Text>
               <ChevronUp size={16} color="black" />
             </TouchableOpacity>
-            <Text style={styles.totalLabel}>Total payment for 2 persons</Text>
+            <Text style={styles.totalLabel}>
+              Total payment for {bookingState.passengers.length} persons
+            </Text>
           </View>
         </View>
 
@@ -435,6 +636,45 @@ export const PassengerDetailScreen = ({ navigation, route }: Props) => {
       </View>
       {renderPriceDetailModal()}
       {renderUploadOptionsModal()}
+
+      <SelectionModal
+        visible={showGenderModal}
+        onClose={() => setShowGenderModal(false)}
+        title="Select Gender"
+        options={genders}
+        onSelect={val => handleSelection('gender', val)}
+        selectedValue={localPassenger.gender}
+      />
+
+      <SelectionModal
+        visible={showJobModal}
+        onClose={() => setShowJobModal(false)}
+        title="Select Job"
+        options={jobs}
+        onSelect={val => handleSelection('job', val)}
+        selectedValue={localPassenger.job}
+      />
+
+      <SelectionModal
+        visible={showNationalityModal}
+        onClose={() => setShowNationalityModal(false)}
+        title="Select Nationality"
+        options={nationalities}
+        onSelect={val => handleSelection('nationality', val)}
+        selectedValue={localPassenger.nationality}
+      />
+
+      <DatePickerModal
+        visible={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        title="Select Date"
+        onSelect={handleDateSelect}
+        initialDate={
+          activeDateType
+            ? (localPassenger[activeDateType] as string)
+            : undefined
+        }
+      />
     </SafeAreaView>
   );
 };

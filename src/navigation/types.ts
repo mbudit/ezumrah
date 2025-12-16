@@ -13,7 +13,9 @@ export type RootStackParamList = {
   AllProducts: undefined;
   Chat: undefined;
   ChatDetail: undefined | { chatId?: string };
-  UmrahPackage: undefined;
+  ChatRoom: { conversationId?: string; vendorName?: string };
+  UmrahSearch: undefined;
+  HajjSearch: undefined;
   PackageList: undefined;
   VendorDetail: undefined | { vendorId?: string }; // Example
   PackageDetail: undefined | { packageId?: string; vendorId?: string }; // Example
@@ -32,6 +34,6 @@ export type RootStackParamList = {
   FlightResults: undefined | { searchParams?: any };
   HotelSearch: undefined;
   HotelResults: undefined | { searchParams?: any };
-  FlightBooking: undefined | { flight?: any };
+  FlightBooking: undefined | { flight?: any; searchParams?: any };
   FlightCompleteBooking: undefined | { flight?: any; ticket?: any };
 };

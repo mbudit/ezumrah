@@ -8,8 +8,15 @@ import {
   Image,
 } from 'react-native';
 import { colors, spacing, typography } from '../theme/theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/types';
+
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export const PromoSection = () => {
+  const navigation = useNavigation<NavigationProp>();
+
   const categories = [
     'All',
     'Hajj Package',
@@ -65,7 +72,10 @@ export const PromoSection = () => {
         ))}
       </ScrollView>
 
-      <TouchableOpacity style={styles.seeAllButton}>
+      <TouchableOpacity
+        style={styles.seeAllButton}
+        onPress={() => navigation.navigate('Voucher')}
+      >
         <Text style={styles.seeAllText}>See all promos</Text>
       </TouchableOpacity>
     </View>

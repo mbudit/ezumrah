@@ -39,197 +39,21 @@ import { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PackageList'>;
 
-const PACKAGE_DATA = [
-  {
-    id: '1',
-    type: 'Regular Haj',
-    vendor: 'PT Azzam Albesuni',
-    title: 'Hajj Plus 2026',
-    rating: '1.538',
-    address: 'Address Jamal Omar',
-    distance: "500m from Ka'bah",
-    ratingScore: 5,
-    days: '21 Days',
-    transport: 'Transport VIP',
-    originalPrice: 'RM 31.598',
-    discount: '-4%',
-    price: 'RM 30.334',
-    seats: 23,
-    totalSeats: 30,
-    image: require('../assets/banner/umrah.png'), // Reusing umrah banner for now
-  },
-  {
-    id: '2',
-    type: 'CNH',
-    vendor: 'PT Azzam Albesuni',
-    title: 'Hajj Plus 2026',
-    rating: '1.538',
-    address: 'Address Jamal Omar',
-    distance: "500m from Ka'bah",
-    ratingScore: 5,
-    days: '21 Days',
-    transport: 'Transport VIP',
-    originalPrice: 'RM 31.598',
-    discount: '-4%',
-    price: 'RM 30.334',
-    seats: 23,
-    totalSeats: 30,
-    image: require('../assets/banner/umrah.png'),
-  },
-  {
-    id: '3',
-    type: 'Regular Haj',
-    vendor: 'PT Azzam Albesuni',
-    title: 'Hajj Plus 2026',
-    rating: '1.538',
-    address: 'Address Jamal Omar',
-    distance: "500m from Ka'bah",
-    ratingScore: 5,
-    days: '21 Days',
-    transport: 'Transport VIP',
-    originalPrice: 'RM 31.598',
-    discount: '-4%',
-    price: 'RM 30.334',
-    seats: 23,
-    totalSeats: 30,
-    image: require('../assets/banner/umrah.png'),
-  },
-];
-
-const VENDOR_DATA = [
-  {
-    id: '1',
-    name: 'ezumrah Umroh & Haji',
-    location: 'South Jakarta',
-    since: 'Since 2008',
-    rating: 4.5,
-    reviews: 90,
-    license: 'PPIU U 165 • PIHK No. 3609',
-    startPrice: 'IDR 27.000',
-    tags: ['Hajj Plus', 'Haji Regular', 'Umrah'],
-    logo: require('../assets/logo/Logo2.png'), // Placeholder, will use text if image fails or use a generic one
-  },
-  {
-    id: '2',
-    name: 'ezumrah Umroh & Haji',
-    location: 'South Jakarta',
-    since: 'Since 2008',
-    rating: 4.5,
-    reviews: 90,
-    license: 'PPIU U 165 • PIHK No. 3609',
-    startPrice: 'IDR 27.000',
-    tags: ['Hajj Plus', 'Haji Regular', 'Umrah'],
-    logo: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '3',
-    name: 'ezumrah Umroh & Haji',
-    location: 'South Jakarta',
-    since: 'Since 2008',
-    rating: 4.5,
-    reviews: 90,
-    license: 'PPIU U 165 • PIHK No. 3609',
-    startPrice: 'IDR 27.000',
-    tags: ['Hajj Plus', 'Haji Regular', 'Umrah'],
-    logo: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '4',
-    name: 'ezumrah Umroh & Haji',
-    location: 'South Jakarta',
-    since: 'Since 2008',
-    rating: 4.5,
-    reviews: 90,
-    license: 'PPIU U 165 • PIHK No. 3609',
-    startPrice: 'IDR 27.000',
-    tags: ['Hajj Plus', 'Haji Regular', 'Umrah'],
-    logo: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '5',
-    name: 'ezumrah Umroh & Haji',
-    location: 'South Jakarta',
-    since: 'Since 2008',
-    rating: 4.5,
-    reviews: 90,
-    license: 'PPIU U 165 • PIHK No. 3609',
-    startPrice: 'IDR 27.000',
-    tags: ['Hajj Plus', 'Haji Regular', 'Umrah'],
-    logo: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '6',
-    name: 'ezumrah Umroh & Haji',
-    location: 'South Jakarta',
-    since: 'Since 2008',
-    rating: 4.5,
-    reviews: 90,
-    license: 'PPIU U 165 • PIHK No. 3609',
-    startPrice: 'IDR 27.000',
-    tags: ['Hajj Plus', 'Haji Regular', 'Umrah'],
-    logo: require('../assets/logo/Logo2.png'),
-  },
-];
-
-const DEPARTURE_MONTHS = [
-  'January 2027',
-  'February 2027',
-  'March 2027',
-  'April 2027',
-  'May 2027',
-  'June 2027',
-  'July 2027',
-  'August 2027',
-  'September 2027',
-  'October 2027',
-  'November 2027',
-  'December 2027',
-];
-
-const COST_RANGES = [
-  '< $17.500',
-  '$17.500 - $19.650',
-  '$20.000 - $ 28.850',
-  '$29.850 - $31.450',
-  '$52.900 - $58.500',
-  '$52.900 - $58.500',
-];
-
-const RECENT_SEARCHES = [
-  {
-    id: '1',
-    city: 'Soekarno Hatta International Airport',
-    code: 'CGK',
-    location: 'Jakarta, Indonesia',
-    type: 'airport',
-  },
-  {
-    id: '2',
-    city: 'Soekarno Hatta International Airport',
-    code: 'CGK',
-    location: 'Jakarta, Indonesia',
-    type: 'airport',
-  },
-  {
-    id: '3',
-    city: 'Kuala Lumpur',
-    code: 'All airports',
-    location: 'Malaysia',
-    type: 'city',
-  },
-];
-
-const POPULAR_CITIES = [
-  'Soekarno Hatta International Airport (CGK)',
-  'Kuala Lumpur (All airports)',
-  'Kuala Lumpur (All airports)',
-  'Soekarno Hatta International Airport (CGK)',
-  'Soekarno Hatta International Airport (CGK)',
-  'Kuala Lumpur (All airports)',
-];
+import { usePackageList } from '../hooks/usePackageList';
+import { Package, Vendor } from '../types/package';
 
 export const PackageListScreen = ({ navigation }: Props) => {
+  const { data, isLoading } = usePackageList();
   const [activeTab, setActiveTab] = useState<'Product' | 'Vendor'>('Product');
+
+  const PACKAGE_DATA = data?.packages || [];
+  const VENDOR_DATA = data?.vendors || [];
+  const DEPARTURE_MONTHS = data?.departureMonths || [];
+  const COST_RANGES = data?.costRanges || [];
+  const RECENT_SEARCHES = data?.recentSearches || [];
+  const POPULAR_CITIES = data?.popularCities || [];
+
+  // ... (keep existing state vars defined below)
 
   const renderHeader = () => (
     <View style={styles.header}>
@@ -338,7 +162,7 @@ export const PackageListScreen = ({ navigation }: Props) => {
     </View>
   );
 
-  const renderCard = ({ item }: { item: (typeof PACKAGE_DATA)[0] }) => (
+  const renderCard = ({ item }: { item: Package }) => (
     <TouchableOpacity
       style={styles.card}
       onPress={() => navigation.navigate('PackageDetail')}
@@ -425,7 +249,7 @@ export const PackageListScreen = ({ navigation }: Props) => {
     </TouchableOpacity>
   );
 
-  const renderVendorCard = ({ item }: { item: (typeof VENDOR_DATA)[0] }) => (
+  const renderVendorCard = ({ item }: { item: Vendor }) => (
     <TouchableOpacity
       style={styles.vendorCard}
       onPress={() => navigation.navigate('VendorDetail')}

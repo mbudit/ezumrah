@@ -31,14 +31,14 @@ import { colors, spacing, typography } from '../theme/theme';
 import { useUmrahOptions } from '../hooks/useUmrahOptions';
 import { Country } from '../types/umrah';
 
-const bannerImage = require('../assets/banner/umrah.png');
+const bannerImage = require('../assets/banner/hajj.jpeg');
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'UmrahSearch'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'HajjSearch'>;
 
-export const UmrahSearchScreen = ({ navigation }: Props) => {
+export const HajjSearchScreen = ({ navigation }: Props) => {
   const [passengers, setPassengers] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState('Malaysia');
   const [selectedCity, setSelectedCity] = useState(
@@ -86,7 +86,7 @@ export const UmrahSearchScreen = ({ navigation }: Props) => {
     setCityModalVisible(false);
   };
 
-  console.log('Rendering UmrahPackageScreen', {
+  console.log('Rendering HajjSearchScreen', {
     isLoading,
     optionsLoaded: !!options,
   });
@@ -153,7 +153,7 @@ export const UmrahSearchScreen = ({ navigation }: Props) => {
           </TouchableOpacity>
         </SafeAreaView>
         <View style={styles.titleContainer}>
-          <Text style={styles.headerTitle}>Umrah Package</Text>
+          <Text style={styles.headerTitle}>Hajj Package</Text>
         </View>
       </ImageBackground>
 

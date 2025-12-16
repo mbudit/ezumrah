@@ -38,8 +38,15 @@ import {
   Armchair,
 } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
-import { packageService } from '../services/packageService';
-import { PackageDetail } from '../types';
+// import { packageService } from '../services/packageService'; // Removed standard service usage
+import { usePackageDetail } from '../hooks/usePackageDetail';
+// import { PackageDetail } from '../types'; // Removed old type
+import {
+  PackageDetailExtended,
+  ItineraryItem,
+  Facility,
+  Advantage,
+} from '../types/package';
 import { ActivityIndicator } from 'react-native';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -58,23 +65,8 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
   const [itinerarySelectedDay, setItinerarySelectedDay] =
     React.useState('Day 01');
 
-  const [packageDetail, setPackageDetail] =
-    React.useState<PackageDetail | null>(null);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    const fetchPackage = async () => {
-      try {
-        const data = await packageService.getPackageDetail('1'); // Mock ID
-        setPackageDetail(data || null);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPackage();
-  }, []);
+  // Use Custom Hook
+  const { data: packageDetail, isLoading: loading } = usePackageDetail('1');
 
   if (loading) {
     return (
@@ -92,218 +84,34 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
     );
   }
 
-  // Derived data for backward compatibility with render functions
+  // Derived data from hook
   const FLIGHT_DATA = packageDetail.flights;
   const ACCOMMODATION_DATA = packageDetail.hotels;
+  const ADVANTAGES_DATA = packageDetail.advantages;
+  const FACILITY_DATA = packageDetail.facilities;
+  const FULL_FACILITY_DATA = packageDetail.fullFacilities;
+  const ITINERARY_DATA = packageDetail.itinerary;
+  const FULL_ITINERARY_DATA = packageDetail.fullItinerary;
+  const FULL_ADVANTAGES_DATA = packageDetail.fullAdvantages;
 
-  // Keep static for now or move to mock if needed
-  const ADVANTAGES_DATA = [
-    {
-      id: '1',
-      title: 'Garuda Indonesia',
-      image: require('../assets/icons/flight.png'),
-    },
-    {
-      id: '2',
-      title: 'Travel Guide',
-      image: require('../assets/icons/mutawwif.png'),
-    },
-  ];
-
-  const FACILITY_DATA = [
-    {
-      id: '1',
-      title: 'Inclusive Round-Trip Airline Ticket',
-      icon: Plane,
-    },
-    {
-      id: '2',
-      title: 'Haramain High Speed Railway',
-      icon: TrainFront,
-    },
-    {
-      id: '3',
-      title: 'Tour Equipment',
-      icon: Briefcase,
-    },
-    {
-      id: '4',
-      title: 'Eat 3 times a day with full board',
-      icon: Utensils,
-    },
-  ];
-
-  const FULL_FACILITY_DATA = [
-    {
-      id: '1',
-      title: 'Exclusive Round-Trip Flight Tickets',
-      icon: Plane,
-    },
-    {
-      id: '2',
-      title: 'Haramain High-Speed Railway',
-      icon: TrainFront,
-    },
-    {
-      id: '3',
-      title: 'Tour Equipment',
-      icon: Briefcase,
-    },
-    {
-      id: '4',
-      title: 'Eat 3 times a day with full board',
-      icon: Utensils,
-    },
-    {
-      id: '5',
-      title: 'Ihram Cloth (for Ikhwan)',
-      icon: Scissors,
-    },
-    {
-      id: '6',
-      title: 'Ihram Cloth Belt (for Ikhwan)',
-      icon: Armchair, // Closest usable icon for belt/strap logic? Or generic
-    },
-    {
-      id: '7',
-      title: '24-inch and 20-inch suitcases',
-      icon: Luggage,
-    },
-  ];
-
-  const ITINERARY_DATA = [
-    {
-      id: '1',
-      day: 'Day 1',
-      date: '04 Sept',
-      icon: Plane,
-      type: 'flight_card',
-      data: {
-        badge: 'Depart',
-        fullDate: 'Wed, 04 Sept 2025',
-        startTime: '15:50',
-        startLoc: 'Jakarta (CGK)',
-        endTime: '21:45',
-        endLoc: 'Jeddah (Jed)',
-        airline: 'Garuda Indonesia',
-        duration: '9h 50m Direct',
-      },
-    },
-    {
-      id: '2',
-      day: '',
-      date: '',
-      icon: Building,
-      type: 'simple',
-      data: {
-        time: '18:00',
-        title: 'Check-in',
-      },
-    },
-    {
-      id: '3',
-      day: 'Day 2',
-      date: '06 Sept',
-      icon: Plane,
-      type: 'simple',
-      data: {
-        time: '18:00',
-        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
-      },
-    },
-  ];
-  const FULL_ITINERARY_DATA = [
-    {
-      id: '1',
-      day: 'Day 01',
-      dayId: 'Day 01', // Added dayId for filtering
-      date: '04 Sept',
-      icon: Plane,
-      type: 'flight_card',
-      data: {
-        badge: 'Depart',
-        fullDate: 'Wed, 04 Sept 2025',
-        startTime: '15:50',
-        startLoc: 'Jakarta (CGK)',
-        endTime: '21:45',
-        endLoc: 'Jeddah (Jed)',
-        airline: 'Garuda Indonesia',
-        duration: '9h 50m Direct',
-      },
-    },
-    {
-      id: '2',
-      day: '',
-      dayId: 'Day 01',
-      date: '',
-      icon: Building,
-      type: 'simple',
-      data: {
-        time: '18:00',
-        title: 'Check-in',
-      },
-    },
-    {
-      id: '3',
-      day: 'Day 2',
-      dayId: 'Day 02',
-      date: '06 Sept',
-      icon: Plane,
-      type: 'simple',
-      data: {
-        time: '18:00',
-        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
-      },
-    },
-    {
-      id: '4',
-      day: 'Day 3',
-      dayId: 'Day 03',
-      date: '06 Sept',
-      icon: Plane,
-      type: 'simple',
-      data: {
-        time: '18:00',
-        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
-      },
-    },
-    {
-      id: '5',
-      day: 'Day 4',
-      dayId: 'Day 04',
-      date: '06 Sept',
-      icon: Plane,
-      type: 'simple',
-      data: {
-        time: '18:00',
-        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
-      },
-    },
-    {
-      id: '6',
-      day: 'Day 5',
-      dayId: 'Day 05',
-      date: '06 Sept',
-      icon: Plane,
-      type: 'simple',
-      data: {
-        time: '18:00',
-        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
-      },
-    },
-    {
-      id: '7',
-      day: 'Day 6',
-      dayId: 'Day 06',
-      date: '',
-      icon: Plane,
-      type: 'simple',
-      data: {
-        time: '18:00',
-        title: 'prayers, sunnah worship, and increasing sunnah tawaf.',
-      },
-    },
-  ];
+  const renderFacilities = () => (
+    <View style={styles.sectionContainer}>
+      <View style={styles.sectionHeaderRow}>
+        <Text style={styles.sectionTitle}>Facility</Text>
+        <TouchableOpacity onPress={() => setFacilitiesModalVisible(true)}>
+          <Text style={styles.seeAllText}>See all</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.facilitiesList}>
+        {FACILITY_DATA.map(item => (
+          <View key={item.id} style={styles.facilityItem}>
+            <item.icon color="#555" size={24} style={styles.facilityIcon} />
+            <Text style={styles.facilityTitle}>{item.title}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
 
   const renderItinerary = () => (
     <View style={styles.sectionContainer}>
@@ -383,104 +191,6 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
     </View>
   );
 
-  const renderFacilities = () => (
-    <View style={styles.sectionContainer}>
-      <View style={styles.sectionHeaderRow}>
-        <Text style={styles.sectionTitle}>Facility</Text>
-        <TouchableOpacity onPress={() => setFacilitiesModalVisible(true)}>
-          <Text style={styles.seeAllText}>See all</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.facilitiesList}>
-        {FACILITY_DATA.map(item => (
-          <View key={item.id} style={styles.facilityItem}>
-            <item.icon color="#555" size={24} style={styles.facilityIcon} />
-            <Text style={styles.facilityTitle}>{item.title}</Text>
-          </View>
-        ))}
-      </View>
-    </View>
-  );
-
-  const FULL_ADVANTAGES_DATA = [
-    {
-      id: '1',
-      title: 'Near from Ka’bah',
-      description: '500meter from kakbah',
-      type: 'image',
-      source: require('../assets/icons/kiblat.png'),
-    },
-    {
-      id: '2',
-      title: 'Near from Masjid Nabawi',
-      description: '500meter from kakbah', // Copied logic from image
-      type: 'image',
-      source: require('../assets/icons/umrah.png'),
-    },
-    {
-      id: '3',
-      title: 'Garuda Indonesia',
-      description:
-        'Direct flights to Jeddah and Medina with Indonesian-speaking crew.',
-      type: 'image',
-      source: require('../assets/icons/flight.png'),
-    },
-    {
-      id: '4',
-      title: 'Muthawwif/muthawwifah',
-      description:
-        'Experienced guides, guidance on rituals, and accompanying tour leaders.',
-      type: 'image',
-      source: require('../assets/icons/vendor_mutawwif.png'),
-    },
-    {
-      id: '5',
-      title: 'Complete Hotel Facilities',
-      description:
-        'Halal restaurants, laundry, 24-hour dining, and meeting rooms for rituals.',
-      type: 'image',
-      source: require('../assets/icons/hotel.png'),
-    },
-    {
-      id: '6',
-      title: 'Near Shopping Centers',
-      description:
-        "It's easy to find souvenirs, local food, or daily necessities.",
-      type: 'icon',
-      icon: ShoppingBag,
-      color: '#0D9488', // Teal
-      bgColor: '#E0F2F1',
-    },
-    {
-      id: '7',
-      title: 'Near Health Facilities',
-      description:
-        'Nearby hospitals and clinics, plus doctors accompanying pilgrims.',
-      type: 'icon',
-      icon: Stethoscope,
-      color: '#EF4444', // Red
-      bgColor: '#FEE2E2',
-    },
-    {
-      id: '8',
-      title: 'Indonesian cuisine',
-      description: 'Daily Indonesian food menu',
-      type: 'icon',
-      icon: ChefHat,
-      color: '#F59E0B', // Amber
-      bgColor: '#FEF3C7',
-    },
-    {
-      id: '9',
-      title: 'Additional Facilities',
-      description: 'Free WiFi, currency exchange, and quick laundry service.',
-      type: 'icon',
-      icon: Wifi,
-      color: '#D97706', // Dark Amber/Brownish
-      bgColor: '#FEF3C7',
-    },
-  ];
-
   const renderAdvantages = () => (
     <View style={styles.sectionContainer}>
       <View style={styles.sectionHeaderRow}>
@@ -492,7 +202,7 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
       <View style={styles.advantagesList}>
         {ADVANTAGES_DATA.map(item => (
           <View key={item.id} style={styles.advantageItem}>
-            <Image source={item.image} style={styles.advantageIcon} />
+            <Image source={item.source} style={styles.advantageIcon} />
             <Text style={styles.advantageTitle}>{item.title}</Text>
           </View>
         ))}
@@ -525,12 +235,16 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
       <View style={styles.vendorContainer}>
         <View style={styles.vendorHeader}>
           <Image
-            source={require('../assets/logo/Logo2.png')}
+            source={packageDetail.vendorInfo.logo}
             style={styles.vendorLogo}
           />
           <View style={styles.vendorInfo}>
-            <Text style={styles.vendorName}>Ezumrah</Text>
-            <Text style={styles.vendorLocation}>Kuala Lumpur, Malaysia</Text>
+            <Text style={styles.vendorName}>
+              {packageDetail.vendorInfo.name}
+            </Text>
+            <Text style={styles.vendorLocation}>
+              {packageDetail.vendorInfo.location}
+            </Text>
           </View>
           <TouchableOpacity
             style={styles.visitButton}
@@ -544,15 +258,21 @@ export const PackageDetailScreen = ({ navigation }: Props) => {
 
         <View style={styles.vendorStatsRow}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>5.0</Text>
+            <Text style={styles.statValue}>
+              {packageDetail.vendorInfo.rating}
+            </Text>
             <Text style={styles.statLabel}>Review</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>10</Text>
+            <Text style={styles.statValue}>
+              {packageDetail.vendorInfo.properties}
+            </Text>
             <Text style={styles.statLabel}>Property</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>100%</Text>
+            <Text style={styles.statValue}>
+              {packageDetail.vendorInfo.chatReplied}
+            </Text>
             <Text style={styles.statLabel}>Chat replied</Text>
           </View>
         </View>

@@ -28,14 +28,109 @@ import { colors, spacing } from '../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { useBooking } from '../hooks/useBooking';
+import { useTripEnhancements } from '../hooks/useTripEnhancements';
+import { Enhancement } from '../types/enhancement';
+
+// Lucide Icon Mapping
+const ICON_MAP: Record<string, any> = {
+  Luggage,
+  Plane,
+  ShieldCheck,
+  Shield,
+  Coins,
+  Clock,
+  Briefcase,
+};
 
 type Props = NativeStackScreenProps<RootStackParamList, 'TripEnhance'>;
 
 export const TripEnhanceScreen = ({ navigation }: Props) => {
-  const [isFullPayment, setIsFullPayment] = React.useState(false);
+  const {
+    bookingState,
+    setPaymentType,
+    toggleEnhancement,
+    calculateTotalPrice,
+  } = useBooking('1');
+  const { enhancements, isLoading } = useTripEnhancements();
+
   const [showPaymentDropdown, setShowPaymentDropdown] = React.useState(false);
   const [showPriceDetail, setShowPriceDetail] = React.useState(false);
-  const [paymentMethod, setPaymentMethod] = React.useState('Full Payment');
+
+  // Calculate enhancement total for display and sync
+  const enhancementTotal = React.useMemo(() => {
+    return enhancements.reduce((total, item) => {
+      const qty = bookingState.selectedEnhancements[item.id] || 0;
+      return total + qty * item.price;
+    }, 0);
+  }, [enhancements, bookingState.selectedEnhancements]);
+
+  // Sync total price to global state when it changes
+  React.useEffect(() => {
+    calculateTotalPrice(enhancementTotal);
+  }, [enhancementTotal]);
+
+  const handleToggleEnhancement = (item: Enhancement) => {
+    const currentQty = bookingState.selectedEnhancements[item.id] || 0;
+    const newQty = currentQty > 0 ? 0 : 1; // Toggle logic for now (0 or 1)
+    toggleEnhancement(item.id, newQty, item.price);
+  };
+
+  const renderEnhancementCard = (item: Enhancement) => {
+    const Icon = ICON_MAP[item.iconName] || Shield;
+    const isSelected = (bookingState.selectedEnhancements[item.id] || 0) > 0;
+
+    return (
+      <View
+        key={item.id}
+        style={[styles.card, isSelected && styles.cardSelected]}
+      >
+        <View style={styles.cardHeader}>
+          <View style={styles.cardTitleRow}>
+            <Icon
+              color={item.category === 'add-on' ? '#D97706' : '#0D9488'}
+              size={20}
+            />
+            <Text style={styles.cardTitle}>{item.title}</Text>
+          </View>
+          <Text style={styles.cardDescription}>{item.description}</Text>
+        </View>
+
+        {item.benefits && (
+          <View style={styles.benefitContainer}>
+            {item.benefits.map((benefit, index) => (
+              <View key={index} style={styles.benefitRow}>
+                <ShieldCheck color="#0D9488" size={16} />
+                <Text style={styles.benefitText}>{benefit}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        <View style={styles.priceRow}>
+          <Text style={styles.priceLabel}>
+            <Text style={styles.priceValue}>
+              IDR {item.price.toLocaleString('id-ID')}
+            </Text>
+            {item.unit}
+          </Text>
+          <TouchableOpacity onPress={() => handleToggleEnhancement(item)}>
+            {isSelected ? (
+              <View style={styles.selectedIcon}>
+                <ShieldCheck color="white" size={16} />
+              </View>
+            ) : (
+              <PlusCircle color="#0D9488" size={24} fill="white" />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  // Helper for payment label
+  const paymentLabel =
+    bookingState.paymentType === 'Full' ? 'Full Payment' : 'Deposit';
 
   const renderPriceDetailModal = () => (
     <Modal
@@ -54,32 +149,45 @@ export const TripEnhanceScreen = ({ navigation }: Props) => {
             <View style={{ width: 24 }} />
           </View>
 
-          <Text style={styles.packageName}>Hajj Plus 2027</Text>
+          <Text style={styles.packageName}>
+            {bookingState.packageInfo?.title}
+          </Text>
 
           <View style={styles.priceDetailRow}>
-            <Text style={styles.priceDetailLabel}>2 Passengers</Text>
-            <Text style={styles.priceDetailValue}>$35.000</Text>
-          </View>
-
-          <View style={styles.priceDetailRow}>
-            <Text style={styles.priceDetailLabel}>Discount</Text>
-            <Text style={[styles.priceDetailValue, { color: '#10B981' }]}>
-              -$0,67
+            <Text style={styles.priceDetailLabel}>
+              {bookingState.passengers.length} Passengers
+            </Text>
+            <Text style={styles.priceDetailValue}>
+              $
+              {bookingState.priceBreakdown.basePrice
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
             </Text>
           </View>
 
-          <View style={styles.priceDetailRow}>
-            <Text style={styles.priceDetailLabel}>Tax</Text>
-            <Text style={[styles.priceDetailValue, { color: '#10B981' }]}>
-              Included
-            </Text>
-          </View>
+          {enhancements.map(item => {
+            const qty = bookingState.selectedEnhancements[item.id] || 0;
+            if (qty === 0) return null;
+            return (
+              <View key={item.id} style={styles.priceDetailRow}>
+                <Text style={styles.priceDetailLabel}>{item.title}</Text>
+                <Text style={styles.priceDetailValue}>
+                  + IDR {(item.price * qty).toLocaleString('id-ID')}
+                </Text>
+              </View>
+            );
+          })}
 
           <View style={styles.modalDivider} />
 
           <View style={styles.totalRow}>
             <Text style={styles.modalTotalLabel}>TOTAL</Text>
-            <Text style={styles.modalTotalValue}>$34.999,33</Text>
+            <Text style={styles.modalTotalValue}>
+              $
+              {bookingState.totalPrice
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+            </Text>
           </View>
         </View>
       </View>
@@ -112,194 +220,15 @@ export const TripEnhanceScreen = ({ navigation }: Props) => {
 
         {/* Travel Add-ons */}
         <Text style={styles.sectionTitle}>Travel Add-ons</Text>
-
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Luggage color="#D97706" size={24} style={styles.cardIcon} />
-            <Text style={styles.cardDescription}>
-              Clothes, souvenirs, shoes, and stuff. You sure 10 kg is enough?
-            </Text>
-          </View>
-          <View style={styles.priceRow}>
-            <Text style={styles.priceLabel}>
-              From <Text style={styles.priceValue}>IDR 90.000</Text>/5 kg
-            </Text>
-            <TouchableOpacity>
-              <PlusCircle color="#0D9488" size={24} fill="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
+        {enhancements
+          .filter(e => e.category === 'add-on')
+          .map(renderEnhancementCard)}
 
         {/* Extra Protection */}
         <Text style={styles.sectionTitle}>Extra Protection</Text>
-
-        {/* Flight Delay Insurance */}
-        <View style={styles.card}>
-          <View style={styles.cardTitleRow}>
-            <Plane color="#0D9488" size={20} />
-            <Text style={styles.cardTitle}>Flight Delay Insurance</Text>
-          </View>
-
-          <View style={styles.benefitContainer}>
-            <View style={styles.benefitRow}>
-              <ShieldCheck color="#0D9488" size={16} />
-              <Text style={styles.benefitText}>
-                Get compensated if your flight delay above 90 minutes up to{' '}
-                <Text style={styles.boldText}>IDR 600.000</Text>
-              </Text>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.moreBenefitText}>More Benefit</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.priceRow}>
-            <Text style={styles.priceValue}>
-              IDR 76,700<Text style={styles.priceUnit}>/5 kg</Text>
-            </Text>
-            <TouchableOpacity>
-              <PlusCircle color="#0D9488" size={24} fill="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Baggage Lost Insurance */}
-        <View style={styles.card}>
-          <View style={styles.cardTitleRow}>
-            <Briefcase color="#D97706" size={20} />
-            <Text style={styles.cardTitle}>Baggage Lost Insurance</Text>
-          </View>
-
-          <View style={styles.benefitContainer}>
-            <View style={styles.benefitRow}>
-              <ShieldCheck color="#0D9488" size={16} />
-              <Text style={styles.benefitText}>
-                Lost or damaged baggage up to{' '}
-                <Text style={styles.boldText}>IDR 5 million/item</Text>
-              </Text>
-            </View>
-            <View style={styles.benefitRow}>
-              <ShieldCheck color="#0D9488" size={16} />
-              <Text style={styles.benefitText}>
-                Repair cost <Text style={styles.boldText}>IDR 1 million</Text>
-              </Text>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.moreBenefitText}>More Benefit</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.priceRow}>
-            <Text style={styles.priceValue}>
-              IDR 13.300<Text style={styles.priceUnit}>/5 kg</Text>
-            </Text>
-            <TouchableOpacity>
-              <PlusCircle color="#0D9488" size={24} fill="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* 100% Refund Guarantee (Chest Icon) */}
-        <View style={styles.card}>
-          <View style={styles.cardTitleRow}>
-            <Shield color="#0D9488" size={20} />
-            <Text style={styles.cardTitle}>100% Refund Guarantee</Text>
-          </View>
-
-          <View style={styles.benefitContainer}>
-            <View style={styles.benefitRow}>
-              <ShieldCheck color="#0D9488" size={16} />
-              <Text style={styles.benefitText}>
-                Covers any cancellation reasons, including personal reason
-              </Text>
-            </View>
-            <View style={styles.benefitRow}>
-              <ShieldCheck color="#0D9488" size={16} />
-              <Text style={styles.benefitText}>
-                Flexibility to cancel for any reason up to{' '}
-                <Text style={styles.boldText}>24 hours</Text> before departure.
-              </Text>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.moreBenefitText}>More Benefit</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.priceRow}>
-            <Text style={styles.priceValue}>
-              IDR 80.000<Text style={styles.priceUnit}>/pax</Text>
-            </Text>
-            <TouchableOpacity>
-              <PlusCircle color="#0D9488" size={24} fill="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* 100% Refund Guarantee (Coin Icon) */}
-        <View style={styles.card}>
-          <View style={styles.cardTitleRow}>
-            <Coins color="#D97706" size={20} />
-            <Text style={styles.cardTitle}>100% Refund Guarantee</Text>
-          </View>
-
-          <View style={styles.benefitContainer}>
-            <View style={styles.benefitRow}>
-              <ShieldCheck color="#0D9488" size={16} />
-              <Text style={styles.benefitText}>
-                Covers any cancellation reasons, including personal reason
-              </Text>
-            </View>
-            <View style={styles.benefitRow}>
-              <ShieldCheck color="#0D9488" size={16} />
-              <Text style={styles.benefitText}>
-                Flexibility to cancel for any reason up to{' '}
-                <Text style={styles.boldText}>24 hours</Text> before departure.
-              </Text>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.moreBenefitText}>More Benefit</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.priceRow}>
-            <Text style={styles.priceValue}>
-              IDR 80.000<Text style={styles.priceUnit}>/pax</Text>
-            </Text>
-            <TouchableOpacity>
-              <PlusCircle color="#0D9488" size={24} fill="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Airline Reschedule Protection */}
-        <View style={styles.card}>
-          <View style={styles.cardTitleRow}>
-            <Clock color="#D97706" size={20} />
-            <Text style={styles.cardTitle}>Airline Reschedule Protection</Text>
-          </View>
-
-          <View style={styles.benefitContainer}>
-            <View style={styles.benefitRow}>
-              <ShieldCheck color="#0D9488" size={16} />
-              <Text style={styles.benefitText}>
-                Covers up to <Text style={styles.boldText}>50%</Text> of the
-                price of the canceled ticket (max. IDR 4 million)
-              </Text>
-            </View>
-            <TouchableOpacity>
-              <Text style={styles.moreBenefitText}>More Benefit</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.priceRow}>
-            <Text style={styles.priceValue}>
-              IDR 30.000<Text style={styles.priceUnit}>/pax</Text>
-            </Text>
-            <TouchableOpacity>
-              <PlusCircle color="#0D9488" size={24} fill="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
+        {enhancements
+          .filter(e => e.category !== 'add-on')
+          .map(renderEnhancementCard)}
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -331,7 +260,7 @@ export const TripEnhanceScreen = ({ navigation }: Props) => {
                 style={styles.dropdownBadge}
                 onPress={() => setShowPaymentDropdown(!showPaymentDropdown)}
               >
-                <Text style={styles.dropdownText}>{paymentMethod}</Text>
+                <Text style={styles.dropdownText}>{paymentLabel}</Text>
                 <ChevronDown size={14} color="#D97706" />
               </TouchableOpacity>
               {showPaymentDropdown && (
@@ -339,7 +268,7 @@ export const TripEnhanceScreen = ({ navigation }: Props) => {
                   <TouchableOpacity
                     style={styles.dropdownItem}
                     onPress={() => {
-                      setPaymentMethod('Full Payment');
+                      setPaymentType('Full');
                       setShowPaymentDropdown(false);
                     }}
                   >
@@ -349,7 +278,7 @@ export const TripEnhanceScreen = ({ navigation }: Props) => {
                   <TouchableOpacity
                     style={styles.dropdownItem}
                     onPress={() => {
-                      setPaymentMethod('Deposit');
+                      setPaymentType('Deposit');
                       setShowPaymentDropdown(false);
                     }}
                   >
@@ -363,8 +292,8 @@ export const TripEnhanceScreen = ({ navigation }: Props) => {
             trackColor={{ false: '#E5E7EB', true: '#0D9488' }}
             thumbColor={'white'}
             ios_backgroundColor="#E5E7EB"
-            onValueChange={setIsFullPayment}
-            value={isFullPayment}
+            onValueChange={val => setPaymentType(val ? 'Full' : 'Deposit')}
+            value={bookingState.paymentType === 'Full'}
           />
         </View>
 
@@ -377,7 +306,12 @@ export const TripEnhanceScreen = ({ navigation }: Props) => {
               style={styles.totalPriceRow}
               onPress={() => setShowPriceDetail(true)}
             >
-              <Text style={styles.totalPrice}>$35.00</Text>
+              <Text style={styles.totalPrice}>
+                $
+                {bookingState.totalPrice
+                  .toString()
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+              </Text>
               <ChevronUp size={20} color="#374151" />
             </TouchableOpacity>
             <Text style={styles.totalSubtitle}>
@@ -455,10 +389,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F3F4F6',
   },
+  cardSelected: {
+    borderColor: '#0D9488',
+    backgroundColor: '#F0FDFA',
+  },
   cardHeader: {
-    flexDirection: 'row',
-    gap: 12,
     marginBottom: spacing.m,
+  },
+  selectedIcon: {
+    backgroundColor: '#0D9488',
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cardIcon: {
     marginTop: 2,

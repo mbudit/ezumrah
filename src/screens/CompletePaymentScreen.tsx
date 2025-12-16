@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -22,88 +22,54 @@ import { colors, spacing } from '../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { usePayment } from '../hooks/usePayment';
+import { TransactionSummary, PaymentMethod } from '../types/payment';
+import { useBooking } from '../hooks/useBooking';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CompletePayment'>;
 
 export const CompletePaymentScreen = ({ navigation, route }: Props) => {
   const { orderId = '1999120524' } = route.params || {};
-  const [paymentType, setPaymentType] = useState('Full payment');
+  const { bookingState, setPaymentType } = useBooking('1');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [secondsRemaining, setSecondsRemaining] = useState(3580); // 00:59:40
+
+  const { getTransactionSummary, getPaymentCategories } = usePayment();
+  const [transaction, setTransaction] = useState<TransactionSummary | null>(
+    null,
+  );
+  const [allMethods, setAllMethods] = useState<PaymentMethod[]>([]);
+
   useEffect(() => {
     if (route.params?.selectedPaymentMethod) {
       setPaymentMethod(route.params.selectedPaymentMethod);
     }
   }, [route.params?.selectedPaymentMethod]);
 
-  const PAYMENT_METHODS_LOOKUP: Record<string, { label: string; image: any }> =
-    {
-      QRIS: { label: 'QRIS', image: require('../assets/icons/qris.png') },
-      BCA: {
-        label: 'BCA Virtual Account',
-        image: require('../assets/icons/bca.png'),
-      },
-      Mandiri: {
-        label: 'Mandiri Virtual Account',
-        image: require('../assets/icons/mandiri.png'),
-      },
-      BNI: {
-        label: 'BNI Virtual Account',
-        image: require('../assets/icons/bni.png'),
-      },
-      BSI: {
-        label: 'BSI Virtual Account',
-        image: require('../assets/icons/bsi.png'),
-      },
-      CIMB: {
-        label: 'CIMB Niaga Virtual Account',
-        image: require('../assets/icons/cimbniaga.png'),
-      },
-      RHB: {
-        label: 'RHB Bank Virtual Account',
-        image: require('../assets/icons/rhbank.png'),
-      },
-      Toyyibpay: {
-        label: 'Toyyibpay Virtual Account',
-        image: require('../assets/icons/toyyibpay.png'),
-      },
-      GoPay: { label: 'GoPay', image: require('../assets/icons/gopay.png') },
-      OVO: { label: 'OVO', image: require('../assets/icons/ovo.png') },
-      ShopeePay: {
-        label: 'ShopeePay',
-        image: require('../assets/icons/shopeepay.png'),
-      },
-      Dana: { label: 'Dana', image: require('../assets/icons/dana.png') },
-      CC: {
-        label: 'Visa/Mastercard',
-        image: require('../assets/icons/visamastercard.png'),
-      },
+  useEffect(() => {
+    const fetchData = async () => {
+      const t = await getTransactionSummary(orderId);
+      setTransaction(t);
+      const cats = await getPaymentCategories();
+      setAllMethods(cats.flatMap(c => c.data));
     };
+    fetchData();
+  }, [orderId]);
 
-  const DEFAULT_PAYMENT_METHODS = ['QRIS', 'Toyyibpay', 'RHB'];
+  const DEFAULT_PAYMENT_METHODS_IDS = ['QRIS', 'Toyyibpay', 'RHB'];
 
-  // Combine selected method with default methods, valid only if in lookup
-  const displayedMethods = [
-    ...(paymentMethod && PAYMENT_METHODS_LOOKUP[paymentMethod]
-      ? [paymentMethod]
-      : []),
-    ...DEFAULT_PAYMENT_METHODS.filter(m => m !== paymentMethod),
-  ];
+  const displayedMethods = useMemo(() => {
+    // Create a list of methods to display: selected + defaults
+    const selected = allMethods.find(m => m.id === paymentMethod);
+    const defaults = allMethods.filter(
+      m => DEFAULT_PAYMENT_METHODS_IDS.includes(m.id) && m.id !== paymentMethod,
+    );
 
-  const FLIGHT_DETAILS = [
-    {
-      id: '1',
-      from: 'Jakarta',
-      to: 'Jeddah',
-      date: 'Wed, 04 Sept 2025 · 15:50',
-    },
-    {
-      id: '2',
-      from: 'Jeddah',
-      to: 'Jakarta',
-      date: 'Thu, 18 Sept 2025 · 20:10',
-    },
-  ];
+    const res = [];
+    if (selected) res.push(selected);
+    res.push(...defaults);
+    return res;
+  }, [paymentMethod, allMethods]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -175,14 +141,16 @@ export const CompletePaymentScreen = ({ navigation, route }: Props) => {
             </View>
           </View>
 
-          <Text style={styles.packageName}>Haji Plus 2027</Text>
+          <Text style={styles.packageName}>
+            {bookingState.packageInfo?.title || 'Package'}
+          </Text>
 
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.flightCarouselContent}
           >
-            {FLIGHT_DETAILS.map(flight => (
+            {transaction?.flights.map(flight => (
               <View key={flight.id} style={styles.flightInfoCard}>
                 <View style={styles.flightRow}>
                   <Plane color="#0D9488" size={16} />
@@ -204,12 +172,12 @@ export const CompletePaymentScreen = ({ navigation, route }: Props) => {
           <TouchableOpacity
             style={[
               styles.optionRow,
-              paymentType === 'Full payment' && styles.optionSelected,
+              bookingState.paymentType === 'Full' && styles.optionSelected,
             ]}
-            onPress={() => setPaymentType('Full payment')}
+            onPress={() => setPaymentType('Full')}
           >
             <Text style={styles.optionText}>Full payment</Text>
-            {renderRadio(paymentType === 'Full payment')}
+            {renderRadio(bookingState.paymentType === 'Full')}
           </TouchableOpacity>
 
           <View style={{ height: spacing.m }} />
@@ -217,12 +185,12 @@ export const CompletePaymentScreen = ({ navigation, route }: Props) => {
           <TouchableOpacity
             style={[
               styles.optionRow,
-              paymentType === 'Deposit' && styles.optionSelected,
+              bookingState.paymentType === 'Deposit' && styles.optionSelected,
             ]}
             onPress={() => setPaymentType('Deposit')}
           >
             <Text style={styles.optionText}>Deposit</Text>
-            {renderRadio(paymentType === 'Deposit')}
+            {renderRadio(bookingState.paymentType === 'Deposit')}
           </TouchableOpacity>
         </View>
 
@@ -231,7 +199,12 @@ export const CompletePaymentScreen = ({ navigation, route }: Props) => {
           <View style={styles.methodHeader}>
             <Text style={styles.sectionTitle}>Payment Method</Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('PaymentMethod')}
+              onPress={() =>
+                navigation.navigate('PaymentMethod', {
+                  orderId,
+                  selectedPaymentMethod: paymentMethod,
+                })
+              }
             >
               <Text style={styles.seeAllText}>See all</Text>
             </TouchableOpacity>
@@ -240,18 +213,15 @@ export const CompletePaymentScreen = ({ navigation, route }: Props) => {
 
           <View style={{ height: spacing.m }} />
 
-          {displayedMethods.map((method, index) => {
-            const methodData = PAYMENT_METHODS_LOOKUP[method];
-            if (!methodData) return null;
-
+          {displayedMethods.map((methodData, index) => {
             return (
-              <React.Fragment key={method}>
+              <React.Fragment key={methodData.id}>
                 <TouchableOpacity
                   style={[
                     styles.optionRow,
-                    paymentMethod === method && styles.optionSelected,
+                    paymentMethod === methodData.id && styles.optionSelected,
                   ]}
-                  onPress={() => setPaymentMethod(method)}
+                  onPress={() => setPaymentMethod(methodData.id)}
                 >
                   <View style={styles.methodContent}>
                     <Image
@@ -260,7 +230,7 @@ export const CompletePaymentScreen = ({ navigation, route }: Props) => {
                     />
                     <Text style={styles.optionText}>{methodData.label}</Text>
                   </View>
-                  {renderRadio(paymentMethod === method)}
+                  {renderRadio(paymentMethod === methodData.id)}
                 </TouchableOpacity>
                 {index < displayedMethods.length - 1 && (
                   <View style={{ height: spacing.m }} />
@@ -274,17 +244,49 @@ export const CompletePaymentScreen = ({ navigation, route }: Props) => {
         <View style={styles.card}>
           <Text style={styles.sectionTitle}>You Can Save More!</Text>
           <View style={{ height: spacing.m }} />
-          <TouchableOpacity style={styles.promoButton}>
-            <View style={styles.promoContent}>
-              <View style={styles.promoIconBg}>
-                <Percent size={16} color="white" />
+
+          {bookingState.selectedVoucher ? (
+            <View style={styles.selectedVoucherContainer}>
+              <View style={styles.promoContent}>
+                <View style={styles.promoIconBg}>
+                  <Percent size={16} color="white" />
+                </View>
+                <View>
+                  <Text style={styles.voucherCode}>
+                    {bookingState.selectedVoucher.code}
+                  </Text>
+                  <Text style={styles.voucherDiscount}>
+                    {bookingState.selectedVoucher.type === 'percentage'
+                      ? `${bookingState.selectedVoucher.discount}% off`
+                      : `IDR ${bookingState.selectedVoucher.discount.toLocaleString(
+                          'id-ID',
+                        )} off`}
+                  </Text>
+                </View>
               </View>
-              <Text style={styles.promoText}>Promos or Voucher Codes</Text>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('PromoCode')}
+              >
+                <Text style={styles.changeText}>Change</Text>
+              </TouchableOpacity>
             </View>
-            <View style={styles.plusIconBg}>
-              <Plus size={16} color="white" />
-            </View>
-          </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.promoButton}
+              onPress={() => navigation.navigate('PromoCode')}
+            >
+              <View style={styles.promoContent}>
+                <View style={styles.promoIconBg}>
+                  <Percent size={16} color="white" />
+                </View>
+                <Text style={styles.promoText}>Promos or Voucher Codes</Text>
+              </View>
+              <View style={styles.plusIconBg}>
+                <Plus size={16} color="white" />
+              </View>
+            </TouchableOpacity>
+          )}
+
           <Text style={styles.availablePromoText}>
             You have 5 available promo(s)
           </Text>
@@ -298,7 +300,12 @@ export const CompletePaymentScreen = ({ navigation, route }: Props) => {
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Total Price</Text>
           <TouchableOpacity style={styles.totalValueContainer}>
-            <Text style={styles.totalValue}>$35.000</Text>
+            <Text style={styles.totalValue}>
+              $
+              {bookingState.totalPrice
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+            </Text>
             <ChevronDown size={20} color="#333" />
           </TouchableOpacity>
         </View>
@@ -558,5 +565,31 @@ const styles = StyleSheet.create({
     width: 60,
     height: 30,
     resizeMode: 'contain',
+  },
+  selectedVoucherContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#E9F6F5',
+    padding: spacing.m,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#0D9488',
+  },
+  voucherCode: {
+    fontSize: 14,
+    color: 'black',
+    fontFamily: 'Inter_18pt-Bold',
+  },
+  voucherDiscount: {
+    fontSize: 12,
+    color: '#0D9488',
+    fontFamily: 'Inter_18pt-Medium',
+  },
+  changeText: {
+    fontSize: 12,
+    color: '#0D9488',
+    fontFamily: 'Inter_18pt-Medium',
+    textDecorationLine: 'underline',
   },
 });

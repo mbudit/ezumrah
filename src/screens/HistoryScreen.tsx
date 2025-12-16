@@ -14,21 +14,14 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 import { colors, spacing } from '../theme/theme';
 
+import { useOrderData } from '../hooks/useOrderData';
+
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'History'>;
 
 export const HistoryScreen = () => {
   const navigation = useNavigation<NavigationProp>();
-
-  const HISTORY_DATA = [
-    {
-      id: '1',
-      title: 'Haji Plus 2027',
-      date: '20 Mei - 10 Juni 2025',
-      status: 'Success',
-      image: require('../assets/icons/kaaba.png'), // Placeholder
-    },
-    // Add more mock data if needed
-  ];
+  const { data, isLoading } = useOrderData();
+  const HISTORY_DATA = data?.historyOrders || [];
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>

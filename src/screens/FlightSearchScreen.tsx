@@ -98,10 +98,14 @@ const PASSENGER_OPTIONS = [
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { useFlightSearch } from '../hooks/useFlightSearch';
+import { FlightSearchParams } from '../types/flight';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlightSearch'>;
 
 export const FlightSearchScreen = ({ navigation }: Props) => {
+  const { searchFlights, isSearching } = useFlightSearch();
+
   const [isRoundTrip, setIsRoundTrip] = useState(false);
   const [departureCity, setDepartureCity] = useState(AIRPORTS[0]);
   const [arrivalCity, setArrivalCity] = useState(AIRPORTS[1]);
@@ -127,6 +131,25 @@ export const FlightSearchScreen = ({ navigation }: Props) => {
   const openSelection = (mode: 'from' | 'to') => {
     setSelectionMode(mode);
     setModalVisible(true);
+  };
+
+  const handleSearch = async () => {
+    const passengerCount = parseInt(passengers.split(' ')[0]);
+
+    const searchParams: FlightSearchParams = {
+      from: departureCity.code,
+      to: arrivalCity.code,
+      departDate: date,
+      passengers: passengerCount,
+      seatClass: seatClass,
+      isRoundTrip: isRoundTrip,
+    };
+
+    // Trigger search
+    await searchFlights(searchParams);
+
+    // Navigate to results
+    navigation.navigate('FlightResults', { searchParams });
   };
 
   const renderInput = (
@@ -265,21 +288,16 @@ export const FlightSearchScreen = ({ navigation }: Props) => {
 
             {/* Search Button */}
             <TouchableOpacity
-              style={styles.searchButton}
-              onPress={() =>
-                navigation.navigate('FlightResults', {
-                  searchParams: {
-                    departureCity,
-                    arrivalCity,
-                    date,
-                    passengers,
-                    seatClass,
-                    isRoundTrip,
-                  },
-                })
-              }
+              style={[
+                styles.searchButton,
+                isSearching && styles.searchButtonDisabled,
+              ]}
+              onPress={handleSearch}
+              disabled={isSearching}
             >
-              <Text style={styles.searchButtonText}>Search</Text>
+              <Text style={styles.searchButtonText}>
+                {isSearching ? 'Searching...' : 'Search'}
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -725,12 +743,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   searchButton: {
-    backgroundColor: '#20A39E',
-    borderRadius: 8,
-    height: 48,
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    borderRadius: 12,
     alignItems: 'center',
-    justifyContent: 'center',
     marginTop: spacing.l,
+  },
+  searchButtonDisabled: {
+    backgroundColor: '#ccc',
+    opacity: 0.7,
   },
   searchButtonText: {
     color: 'white',

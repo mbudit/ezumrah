@@ -20,16 +20,47 @@ import {
 import { colors, spacing } from '../theme/theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { useProfile } from '../hooks/useProfile';
+import { useEffect } from 'react';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EditProfile'>;
 
 export const EditProfileScreen = ({ navigation }: Props) => {
-  const [name, setName] = useState('Hasan Barsain');
-  const [email, setEmail] = useState('Hasanbarsain@gmail.com');
-  const [dob, setDob] = useState('12 May 1999');
+  const { profile, updateProfile, isLoading } = useProfile();
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [dob, setDob] = useState('');
   const [gender, setGender] = useState('Male');
-  const [phone1, setPhone1] = useState('+60123456789');
-  const [phone2, setPhone2] = useState('+60123456788');
+  const [phone1, setPhone1] = useState('');
+  const [phone2, setPhone2] = useState('');
+
+  // Pre-fill form with profile data
+  useEffect(() => {
+    if (profile) {
+      setName(profile.name || '');
+      setEmail(profile.email || '');
+      setDob(profile.dateOfBirth || '');
+      setGender(profile.gender || 'Male');
+      setPhone1(profile.phone || '');
+      setPhone2(profile.emergencyPhone || '');
+    }
+  }, [profile]);
+
+  const handleSave = async () => {
+    const success = await updateProfile({
+      name,
+      email,
+      dateOfBirth: dob,
+      gender: gender as 'Male' | 'Female' | 'Other',
+      phone: phone1,
+      emergencyPhone: phone2,
+    });
+
+    if (success) {
+      navigation.goBack();
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -44,8 +75,14 @@ export const EditProfileScreen = ({ navigation }: Props) => {
             <ArrowLeft size={24} color="black" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Edit Profile</Text>
-          <TouchableOpacity style={styles.saveButton}>
-            <Text style={styles.saveButtonText}>Save</Text>
+          <TouchableOpacity
+            style={[styles.saveButton, !isLoading && styles.saveButtonActive]}
+            onPress={handleSave}
+            disabled={isLoading}
+          >
+            <Text style={styles.saveButtonText}>
+              {isLoading ? 'Saving...' : 'Save'}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -172,10 +209,13 @@ const styles = StyleSheet.create({
     marginLeft: spacing.s, // Add spacing between back arrow and title
   },
   saveButton: {
-    backgroundColor: '#ccc', // Disabled look by default
+    backgroundColor: '#ccc',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
+  },
+  saveButtonActive: {
+    backgroundColor: '#20A39E',
   },
   saveButtonText: {
     color: 'white',

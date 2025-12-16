@@ -37,6 +37,8 @@ interface FlightData {
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
+import { useState } from 'react';
+import { TicketOption } from '../types/flight';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'FlightBooking'>;
 
@@ -83,7 +85,11 @@ const TICKET_OPTIONS = [
 ];
 
 export const FlightBookingScreen = ({ navigation, route }: Props) => {
-  const flight = route.params?.flight;
+  const { flight, searchParams } = route.params || {};
+  const [selectedTicket, setSelectedTicket] = useState<TicketOption | null>(
+    null,
+  );
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -200,7 +206,14 @@ export const FlightBookingScreen = ({ navigation, route }: Props) => {
 
           {/* Ticket Options */}
           {TICKET_OPTIONS.map(ticket => (
-            <View key={ticket.id} style={styles.ticketCard}>
+            <TouchableOpacity
+              key={ticket.id}
+              style={[
+                styles.ticketCard,
+                selectedTicket?.id === ticket.id && styles.ticketCardSelected,
+              ]}
+              onPress={() => setSelectedTicket(ticket)}
+            >
               <View style={styles.ticketHeader}>
                 <View>
                   <Text style={styles.ticketClass}>{ticket.type}</Text>
@@ -209,17 +222,6 @@ export const FlightBookingScreen = ({ navigation, route }: Props) => {
                     <Text style={styles.ticketPax}>/pax</Text>
                   </Text>
                 </View>
-                <TouchableOpacity
-                  style={styles.selectButton}
-                  onPress={() =>
-                    navigation.navigate('FlightCompleteBooking', {
-                      flight,
-                      ticket,
-                    })
-                  }
-                >
-                  <Text style={styles.selectButtonText}>Select</Text>
-                </TouchableOpacity>
               </View>
 
               <View style={styles.dashedLine} />
@@ -255,11 +257,32 @@ export const FlightBookingScreen = ({ navigation, route }: Props) => {
                   </View>
                 ))}
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
 
           <View style={{ height: 40 }} />
         </ScrollView>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={[
+              styles.continueButton,
+              !selectedTicket && styles.continueButtonDisabled,
+            ]}
+            onPress={() => {
+              if (selectedTicket) {
+                navigation.navigate('FlightCompleteBooking', {
+                  flight,
+                  ticket: selectedTicket,
+                });
+              }
+            }}
+            disabled={!selectedTicket}
+          >
+            <Text style={styles.continueButtonText}>Continue</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     </View>
   );
@@ -443,7 +466,12 @@ const styles = StyleSheet.create({
     padding: spacing.m,
     marginBottom: spacing.m,
     borderWidth: 1,
-    borderColor: '#f0f0f0',
+    borderColor: '#E5E7EB',
+  },
+  ticketCardSelected: {
+    borderColor: colors.primary,
+    borderWidth: 2,
+    backgroundColor: '#E6F6F6',
   },
   ticketHeader: {
     flexDirection: 'row',
@@ -464,17 +492,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'normal',
     color: '#999',
-  },
-  selectButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.l,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  selectButtonText: {
-    color: 'white',
-    fontFamily: 'Inter_18pt-Bold',
-    fontSize: 14,
   },
   dashedLine: {
     height: 1,
@@ -512,5 +529,26 @@ const styles = StyleSheet.create({
   benefitText: {
     fontSize: 13,
     color: '#333',
+  },
+  footer: {
+    padding: spacing.m,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#f0f0f0',
+  },
+  continueButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  continueButtonDisabled: {
+    backgroundColor: '#ccc',
+    opacity: 0.7,
+  },
+  continueButtonText: {
+    color: 'white',
+    fontFamily: 'Inter_18pt-Bold',
+    fontSize: 14,
   },
 });

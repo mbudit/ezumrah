@@ -32,55 +32,52 @@ import { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PaymentInstruction'>;
 
-const PAYMENT_METHODS_LOOKUP: Record<string, { label: string; image: any }> = {
-  QRIS: { label: 'QRIS', image: require('../assets/icons/qris.png') },
-  BCA: {
-    label: 'BCA Virtual Account',
-    image: require('../assets/icons/bca.png'),
-  },
-  Mandiri: {
-    label: 'Mandiri Virtual Account',
-    image: require('../assets/icons/mandiri.png'),
-  },
-  BNI: {
-    label: 'BNI Virtual Account',
-    image: require('../assets/icons/bni.png'),
-  },
-  BSI: {
-    label: 'BSI Virtual Account',
-    image: require('../assets/icons/bsi.png'),
-  },
-  CIMB: {
-    label: 'CIMB Niaga Virtual Account',
-    image: require('../assets/icons/cimbniaga.png'),
-  },
-  RHB: {
-    label: 'RHB Bank Virtual Account',
-    image: require('../assets/icons/rhbank.png'),
-  },
-  Toyyibpay: {
-    label: 'Toyyibpay Virtual Account',
-    image: require('../assets/icons/toyyibpay.png'),
-  },
-  GoPay: { label: 'GoPay', image: require('../assets/icons/gopay.png') },
-  OVO: { label: 'OVO', image: require('../assets/icons/ovo.png') },
-  ShopeePay: {
-    label: 'ShopeePay',
-    image: require('../assets/icons/shopeepay.png'),
-  },
-  Dana: { label: 'Dana', image: require('../assets/icons/dana.png') },
-  CC: {
-    label: 'Visa/Mastercard',
-    image: require('../assets/icons/visamastercard.png'),
-  },
-};
+import { usePayment } from '../hooks/usePayment';
+import {
+  PaymentInstruction,
+  TransactionSummary,
+  PaymentMethod,
+} from '../types/payment';
+import { useBooking } from '../hooks/useBooking';
+
+// ... (imports)
 
 export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
   const { paymentMethod = 'BCA', orderId = '1999120524' } = route.params || {};
-  const [secondsRemaining, setSecondsRemaining] = useState(3580); // 00:59:40
+  const { bookingState } = useBooking('1');
+  const [secondsRemaining, setSecondsRemaining] = useState(3580);
   const [expandedInstruction, setExpandedInstruction] = useState<string | null>(
     null,
   );
+
+  const { getPaymentInstruction, getTransactionSummary, getPaymentCategories } =
+    usePayment();
+  const [instruction, setInstruction] = useState<PaymentInstruction | null>(
+    null,
+  );
+  const [transaction, setTransaction] = useState<TransactionSummary | null>(
+    null,
+  );
+  const [methodDetails, setMethodDetails] = useState<PaymentMethod | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const trans = await getTransactionSummary(orderId);
+      setTransaction(trans);
+
+      const instr = await getPaymentInstruction(paymentMethod);
+      setInstruction(instr);
+
+      const cats = await getPaymentCategories();
+      const method = cats
+        .flatMap(c => c.data)
+        .find(m => m.id === paymentMethod);
+      if (method) setMethodDetails(method);
+    };
+    fetchData();
+  }, [paymentMethod, orderId]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -121,37 +118,46 @@ export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
     setExpandedInstruction(expandedInstruction === title ? null : title);
   };
 
-  const paymentInfo = PAYMENT_METHODS_LOOKUP[paymentMethod] || {
-    label: paymentMethod,
-    image: null,
+  const getPaymentDeadline = () => {
+    const deadline = new Date();
+    deadline.setHours(deadline.getHours() + 1);
+
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    const day = deadline.getDate();
+    const month = months[deadline.getMonth()];
+    const year = deadline.getFullYear();
+    const hours = deadline.getHours().toString().padStart(2, '0');
+    const minutes = deadline.getMinutes().toString().padStart(2, '0');
+
+    return `${day} ${month} ${year}, ${hours}:${minutes} WIB`;
   };
 
-  const HOW_TO_PAY_STEPS = [
-    {
-      title: `${paymentInfo.label} Mobile`,
-      content: 'Step 1: Open App...\nStep 2: Select Pay...',
-    },
-    {
-      title: 'Internet Banking',
-      content: 'Step 1: Login...\nStep 2: Select Transfer...',
-    },
-    { title: 'ATM', content: 'Step 1: Insert Card...\nStep 2: Enter PIN...' },
-  ];
+  if (!instruction || !transaction) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        {/* <ActivityIndicator /> */}
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
-  const FLIGHT_DETAILS = [
-    {
-      id: '1',
-      from: 'Jakarta',
-      to: 'Jeddah',
-      date: 'Wed, 04 Sept 2025 · 15:50',
-    },
-    {
-      id: '2',
-      from: 'Jeddah',
-      to: 'Jakarta',
-      date: 'Thu, 18 Sept 2025 · 20:10',
-    },
-  ];
+  const HOW_TO_PAY_STEPS = instruction.steps;
+  const FLIGHT_DETAILS = transaction.flights;
+  const label = methodDetails?.label || paymentMethod;
+  const image = methodDetails?.image;
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -164,7 +170,7 @@ export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
           <ArrowLeft color="black" size={24} />
         </TouchableOpacity>
         <View>
-          <Text style={styles.headerTitle}>{paymentInfo.label}</Text>
+          <Text style={styles.headerTitle}>{label}</Text>
           <Text style={styles.orderId}>Order ID: {orderId}</Text>
         </View>
       </View>
@@ -175,7 +181,7 @@ export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
           <View style={styles.timerHeader}>
             <View>
               <Text style={styles.payBeforeLabel}>Pay Before</Text>
-              <Text style={styles.payBeforeDate}>12 Sep 2025, 00:06 WIB</Text>
+              <Text style={styles.payBeforeDate}>{getPaymentDeadline()}</Text>
             </View>
             <View style={styles.timerContainer}>
               {renderTimerBox(time.h)}
@@ -188,7 +194,9 @@ export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
 
           <View style={styles.separator} />
 
-          <Text style={styles.packageName}>Haji Plus 2027</Text>
+          <Text style={styles.packageName}>
+            {bookingState.packageInfo?.title || 'Package'}
+          </Text>
 
           <ScrollView
             horizontal
@@ -215,10 +223,10 @@ export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
           <View style={{ height: spacing.m }} />
 
           <View style={styles.accountContainer}>
-            {paymentInfo.image && (
-              <Image source={paymentInfo.image} style={styles.accountLogo} />
-            )}
-            <Text style={styles.accountNumber}>1420 2010 0538 3789</Text>
+            {image && <Image source={image} style={styles.accountLogo} />}
+            <Text style={styles.accountNumber}>
+              {instruction.accountNumber}
+            </Text>
             <TouchableOpacity onPress={() => console.log('Copied')}>
               <Text style={styles.copyText}>Copy</Text>
             </TouchableOpacity>
@@ -228,7 +236,12 @@ export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
 
           <View>
             <Text style={styles.totalPaymentLabel}>Total Payment</Text>
-            <Text style={styles.totalPaymentValue}>$35.000</Text>
+            <Text style={styles.totalPaymentValue}>
+              $
+              {bookingState.totalPrice
+                .toString()
+                .replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+            </Text>
           </View>
         </View>
 
@@ -263,6 +276,7 @@ export const PaymentInstructionScreen = ({ navigation, route }: Props) => {
               </View>
             );
           })}
+          <View style={{ height: spacing.m }} />
         </View>
 
         <View style={{ height: 80 }} />

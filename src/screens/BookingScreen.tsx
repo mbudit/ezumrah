@@ -20,6 +20,7 @@ import {
   ChevronRight,
   X,
   ChevronDown,
+  ArrowRight,
 } from 'lucide-react-native';
 import { colors, spacing } from '../theme/theme';
 import LinearGradient from 'react-native-linear-gradient';
@@ -32,10 +33,25 @@ import { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Booking'>;
 
+import { useBooking } from '../hooks/useBooking';
+import { ActivityIndicator } from 'react-native';
+
 export const BookingScreen = ({ navigation }: Props) => {
-  const [passengerCount, setPassengerCount] = useState(0);
+  const { bookingState, isLoading, addPassenger, removePassenger } =
+    useBooking('1'); // Mock ID
+
   const [isSameAsContact, setIsSameAsContact] = useState(false);
   const [contactModalVisible, setContactModalVisible] = useState(false);
+
+  if (isLoading || !bookingState.packageInfo) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  const { packageInfo, passengers, contactDetails } = bookingState;
 
   const renderContactModal = () => (
     <Modal
@@ -67,6 +83,7 @@ export const BookingScreen = ({ navigation }: Props) => {
                 style={styles.input}
                 placeholder="Full Name"
                 placeholderTextColor="#9CA3AF"
+                defaultValue={contactDetails.fullName}
               />
               <Text style={styles.helperText}>
                 Filled based on ID/passport (without punctuation and title)
@@ -87,31 +104,12 @@ export const BookingScreen = ({ navigation }: Props) => {
                 <Text style={styles.phoneLabel}>Phone number</Text>
                 <TextInput
                   style={styles.phoneInput}
-                  defaultValue="+60"
+                  defaultValue={contactDetails.phoneNumber} // Mock prepopulated
                   keyboardType="phone-pad"
                 />
               </View>
             </View>
 
-            <View style={styles.phoneInputContainer}>
-              <View style={styles.countrySelector}>
-                <Image
-                  source={{
-                    uri: 'https://flagcdn.com/w40/my.png',
-                  }}
-                  style={styles.flagIcon}
-                />
-                <ChevronDown size={16} color="#333" />
-              </View>
-              <View style={styles.phoneInputWrapper}>
-                <Text style={styles.phoneLabel}>Phone number</Text>
-                <TextInput
-                  style={styles.phoneInput}
-                  defaultValue="+60"
-                  keyboardType="phone-pad"
-                />
-              </View>
-            </View>
             <Text style={styles.helperText}>Emergency Contact</Text>
 
             <View style={styles.inputGroup}>
@@ -119,6 +117,7 @@ export const BookingScreen = ({ navigation }: Props) => {
                 style={styles.input}
                 placeholder="Email Address"
                 placeholderTextColor="#9CA3AF"
+                defaultValue={contactDetails.email}
               />
               <Text style={styles.requiredMark}>*</Text>
             </View>
@@ -144,7 +143,7 @@ export const BookingScreen = ({ navigation }: Props) => {
       <View style={styles.flightCardHeader}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Image
-            source={require('../assets/logo/garuda.png')}
+            source={packageInfo.airlineLogo}
             style={{
               width: 24,
               height: 24,
@@ -152,7 +151,7 @@ export const BookingScreen = ({ navigation }: Props) => {
               resizeMode: 'contain',
             }}
           />
-          <Text style={styles.flightDate}>Web, 04 Sept 2025</Text>
+          <Text style={styles.flightDate}>{packageInfo.startDate}</Text>
         </View>
         <View style={styles.departBadge}>
           <Text style={styles.departText}>Depart</Text>
@@ -160,23 +159,19 @@ export const BookingScreen = ({ navigation }: Props) => {
       </View>
 
       <View style={styles.airlineRow}>
-        <Image
-          source={require('../assets/logo/garuda.png')}
-          style={styles.airlineLogo}
-        />
+        <Image source={packageInfo.airlineLogo} style={styles.airlineLogo} />
         <Text style={styles.verifiedText}>verified</Text>
-        {/* Simple verified icon placeholder */}
         <View style={styles.verifiedIcon} />
       </View>
 
       <View style={styles.routeRow}>
-        <Text style={styles.routeCode}>CGK</Text>
-        <ArrowLeft
-          size={16}
-          color="black"
-          style={{ transform: [{ rotate: '180deg' }] }}
-        />
-        <Text style={styles.routeCode}>JED</Text>
+        <Text style={styles.routeCode}>
+          {packageInfo.startLocation.split('(')[1].replace(')', '')}
+        </Text>
+        <ArrowRight size={16} color="black" />
+        <Text style={styles.routeCode}>
+          {packageInfo.endLocation.split('(')[1].replace(')', '')}
+        </Text>
       </View>
 
       <Text style={styles.flightTime}>15:50 - 21:45</Text>
@@ -222,9 +217,9 @@ export const BookingScreen = ({ navigation }: Props) => {
               contentContainerStyle={styles.flightScrollContent}
             >
               {renderFlightCard()}
-              {/* Duplicate for demo of scrolling */}
               <View style={{ width: 16 }} />
-              {renderFlightCard()}
+              {/* Only render one card for now unless we structure multiple flights */}
+              {/* {renderFlightCard()} */}
             </ScrollView>
           </View>
 
@@ -239,7 +234,7 @@ export const BookingScreen = ({ navigation }: Props) => {
               >
                 <User size={16} color="black" />
                 <Text style={styles.loggedInText}>
-                  Logged in as Hasan Barsain
+                  Logged in as {contactDetails.fullName}
                 </Text>
               </LinearGradient>
               <View style={styles.contactContent}>
@@ -263,15 +258,17 @@ export const BookingScreen = ({ navigation }: Props) => {
               <View style={styles.counterContainer}>
                 <TouchableOpacity
                   onPress={() =>
-                    setPassengerCount(Math.max(0, passengerCount - 1))
+                    removePassenger(passengers[passengers.length - 1]?.id)
                   }
+                  disabled={passengers.length <= 1}
                 >
-                  <Minus size={16} color="#555" />
+                  <Minus
+                    size={16}
+                    color={passengers.length <= 1 ? '#ccc' : '#555'}
+                  />
                 </TouchableOpacity>
-                <Text style={styles.counterText}>{passengerCount}</Text>
-                <TouchableOpacity
-                  onPress={() => setPassengerCount(passengerCount + 1)}
-                >
+                <Text style={styles.counterText}>{passengers.length}</Text>
+                <TouchableOpacity onPress={addPassenger}>
                   <Plus size={16} color="#555" />
                 </TouchableOpacity>
               </View>
@@ -288,31 +285,28 @@ export const BookingScreen = ({ navigation }: Props) => {
                 />
               </View>
               <View style={styles.divider} />
-              <TouchableOpacity
-                style={styles.passengerRow}
-                onPress={() =>
-                  navigation.navigate('PassengerDetail', { passengerCount: 1 })
-                }
-              >
-                <Text style={styles.passengerLabel}>
-                  Passenger 1 (Adult)<Text style={{ color: 'red' }}>*</Text>
-                </Text>
-                <ChevronRight size={20} color="#0D9488" />
-              </TouchableOpacity>
-            </View>
 
-            <View style={styles.passengerCard}>
-              <TouchableOpacity
-                style={styles.passengerRow}
-                onPress={() =>
-                  navigation.navigate('PassengerDetail', { passengerCount: 2 })
-                }
-              >
-                <Text style={styles.passengerLabel}>
-                  Passenger 2 (Adult)<Text style={{ color: 'red' }}>*</Text>
-                </Text>
-                <ChevronRight size={20} color="#0D9488" />
-              </TouchableOpacity>
+              {passengers.map((passenger, index) => (
+                <View key={passenger.id}>
+                  <TouchableOpacity
+                    style={styles.passengerRow}
+                    onPress={() =>
+                      navigation.navigate('PassengerDetail', {
+                        passengerCount: index + 1,
+                      })
+                    }
+                  >
+                    <Text style={styles.passengerLabel}>
+                      Passenger {index + 1} ({passenger.type})
+                      <Text style={{ color: 'red' }}>*</Text>
+                    </Text>
+                    <ChevronRight size={20} color="#0D9488" />
+                  </TouchableOpacity>
+                  {index < passengers.length - 1 && (
+                    <View style={styles.divider} />
+                  )}
+                </View>
+              ))}
             </View>
           </View>
         </ScrollView>
@@ -594,7 +588,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   modalContent: {
-    flex: 1,
+    // flex: 1, // caused collapse inside auto-height container
   },
   inputGroup: {
     marginBottom: spacing.s,

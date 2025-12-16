@@ -21,234 +21,36 @@ import {
   MessageSquare,
   MapPin,
   Star,
-  User,
-  CheckCircle,
   X,
   ArrowUpDown,
   ChevronRight,
 } from 'lucide-react-native';
-import { colors, spacing } from '../theme/theme';
+import { spacing } from '../theme/theme';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'VendorDetail'>;
 
-const MUTAWWIF_DATA = [
-  {
-    id: '1',
-    name: 'Muhammad Hasan',
-    image: require('../assets/logo/Logo2.png'),
-  }, // Placeholder image
-  {
-    id: '2',
-    name: 'Barsain Wiroganagoro',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '3',
-    name: 'Lathif Al-Azhar',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  { id: '4', name: 'Ahmad Husain', image: require('../assets/logo/Logo2.png') },
-];
-
-const MUTAWWIFAH_DATA = [
-  {
-    id: '1',
-    name: 'Deandra Athifa',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '2',
-    name: 'Hanifa Hafshah',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '3',
-    name: 'Yasmin Azzahra',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '4',
-    name: 'Humaira Zahira',
-    image: require('../assets/logo/Logo2.png'),
-  },
-];
-
-// Extended data for the "See More" view to demonstrate scrolling/full list as per image
-const FULL_MUTAWWIF_DATA = [
-  ...MUTAWWIF_DATA,
-  {
-    id: '5',
-    name: 'Muhammad Hasan',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '6',
-    name: 'Barsain Wiroganagoro',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '7',
-    name: 'Lathif Al-Azhar',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  { id: '8', name: 'Ahmad Husain', image: require('../assets/logo/Logo2.png') },
-  {
-    id: '9',
-    name: 'Muhammad Hasan',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '10',
-    name: 'Barsain Wiroganagoro',
-    image: require('../assets/logo/Logo2.png'),
-  },
-];
-
-const FULL_MUTAWWIFAH_DATA = [
-  ...MUTAWWIFAH_DATA,
-  {
-    id: '5',
-    name: 'Deandra Athifa',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '6',
-    name: 'Hanifa Hafshah',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '7',
-    name: 'Yasmin Azzahra',
-    image: require('../assets/logo/Logo2.png'),
-  },
-  {
-    id: '8',
-    name: 'Humaira Zahira',
-    image: require('../assets/logo/Logo2.png'),
-  },
-];
-
-const REVIEWS_DATA = [
-  {
-    id: '1',
-    name: 'Siti Aminah',
-    initials: 'SA',
-    rating: 5,
-    date: 'Two days ago',
-    text: "I'm very satisfied with their service. From the registration process to the departure, everything was well-organized and transparent. The admin team was responsive.",
-  },
-  {
-    id: '2',
-    name: 'Rayyan',
-    initials: 'RA',
-    rating: 5,
-    date: 'Two weeks ago',
-    text: "I'm very satisfied with their service. From the registration process to the departure, everything was well-organized and transparent. The admin team was responsive.",
-  },
-  {
-    id: '3',
-    name: 'Raiham',
-    initials: 'RH',
-    rating: 5,
-    date: '1 month ago',
-    text: "I'm very satisfied with their service. From the registration process to the departure, everything was well-organized and transparent. The admin team was responsive.",
-  },
-];
-
-const RECOMMENDED_DATA = [
-  {
-    id: '1',
-    title: 'Umrah with Turki',
-    rating: 4.5,
-    reviews: 90,
-    price: '$1.456',
-    originalPrice: '$2.500',
-    image: require('../assets/banner/umrah.png'),
-  },
-  {
-    id: '2',
-    title: 'Umrah with Turki',
-    rating: 4.5,
-    reviews: 90,
-    price: '$1.456',
-    originalPrice: '$2.500',
-    image: require('../assets/banner/umrah.png'),
-  },
-];
-
-const PRODUCT_FILTERS = ['Top Sales', 'Promo', 'Hajj', 'Umroh', 'Price'];
-
-const PRODUCTS_DATA = [
-  {
-    id: '1',
-    title: 'Umrah with Turki',
-    rating: 4.5,
-    reviews: 90,
-    price: '$1.456',
-    originalPrice: '$2.500',
-    image: require('../assets/banner/umrah.png'),
-  },
-  {
-    id: '2',
-    title: 'Hajj Regular 2027',
-    rating: 4.5,
-    reviews: 90,
-    price: '$ 17.595',
-    originalPrice: '$19.500',
-    image: require('../assets/banner/umrah.png'),
-  },
-  {
-    id: '3',
-    title: 'Hajj Regular 2028',
-    rating: 4.5,
-    reviews: 90,
-    price: '$ 17.595',
-    originalPrice: '$19.500',
-    image: require('../assets/banner/umrah.png'),
-  },
-  {
-    id: '4',
-    title: 'Hajj ONH 2028',
-    rating: 4.5,
-    reviews: 90,
-    price: '$ 17.595',
-    originalPrice: '$19.500',
-    image: require('../assets/banner/umrah.png'),
-  },
-  {
-    id: '5',
-    title: 'Umrah with Turki',
-    rating: 4.5,
-    reviews: 90,
-    price: '$1.456',
-    originalPrice: '$2.500',
-    image: require('../assets/banner/umrah.png'),
-  },
-  {
-    id: '6',
-    title: 'Umrah with Turki',
-    rating: 4.5,
-    reviews: 90,
-    price: '$1.456',
-    originalPrice: '$2.500',
-    image: require('../assets/banner/umrah.png'),
-  },
-];
-
-const CATEGORIES_DATA = [
-  { id: '1', title: 'All Items', count: 12 },
-  { id: '2', title: 'Hajj Fund', count: 2 },
-  { id: '3', title: 'PJH (Penyelenggara Ibadah Haji Khusus)', count: 12 },
-  { id: '4', title: 'Umrah', count: 12 },
-  { id: '5', title: 'Umrah + Turki', count: 12 },
-];
+import { useVendorDetail } from '../hooks/useVendorDetail';
+import { VendorStaff, VendorReview, VendorProduct } from '../types/vendor';
 
 export const VendorDetailScreen = ({ navigation }: Props) => {
+  const { data, isLoading } = useVendorDetail('1'); // Mock ID
   const [activeTab, setActiveTab] = useState('Vendor');
   const [staffModalVisible, setStaffModalVisible] = useState(false);
+
+  // Use data from hook or empty arrays/defaults
+  const MUTAWWIF_DATA = data?.mutawwif.slice(0, 4) || [];
+  const MUTAWWIFAH_DATA = data?.mutawwifah.slice(0, 4) || [];
+  const FULL_MUTAWWIF_DATA = data?.mutawwif || [];
+  const FULL_MUTAWWIFAH_DATA = data?.mutawwifah || [];
+  const REVIEWS_DATA = data?.reviews || [];
+  const RECOMMENDED_DATA = data?.recommended || [];
+  const PRODUCTS_DATA = data?.products || [];
+  const CATEGORIES_DATA = data?.categories || [];
+  const PRODUCT_FILTERS = data?.productFilters || [];
+  const profile = data?.profile;
 
   const [staffType, setStaffType] = useState<'Mutawwif' | 'Mutawwifah'>(
     'Mutawwif',
@@ -325,7 +127,7 @@ export const VendorDetailScreen = ({ navigation }: Props) => {
     </View>
   );
 
-  const renderMutawwifList = (title: string, data: typeof MUTAWWIF_DATA) => {
+  const renderMutawwifList = (title: string, data: VendorStaff[]) => {
     const type = title.includes('Mutawwifah') ? 'Mutawwifah' : 'Mutawwif';
     return (
       <View style={styles.section}>
@@ -421,7 +223,7 @@ export const VendorDetailScreen = ({ navigation }: Props) => {
                   />
                 ))}
                 <Text style={styles.ratingCount}>
-                  4.5/5 ({item.reviews} review)
+                  {item.rating}/5 ({item.reviews} review)
                 </Text>
               </View>
               <Text style={styles.recommendOriginalPrice}>
@@ -491,7 +293,7 @@ export const VendorDetailScreen = ({ navigation }: Props) => {
                 />
               ))}
               <Text style={styles.ratingCount}>
-                4.5/5 ({item.reviews} review)
+                {item.rating}/5 ({item.reviews} review)
               </Text>
             </View>
             <Text style={styles.productOriginalPrice}>
@@ -578,21 +380,11 @@ export const VendorDetailScreen = ({ navigation }: Props) => {
             {/* Profile Vendor Description */}
             <View style={[styles.section, { paddingTop: spacing.m }]}>
               <Text style={styles.sectionTitle}>Profile Vendor</Text>
-              <Text style={styles.descriptionText}>
-                Founded in 2017 in Indonesia as a travel agency specializing in
-                flight services and Umrah and Hajj charters. In 2023, the
-                company officially transformed into EZUMRAH DIGITAL TECH SDN
-                BHD.
-              </Text>
-              <Text style={styles.licenseText}>
-                MOTAC:000 • PHJ:000 • PPIU/PIHK:000 • IOT/IOTU:000
-              </Text>
+              <Text style={styles.descriptionText}>{profile?.description}</Text>
+              <Text style={styles.licenseText}>{profile?.license}</Text>
               <View style={styles.locationRow}>
                 <MapPin color="#EF4444" size={16} style={{ marginRight: 8 }} />
-                <Text style={styles.locationText}>
-                  Kuala Lumpur, Malaysia, at: 15th Floor, West Block, 1525,
-                  Kuala Lumpur, Federal Territory.
-                </Text>
+                <Text style={styles.locationText}>{profile?.fullAddress}</Text>
               </View>
             </View>
 
