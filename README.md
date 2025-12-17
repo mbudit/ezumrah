@@ -1,97 +1,341 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Ezumrah Mobile App - Frontend
 
-# Getting Started
+A React Native mobile application for Umrah and Hajj travel booking services.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 📱 Project Overview
 
-## Step 1: Start Metro
+This is a mobile-first application built with React Native that allows users to:
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Search and book Umrah and Hajj packages
+- Book flights and hotels
+- Manage bookings and payments
+- Chat with vendors
+- View order history and vouchers
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 🏗️ Project Structure
 
-```sh
-# Using npm
+```
+src/
+├── screens/              # Screen components (organized by feature)
+│   ├── auth/            # Authentication screens
+│   ├── home/            # Home and main navigation
+│   ├── profile/         # User profile screens
+│   ├── umrah/           # Umrah package screens
+│   ├── hajj/            # Hajj package screens
+│   ├── booking/         # Booking flow screens
+│   ├── payment/         # Payment screens
+│   ├── flight/          # Flight booking screens
+│   ├── hotel/           # Hotel booking screens
+│   ├── chat/            # Chat screens
+│   ├── orders/          # Order management screens
+│   └── vouchers/        # Voucher and promo screens
+├── components/          # Reusable UI components
+├── navigation/          # Navigation configuration
+├── hooks/              # Custom React hooks (API integration layer)
+├── types/              # TypeScript type definitions
+├── theme/              # Theme and styling constants
+└── assets/             # Images, fonts, and static files
+```
+
+## 🔌 Backend Integration Guide
+
+### For Backend Developers
+
+This app is **backend-ready** with a clear separation between UI and data layers. All API integrations should be done through **custom hooks** located in `src/hooks/`.
+
+### Key Integration Points
+
+#### 1. **Custom Hooks (API Layer)**
+
+All data fetching and state management is centralized in custom hooks:
+
+| Hook                  | Location                           | Purpose                 | Status       |
+| --------------------- | ---------------------------------- | ----------------------- | ------------ |
+| `useAuth`             | `src/hooks/useAuth.ts`             | User authentication     | 🔴 Mock Data |
+| `useProfile`          | `src/hooks/useProfile.ts`          | User profile management | 🔴 Mock Data |
+| `useHomeData`         | `src/hooks/useHomeData.ts`         | Home screen data        | 🔴 Mock Data |
+| `useUmrahOptions`     | `src/hooks/useUmrahOptions.ts`     | Umrah search options    | 🔴 Mock Data |
+| `useBooking`          | `src/hooks/useBooking.ts`          | Booking management      | 🔴 Mock Data |
+| `useTripEnhancements` | `src/hooks/useTripEnhancements.ts` | Trip add-ons            | 🔴 Mock Data |
+| `usePayment`          | `src/hooks/usePayment.ts`          | Payment methods         | 🔴 Mock Data |
+| `useFlightSearch`     | `src/hooks/useFlightSearch.ts`     | Flight search           | 🔴 Mock Data |
+| `useFlightBooking`    | `src/hooks/useFlightBooking.ts`    | Flight booking          | 🔴 Mock Data |
+| `useChat`             | `src/hooks/useChat.ts`             | Chat conversations      | 🔴 Mock Data |
+| `useReferenceData`    | `src/hooks/useReferenceData.ts`    | Countries, titles, etc. | 🔴 Mock Data |
+
+#### 2. **Type Definitions**
+
+All API request/response types are defined in `src/types/`:
+
+- `src/types/user.ts` - User profile types
+- `src/types/booking.ts` - Booking types
+- `src/types/flight.ts` - Flight search and booking types
+- `src/types/umrah.ts` - Umrah package types
+- `src/types/chat.ts` - Chat message types
+- `src/types/enhancement.ts` - Trip enhancement types
+
+#### 3. **Screen-to-API Mapping**
+
+##### Authentication Flow
+
+- **Screens**: `src/screens/auth/`
+- **Hook**: `useAuth` (to be created)
+- **Endpoints Needed**:
+  - `POST /auth/login` - User login
+  - `POST /auth/register` - User registration
+  - `POST /auth/verify-otp` - OTP verification
+  - `POST /auth/logout` - User logout
+
+##### Umrah/Hajj Booking Flow
+
+- **Screens**: `src/screens/umrah/`, `src/screens/hajj/`
+- **Hooks**: `useUmrahOptions`, `useBooking`
+- **Endpoints Needed**:
+  - `GET /umrah/search-options` - Countries, cities, dates
+  - `POST /umrah/packages/search` - Search packages
+  - `GET /umrah/packages/:id` - Package details
+  - `GET /umrah/vendors/:id` - Vendor details
+  - `POST /bookings` - Create booking
+
+##### Flight Booking Flow
+
+- **Screens**: `src/screens/flight/`
+- **Hooks**: `useFlightSearch`, `useFlightBooking`
+- **Endpoints Needed**:
+  - `POST /flights/search` - Search flights
+  - `GET /flights/:id` - Flight details
+  - `POST /flights/bookings` - Create flight booking
+
+##### Payment Flow
+
+- **Screens**: `src/screens/payment/`
+- **Hooks**: `usePayment`, `useBooking`
+- **Endpoints Needed**:
+  - `GET /payment/methods` - Available payment methods
+  - `POST /payment/vouchers/apply` - Apply voucher code
+  - `POST /payment/confirm` - Confirm payment
+  - `GET /payment/instructions/:orderId` - Payment instructions
+
+##### Profile & Orders
+
+- **Screens**: `src/screens/profile/`, `src/screens/orders/`
+- **Hooks**: `useProfile`, `useBooking`
+- **Endpoints Needed**:
+  - `GET /users/profile` - Get user profile
+  - `PUT /users/profile` - Update profile
+  - `POST /users/avatar` - Upload avatar
+  - `GET /orders` - List user orders
+  - `GET /orders/:id` - Order details
+
+##### Chat
+
+- **Screens**: `src/screens/chat/`
+- **Hook**: `useChat`
+- **Endpoints Needed**:
+  - `GET /chat/conversations` - List conversations
+  - `GET /chat/conversations/:id/messages` - Get messages
+  - `POST /chat/conversations/:id/messages` - Send message
+  - `PUT /chat/conversations/:id/read` - Mark as read
+
+### 🔧 How to Integrate Backend APIs
+
+#### Step 1: Set up API client
+
+Create `src/services/api.ts`:
+
+```typescript
+import axios from 'axios';
+
+const API_BASE_URL = process.env.API_BASE_URL || 'https://api.ezumrah.com';
+
+export const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add auth token to requests
+apiClient.interceptors.request.use(config => {
+  const token = getAuthToken(); // Implement token storage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+```
+
+#### Step 2: Replace mock data in hooks
+
+Example - Update `useFlightSearch.ts`:
+
+```typescript
+// BEFORE (Mock Data)
+export const useFlightSearch = () => {
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const searchFlights = async (params: FlightSearchParams) => {
+    setIsSearching(true);
+    // Mock delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setFlights(MOCK_FLIGHTS);
+    setIsSearching(false);
+  };
+
+  return { flights, searchFlights, isSearching };
+};
+
+// AFTER (Real API)
+export const useFlightSearch = () => {
+  const [flights, setFlights] = useState<Flight[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const searchFlights = async (params: FlightSearchParams) => {
+    setIsSearching(true);
+    try {
+      const response = await apiClient.post('/flights/search', params);
+      setFlights(response.data.flights);
+    } catch (error) {
+      console.error('Flight search failed:', error);
+      // Handle error
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  return { flights, searchFlights, isSearching };
+};
+```
+
+#### Step 3: Environment Configuration
+
+Create `.env` file:
+
+```
+API_BASE_URL=https://api.ezumrah.com
+API_TIMEOUT=10000
+```
+
+### 📋 Backend Integration Checklist
+
+- [ ] Set up API client with base URL and interceptors
+- [ ] Implement authentication token storage (AsyncStorage)
+- [ ] Replace mock data in `useAuth`
+- [ ] Replace mock data in `useProfile`
+- [ ] Replace mock data in `useHomeData`
+- [ ] Replace mock data in `useUmrahOptions`
+- [ ] Replace mock data in `useBooking`
+- [ ] Replace mock data in `useTripEnhancements`
+- [ ] Replace mock data in `usePayment`
+- [ ] Replace mock data in `useFlightSearch`
+- [ ] Replace mock data in `useFlightBooking`
+- [ ] Replace mock data in `useChat`
+- [ ] Implement error handling and retry logic
+- [ ] Add loading states and error messages
+- [ ] Test all API endpoints
+- [ ] Implement offline support (optional)
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 16+
+- React Native CLI
+- Android Studio (for Android)
+- Xcode (for iOS, macOS only)
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Install iOS pods (macOS only)
+cd ios && pod install && cd ..
+
+# Run on Android
+npx react-native run-android
+
+# Run on iOS (macOS only)
+npx react-native run-ios
+```
+
+### Development
+
+```bash
+# Start Metro bundler
 npm start
 
-# OR using Yarn
-yarn start
+# Run linter
+npm run lint
+
+# Run type check
+npm run type-check
 ```
 
-## Step 2: Build and run your app
+## 🎨 Design System
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+The app uses a consistent design system defined in `src/theme/theme.ts`:
 
-### Android
+- **Colors**: Primary (#20A39E), Secondary, etc.
+- **Spacing**: Consistent spacing scale (xs, s, m, l, xl)
+- **Typography**: Inter font family with predefined sizes
 
-```sh
-# Using npm
-npm run android
+## 📱 Navigation Structure
 
-# OR using Yarn
-yarn android
-```
+Navigation is managed by React Navigation v6:
 
-### iOS
+- **Stack Navigator**: Main navigation flow
+- **Bottom Tabs**: Home, Orders, Wishlist, Chat, Profile
+- **Modal Screens**: Filters, selections, etc.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+See `src/navigation/AppNavigator.tsx` for complete navigation setup.
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+## 🔐 Authentication Flow
 
-```sh
-bundle install
-```
+1. Splash Screen → Language Selection
+2. Login Selection → Login/Register
+3. OTP Verification
+4. Home Screen
 
-Then, and every time you update your native dependencies, run:
+## 📦 Key Features Status
 
-```sh
-bundle exec pod install
-```
+| Feature        | Status         | Backend Ready |
+| -------------- | -------------- | ------------- |
+| Authentication | ✅ UI Complete | 🔴 Mock Data  |
+| Home Screen    | ✅ UI Complete | 🔴 Mock Data  |
+| Umrah Search   | ✅ UI Complete | 🔴 Mock Data  |
+| Hajj Search    | ✅ UI Complete | 🔴 Mock Data  |
+| Flight Booking | ✅ UI Complete | 🔴 Mock Data  |
+| Hotel Booking  | ✅ UI Complete | 🔴 Mock Data  |
+| Booking Flow   | ✅ UI Complete | 🔴 Mock Data  |
+| Payment        | ✅ UI Complete | 🔴 Mock Data  |
+| Chat           | ✅ UI Complete | 🔴 Mock Data  |
+| Profile        | ✅ UI Complete | 🔴 Mock Data  |
+| Orders         | ✅ UI Complete | 🔴 Mock Data  |
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## 🤝 Contributing
 
-```sh
-# Using npm
-npm run ios
+### For Frontend Developers
 
-# OR using Yarn
-yarn ios
-```
+- Follow the existing component structure
+- Use TypeScript for all new code
+- Follow the design system in `theme.ts`
+- Keep components small and reusable
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### For Backend Developers
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+- Start with `src/hooks/` - this is your integration layer
+- Check `src/types/` for expected data structures
+- All API calls should go through custom hooks
+- Don't modify screen components directly
 
-## Step 3: Modify your app
+## 📞 Support
 
-Now that you have successfully run the app, let's make changes!
+For questions or issues:
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- Frontend: Check `src/screens/` for UI components
+- Backend Integration: Check `src/hooks/` for API layer
+- Types: Check `src/types/` for data structures
