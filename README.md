@@ -2,6 +2,10 @@
 
 A React Native mobile application for Umrah and Hajj travel booking services.
 
+# BEFORE YOU GO AHEAD
+
+Use JDK 17 and make sure the project's NDK matches your device's NDK in your Android's SDK folder.
+
 ## 📱 Project Overview
 
 This is a mobile-first application built with React Native that allows users to:
@@ -331,11 +335,3 @@ See `src/navigation/AppNavigator.tsx` for complete navigation setup.
 - Check `src/types/` for expected data structures
 - All API calls should go through custom hooks
 - Don't modify screen components directly
-
-## 📞 Support
-
-For questions or issues:
-
-- Frontend: Check `src/screens/` for UI components
-- Backend Integration: Check `src/hooks/` for API layer
-- Types: Check `src/types/` for data structures
