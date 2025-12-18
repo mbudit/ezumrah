@@ -205,15 +205,16 @@ export function TabNavigator() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textLight,
         tabBarStyle: {
-          paddingBottom: 8,
+          paddingBottom: 20, // Extra space for gesture bar
           paddingTop: 8,
-          height: 60,
+          height: 80, // Increased from 60 to accommodate gesture bar
           borderTopWidth: 1,
           borderTopColor: colors.border,
         },
         tabBarLabelStyle: {
           fontSize: 10,
           fontFamily: 'Inter_18pt-Regular',
+          marginBottom: 4, // Adjust label position
         },
       }}
     >

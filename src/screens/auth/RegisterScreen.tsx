@@ -29,7 +29,7 @@ export const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     console.log('Sign Up pressed', { fullName, phoneNumber, icNumber, email });
     // onSignUp();
     // Assuming registration succeeds and logs in
-    navigation.replace('Home');
+    navigation.replace('MainApp');
   };
 
   return (

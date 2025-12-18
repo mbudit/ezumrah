@@ -142,7 +142,15 @@ export const OrderScreen = () => {
             {orderStatus === 'waiting' ? (
               <TouchableOpacity
                 style={styles.completePaymentButton}
-                onPress={() => navigation.navigate('CompletePayment')}
+                onPress={() => {
+                  // Navigate to Home tab, then to CompletePayment screen
+                  const parent = navigation.getParent();
+                  if (parent) {
+                    parent.navigate('Home' as any, {
+                      screen: 'CompletePayment',
+                    });
+                  }
+                }}
               >
                 <Text style={styles.completePaymentText}>
                   Complete the Payment
@@ -211,7 +219,7 @@ export const OrderScreen = () => {
 
         {/* <TouchableOpacity
           style={styles.homeButton}
-          onPress={() => navigation.navigate('Home')}
+          onPress={() => navigation.navigate('Home' as any)}
         >
           <Text style={styles.homeButtonText}>Go to Home</Text>
         </TouchableOpacity> */}

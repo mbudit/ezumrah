@@ -47,7 +47,7 @@ export const LoginSelectionScreen: React.FC<Props> = ({ navigation }) => {
           />
           <Button
             title="Log in as a guest"
-            onPress={() => navigation.replace('Home')}
+            onPress={() => navigation.replace('MainApp')}
             style={styles.guestButton}
             textStyle={styles.buttonText}
             icon={
