@@ -56,7 +56,7 @@ export const OtpScreen: React.FC<Props> = ({ navigation, route }) => {
       if (newOtp.join('').length === 6) {
         if (newOtp.join('').length === 6) {
           // onVerify(newOtp.join(''));
-          navigation.replace('Home');
+          navigation.replace('MainApp');
         }
       }
     }

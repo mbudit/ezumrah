@@ -5,6 +5,11 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Otp: undefined | { phoneNumber?: string }; // Example param
+  
+  // Main App with Tabs
+  MainApp: undefined;
+  
+  // Legacy routes (kept for compatibility, now handled in tab stacks)
   Home: undefined;
   Notification: undefined;
   Voucher: undefined;

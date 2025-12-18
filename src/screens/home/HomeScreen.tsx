@@ -11,27 +11,14 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'react-native-linear-gradient';
 import { Search, Bell, Percent, MapPin } from 'lucide-react-native';
-import { colors, spacing, typography } from '../../theme/theme';
+import { colors, spacing } from '../../theme/theme';
 import { ServiceGrid } from '../../components/ServiceGrid';
 import { PromoSection } from '../../components/PromoSection';
 import { HotelDealsSection } from '../../components/HotelDealsSection';
 import { NotificationCard } from '../../components/NotificationCard';
-import { BottomTabNavigator } from '../../components/BottomTabNavigator';
-import { ChatScreen } from '../chat/ChatScreen';
-import { ProfileScreen } from '../profile/ProfileScreen';
-
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/types';
-import { OrderScreen } from '../orders/OrderScreen';
 import { useHomeData } from '../../hooks/useHomeData';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
-
-export const HomeScreen = ({ navigation }: Props) => {
-  const [activeTab, setActiveTab] = React.useState<
-    'Home' | 'Orders' | 'Wishlist' | 'Chat' | 'Profile'
-  >('Home');
-
+export const HomeScreen = ({ navigation }: any) => {
   const { data, isLoading } = useHomeData();
   const prayerData = data?.prayerData;
 
@@ -49,123 +36,79 @@ export const HomeScreen = ({ navigation }: Props) => {
     }
   };
 
-  const renderContent = () => {
-    if (activeTab === 'Chat') {
-      return <ChatScreen />;
-    }
-
-    if (activeTab === 'Profile') {
-      return <ProfileScreen />;
-    }
-
-    if (activeTab === 'Orders') {
-      return <OrderScreen />;
-    }
-    if (activeTab === 'Home') {
-      return (
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Green Background with Curve */}
-          <LinearGradient
-            colors={['#20A39E', '#1D938E', '#1A827E', '#13625F']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            style={styles.greenBackground}
-          >
-            <SafeAreaView edges={['top']}>
-              <View style={styles.header}>
-                {/* Search ... unchanged ... */}
-                <View style={styles.searchContainer}>
-                  <Search color="#20A39E" size={20} style={styles.searchIcon} />
-                  <TextInput
-                    placeholder="Search"
-                    placeholderTextColor={colors.textLight}
-                    style={styles.searchInput}
-                  />
-                </View>
-                <View style={styles.headerIcons}>
-                  <TouchableOpacity
-                    style={styles.iconButton}
-                    onPress={() => navigation.navigate('Notification')}
-                  >
-                    <Bell color="#20A39E" size={20} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.iconButton}
-                    onPress={() => navigation.navigate('Voucher')}
-                  >
-                    <Percent color="#20A39E" size={20} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              <View style={styles.heroContent}>
-                {isLoading ? (
-                  <Text style={{ color: 'white' }}>Loading...</Text>
-                ) : (
-                  <>
-                    <View style={styles.locationContainer}>
-                      <MapPin color="red" size={16} />
-                      <Text style={styles.locationText}>
-                        {prayerData?.location || 'Loading Location...'}
-                      </Text>
-                    </View>
-
-                    <Text style={styles.prayerName}>
-                      {prayerData?.nextPrayerName} {prayerData?.nextPrayerTime}
-                    </Text>
-                    <Text style={styles.countdown}>
-                      {prayerData?.countdown}
-                    </Text>
-                    <Text style={styles.date}>
-                      {prayerData?.dateString} / {prayerData?.hijriDateString}
-                    </Text>
-                  </>
-                )}
-              </View>
-            </SafeAreaView>
-          </LinearGradient>
-
-          <View style={styles.contentContainer}>
-            <ServiceGrid onServicePress={handleServicePress} />
-            <PromoSection />
-            <NotificationCard />
-            <HotelDealsSection />
-          </View>
-        </ScrollView>
-      );
-    }
-
-    // Default placeholder for other tabs
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ color: colors.text }}>Coming Soon</Text>
-      </View>
-    );
-  };
-
   return (
     <View style={styles.container}>
-      <StatusBar
-        barStyle={
-          activeTab === 'Chat' || activeTab === 'Profile'
-            ? 'dark-content'
-            : 'light-content'
-        }
-        backgroundColor={
-          activeTab === 'Chat' || activeTab === 'Profile'
-            ? '#1D938E'
-            : activeTab === 'Home'
-            ? '#20A39E'
-            : 'white'
-        }
-      />
+      <StatusBar barStyle="light-content" backgroundColor="#20A39E" />
 
-      {renderContent()}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Green Background with Curve */}
+        <LinearGradient
+          colors={['#20A39E', '#1D938E', '#1A827E', '#13625F']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={styles.greenBackground}
+        >
+          <SafeAreaView edges={['top']}>
+            <View style={styles.header}>
+              <View style={styles.searchContainer}>
+                <Search color="#20A39E" size={20} style={styles.searchIcon} />
+                <TextInput
+                  placeholder="Search"
+                  placeholderTextColor={colors.textLight}
+                  style={styles.searchInput}
+                />
+              </View>
+              <View style={styles.headerIcons}>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => navigation.navigate('Notification')}
+                >
+                  <Bell color="#20A39E" size={20} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => navigation.navigate('Voucher')}
+                >
+                  <Percent color="#20A39E" size={20} />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-      <BottomTabNavigator activeTab={activeTab} onTabPress={setActiveTab} />
+            <View style={styles.heroContent}>
+              {isLoading ? (
+                <Text style={{ color: 'white' }}>Loading...</Text>
+              ) : (
+                <>
+                  <View style={styles.locationContainer}>
+                    <MapPin color="red" size={16} />
+                    <Text style={styles.locationText}>
+                      {prayerData?.location || 'Loading Location...'}
+                    </Text>
+                  </View>
+
+                  <Text style={styles.prayerName}>
+                    {prayerData?.nextPrayerName} {prayerData?.nextPrayerTime}
+                  </Text>
+                  <Text style={styles.countdown}>{prayerData?.countdown}</Text>
+                  <Text style={styles.date}>
+                    {prayerData?.dateString} / {prayerData?.hijriDateString}
+                  </Text>
+                </>
+              )}
+            </View>
+          </SafeAreaView>
+        </LinearGradient>
+
+        <View style={styles.contentContainer}>
+          <ServiceGrid onServicePress={handleServicePress} />
+          <PromoSection />
+          <NotificationCard />
+          <HotelDealsSection />
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -255,7 +198,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 80, // Add padding for bottom tab
   },
   contentContainer: {
     paddingTop: spacing.m,
